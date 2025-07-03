@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ECF xmlns="http://www.dgii.gov.do/ECF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Encabezado>
+    <TipoeCF>31</TipoeCF>
+    <RNCEmisor>101675489</RNCEmisor>
+    <RazonSocialEmisor>UREÑA LORENZO &amp; ASOC</RazonSocialEmisor>
+    <RNCComprador>131111111</RNCComprador>
+    <FechaHoraEmision>2025-07-01T23:55:56.559086</FechaHoraEmision>
+    <NumeroComprobanteFiscal>E310000000031</NumeroComprobanteFiscal>
+    <MontoTotal>52500.00</MontoTotal>
+    <TotalITBIS>2500.00</TotalITBIS>
+  </Encabezado>
+  <Cuerpo>
+    <Detalle>
+                 <Descripcion>IGUALA R LOPEZ 04-2025</Descripcion>
+          <Cantidad>1</Cantidad>
+          <PrecioUnitario>17500.00</PrecioUnitario>
+           <ITBIS>833.33</ITBIS>          <Descripcion>IGUALA R LOPEZ 05-2025</Descripcion>
+          <Cantidad>1</Cantidad>
+          <PrecioUnitario>17500.00</PrecioUnitario>
+           <ITBIS>833.33</ITBIS>          <Descripcion>IGUALA R LOPEZ 06-2025</Descripcion>
+          <Cantidad>1</Cantidad>
+          <PrecioUnitario>17500.00</PrecioUnitario>
+           <ITBIS>833.33</ITBIS>
+    </Detalle>
+  </Cuerpo>
+</ECF>
+     
