@@ -1,13 +1,16 @@
 name: ecf_dgii
 description: Ecf Dgii Generator
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/Josue0z/ecf_dgii.git
 
 environment:
   sdk: ^3.6.2
+  flutter: '>=3.0.0'
 
 # Add regular dependencies here.
 dependencies:
+  flutter:
+    sdk: flutter
   path: ^1.9.1
   http: ^1.4.0
   path_provider: ^2.1.5
