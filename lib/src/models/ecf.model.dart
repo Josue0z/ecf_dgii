@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:ecf_dgii/src/types/ecf.dart';
 import 'package:ecf_dgii/src/utils/ecf.functions.dart';
@@ -21,9 +23,16 @@ class EcfModel {
   String certBase64;
   File? seedFile;
   String seedXml = '';
+  File? seedSignFile;
+  String seedSignXml = '';
   File? ecfFile;
   String ecfSignXml = '';
   List<EcfDetailsModel> items = [];
+
+  late XmlSignerService signerService;
+
+  Map<String, String>? json;
+
   EcfModel(
       {required this.tipoEcf,
       required this.rncEmisor,
@@ -35,7 +44,10 @@ class EcfModel {
       required this.totalItbis,
       this.codigoSeguridad,
       required this.privateKey,
-      required this.certBase64});
+      required this.certBase64}) {
+    signerService =
+        XmlSignerService(privateKey: privateKey, certificateBase64: certBase64);
+  }
 
   String get tipo {
     if (tipoEcf == EcfType.e31) {
@@ -79,36 +91,41 @@ class EcfModel {
   }
 
   Future<XmlSignerModel> sendEcfSeed() async {
-    final signer =
-        XmlSignerService(privateKey: privateKey, certificateBase64: certBase64);
-    final signerModel = await signer.signXml(
-        seedXml, File(path.join('temp', 'semilla_firmada.xml')));
-    await sendSignSeed(signerModel.xmlFile);
-    seedFile = signerModel.xmlFile;
-    seedXml = signerModel.xmlStr;
-
+    final signerModel = await signerService.signXml(seedXml,
+        File(path.join(Directory.systemTemp.path, 'semilla_firmada.xml')));
+    json = await sendSignSeed(signerModel.xmlFile);
+    seedSignFile = signerModel.xmlFile;
+    seedSignXml = signerModel.xmlStr;
+    await seedFile?.delete();
+    seedXml = '';
     return signerModel;
+  }
+
+  Future<XmlSignerModel> signer() async {
+    var ecfXmlSign = await signerService.signXml(
+        xml,
+        File(path.join(
+            Directory.systemTemp.path, '$rncEmisor$numeroComprobante.xml')));
+    ecfFile = ecfXmlSign.xmlFile;
+    ecfSignXml = ecfXmlSign.xmlStr;
+
+    return ecfXmlSign;
   }
 
   Future<bool> sendEcfSigned() async {
     try {
       if (ecfFile == null) throw 'Archivo Xml del ecf firmado no existe';
-      await sendEcfSign(ecfFile!, tipoEcf);
+      await sendEcfSign(
+          ecfFile!,
+          tipoEcf,
+          json?['token'] ??
+              base64Encode(Uint8List.fromList([1255, 78555, 1245, 145])));
+      await seedSignFile?.delete();
+      seedSignXml = '';
       return true;
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<XmlSignerModel> signer() async {
-    final signer =
-        XmlSignerService(privateKey: privateKey, certificateBase64: certBase64);
-    var ecfXmlSign = await signer.signXml(
-        xml, File(path.join('temp', '$rncEmisor$numeroComprobante.xml')));
-    ecfFile = ecfXmlSign.xmlFile;
-    ecfSignXml = ecfXmlSign.xmlStr;
-
-    return ecfXmlSign;
   }
 }
 

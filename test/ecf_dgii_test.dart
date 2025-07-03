@@ -46,9 +46,6 @@ void main() async {
     await ecf.sendEcfSigned();
 
     print(ecf.ecfSignXml);
-
-    await ecf.seedFile?.delete();
-    await ecf.ecfFile?.delete();
   } catch (e) {
     print('⚠️ Error: $e');
   }

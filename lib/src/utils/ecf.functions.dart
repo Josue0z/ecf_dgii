@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:http_parser/http_parser.dart';
@@ -21,11 +22,11 @@ Future<File> downloadSeed() async {
     print(uri.toString());
     return file.writeAsString(response.body);
   } else {
-    throw Exception('Error al obtener la semilla: ${response.statusCode}');
+    throw 'Error al obtener la semilla: ${response.statusCode}';
   }
 }
 
-Future<void> sendSignSeed(File xmlSign) async {
+Future<Map<String, String>?> sendSignSeed(File xmlSign) async {
   final uri = GeneratorEndPoint.getEndPoint(kValidarSemillaEndPoint);
   try {
     final request = http.MultipartRequest('POST', uri)
@@ -39,13 +40,20 @@ Future<void> sendSignSeed(File xmlSign) async {
 
     final response = await request.send();
     final body = await response.stream.bytesToString();
+    print('✅ Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
-      print('✅ Status: ${response.statusCode}');
-      print('📨 Respuesta: $body');
+      dynamic json;
+      if (body.contains('{')) {
+        json = jsonDecode(body);
+        return json;
+      } else {
+        print('📨 Respuesta: $body');
+      }
     } else {
       throw body;
     }
+    return null;
   } catch (error) {
     rethrow;
   } finally {
@@ -53,7 +61,7 @@ Future<void> sendSignSeed(File xmlSign) async {
   }
 }
 
-Future<void> sendEcfSign(File xmlSign, EcfType type) async {
+Future<void> sendEcfSign(File xmlSign, EcfType type, String token) async {
   String endPoint = kRecepcionEcfEndPoint;
   switch (type) {
     case EcfType.e31:
@@ -68,6 +76,7 @@ Future<void> sendEcfSign(File xmlSign, EcfType type) async {
   try {
     final request = http.MultipartRequest('POST', uri)
       ..headers['accept'] = 'application/json'
+      ..headers['Authorization'] = 'Bearer $token'
       ..files.add(await http.MultipartFile.fromPath(
         'xml',
         xmlSign.path,
@@ -85,6 +94,7 @@ Future<void> sendEcfSign(File xmlSign, EcfType type) async {
       throw body;
     }
   } catch (error) {
+    print(error);
     rethrow;
   } finally {
     print(uri.toString());
