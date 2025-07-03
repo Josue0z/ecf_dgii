@@ -6,4 +6,4 @@
 *.crt
 *.pem
 ./202506300359241.xml
-.temp
+temp/
