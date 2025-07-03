@@ -6,4 +6,7 @@
 *.crt
 *.pem
 202506300359241.xml
+build/
+.temp/
 temp/
+*.iml
