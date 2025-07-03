@@ -1,7 +1,8 @@
 # ecf_dgii 🧾🇩🇴
 
-Librería Dart para generar, firmar y enviar Comprobantes Fiscales Electrónicos (e-CF) conforme al esquema DGII en República Dominicana.
+Librería Dart para generar, firmar y enviar Comprobantes Fiscales Electrónicos (e-CF) conforme al esquema DGII en República Dominicana. (Uso de Openssl para validar certificados)
 
+Por lo tanto debera instalar Openssl en Windows y agregarla al Path, en caso de MacOs Openssl esta por defecto en las versiones mas recientes de ese sistema operativo
 ---
 
 ## 🚀 Ejemplo de uso completo
