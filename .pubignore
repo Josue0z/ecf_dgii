@@ -1,0 +1,11 @@
+./202506300359241.xml
+.dart_tool/
+*.key
+*.p12
+*.crt
+*.pem
+./202506300359241.xml
+build/
+.temp/
+temp/
+*.iml
