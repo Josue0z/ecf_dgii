@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:ecf_dgii/ecf_dgii.dart';
+import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 //import 'package:path_provider/path_provider.dart';
 
 Future<File> downloadSeed() async {
-  var dir = Directory.systemTemp;
+  var dir = Directory(dirProject.path);
   Uri uri = GeneratorEndPoint.getEndPoint(kSemillaEndPoint);
   final response = await http.get(
     uri,

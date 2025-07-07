@@ -8,8 +8,7 @@ import 'package:path/path.dart' as path;
 void main() async {
   try {
     GeneratorEndPoint.envEcfType = EnvEcfType.cert;
-    final cert =
-        File(path.join(dirProject.path, '20250609-1517569-ATBJZGHSK.p12'));
+    final cert = File(path.join(dirProject.path, 'CERTIFICADO-JPU-URESA.p12'));
 
     String password = 'INES1037';
 
