@@ -12,7 +12,7 @@ void main() async {
 
     String password = 'INES1037';
 
-    AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
+    //AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
 
     EcfModel ecf = EcfModel(
         tipoEcf: EcfType.e31,
@@ -33,8 +33,6 @@ void main() async {
         montoNeto16: '0.00',
         montoExento: '0.00',
         montoPagado: '139787.77',
-        privateKey: authModel.privateKey,
-        certBase64: authModel.certBase64,
         certFile: cert,
         password: password);
 
@@ -50,7 +48,7 @@ void main() async {
     await ecf.validarSign();
     await ecf.signer();
     await ecf.sendEcfSigned();
-    //await ecf.sendAprobacionComercialEcf();
+    await ecf.sendAprobacionComercialEcf();
 
     print(ecf.ecfSignXml);
     print(ecf.codigoSeguridad);

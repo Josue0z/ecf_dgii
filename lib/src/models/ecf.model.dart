@@ -4,7 +4,6 @@ import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
-import 'package:pointycastle/asymmetric/api.dart';
 
 class EcfModel {
   EcfType tipoEcf;
@@ -26,8 +25,8 @@ class EcfModel {
   String codigoSeguridad = '';
   File? ecfXml;
 
-  RSAPrivateKey privateKey;
-  String certBase64;
+  //RSAPrivateKey privateKey;
+  //String certBase64;
   File certFile;
   String password;
   File? seedFile;
@@ -72,12 +71,9 @@ class EcfModel {
       required this.montoExento,
       required this.tipoIngreso,
       required this.tipoPago,
-      required this.privateKey,
-      required this.certBase64,
       required this.certFile,
       required this.password}) {
-    signerService =
-        XmlSignerService(privateKey: privateKey, certificateBase64: certBase64);
+    signerService = XmlSignerService(certFile: certFile, password: password);
   }
 
   String get tipo {
@@ -207,10 +203,9 @@ class EcfModel {
 
   Future<XmlSignerModel> validarSign() async {
     var xmlSignerModel = await signerService.signXml(
-        seedXml,
-        File(path.join(dirProject.path, 'temp', 'semilla_firmada.xml')),
-        certFile,
-        password);
+      seedXml,
+      File(path.join(dirProject.path, 'temp', 'semilla_firmada.xml')),
+    );
 
     json = await validarSignSeed(xmlSignerModel.xmlFile);
     token = json?['token'] ?? '';
@@ -225,9 +220,7 @@ class EcfModel {
     xmlSignerModel = await signerService.signXml(
         xml,
         File(path.join(
-            Directory.systemTemp.path, '$rncEmisor$numeroComprobante.xml')),
-        certFile,
-        '');
+            Directory.systemTemp.path, '$rncEmisor$numeroComprobante.xml')));
     ecfFile = xmlSignerModel!.xmlFile;
     ecfSignXml = xmlSignerModel?.xmlStr ?? '';
 
@@ -244,7 +237,7 @@ class EcfModel {
       }
 
       await sendEcfSign(ecfFile!, tipoEcf, token);
-      await seedSignFile?.delete();
+      //await seedSignFile?.delete();
       //seedSignXml = '';
       //print(ecfFile);
 
@@ -254,16 +247,17 @@ class EcfModel {
     }
   }
 
-  /*Future<Map<String, String>> sendAprobacionComercialEcf() async {
-    xmlAprobacionFile = File(path.join(Directory.systemTemp.path,
-        'ACECF_${rncComprador}_$numeroComprobante.xml'));
-    var xmlAprobacionSigned = await signerService.signXml(
-        xmlAprobacion, xmlAprobacionFile!, certFile, password);
+  Future<Map<String, String>> sendAprobacionComercialEcf() async {
+    xmlAprobacionFile = File(path.join(
+        dirProject.path, 'ACECF_${rncComprador}_$numeroComprobante.xml'));
+
+    var xmlAprobacionSigned =
+        await signerService.signXml(xmlAprobacion, xmlAprobacionFile!);
     var result =
         await sendAprobacionComercial(xmlAprobacionSigned.xmlFile, token);
-    await xmlAprobacionFile?.delete();
+    //await xmlAprobacionFile?.delete();
     return result;
-  }*/
+  }
 }
 
 class EcfDetailsModel {

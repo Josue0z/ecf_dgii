@@ -103,3 +103,35 @@ Future<Map<String, String>> sendEcfSign(
     print(uri.toString());
   }
 }
+
+Future<Map<String, String>> sendAprobacionComercial(
+    File file, String token) async {
+  final uri = GeneratorEndPoint.getEndPoint(kAprobacionEcfEndPoint);
+  try {
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['accept'] = 'application/json'
+      ..headers['Authorization'] = 'Bearer $token'
+      ..files.add(await http.MultipartFile.fromPath(
+        'xml',
+        file.path,
+        contentType: MediaType('text', 'xml'),
+        filename: path.basename(file.path),
+      ));
+
+    final response = await request.send();
+    final body = await response.stream.bytesToString();
+
+    if (response.statusCode == 200) {
+      print('✅ Status: ${response.statusCode}');
+      print('📨 Respuesta: $body');
+      return jsonDecode(body);
+    } else {
+      throw body;
+    }
+  } catch (error) {
+    print(error);
+    rethrow;
+  } finally {
+    print(uri.toString());
+  }
+}

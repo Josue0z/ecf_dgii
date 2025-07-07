@@ -2,28 +2,22 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
-import 'package:pointycastle/asymmetric/api.dart';
 import 'package:xml/xml.dart';
 import 'package:path/path.dart' as path;
 
 class XmlSignerService {
-  final RSAPrivateKey privateKey;
-  final String certificateBase64;
+  //final RSAPrivateKey privateKey;
+  //final String certificateBase64;
 
-  XmlSignerService({
-    required this.privateKey,
-    required this.certificateBase64,
-  });
+  File certFile;
+  String password;
+  XmlSignerService({required this.certFile, required this.password});
+
   String removeXmlDeclaration(String xml) {
     return xml.replaceFirst(RegExp(r'^<\?xml.*?\?>\s*'), '');
   }
 
-  Future<XmlSignerModel> signXml(
-    String xmlOriginal,
-    File fileOutPath,
-    File certFile,
-    String password,
-  ) async {
+  Future<XmlSignerModel> signXml(String xmlOriginal, File fileOutPath) async {
     final tempDir = path.join(dirProject.path, 'temp');
     final tempSeedFile = File(path.join(tempDir, 'semilla.xml'));
     final c14nFile = File(path.join(tempDir, 'c14n.xml'));
