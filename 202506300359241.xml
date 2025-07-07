@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Postulacion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <PostulacionID>19780</PostulacionID>
+  <TipoRegistro>1</TipoRegistro>
+  <GrupoComprobante>31,32,33,34,41,43,44,45,46,47</GrupoComprobante>
+  <Contribuyente>
+    <RNCContribuyente>101675489</RNCContribuyente>
+    <RazonSocial>URENA LORENZO &amp; ASOCIADOS S R L</RazonSocial>
+    <ActividadEconomica>741201</ActividadEconomica>
+    <Telefono>8095410401</Telefono>
+    <Direccion>ERICK LEONARD EKMAN, No. 37, APTO. 2DA PLANTA, ARROYO HONDO VIEJO</Direccion>
+    <Provincia>DISTRITO NACIONAL</Provincia>
+    <Municipio>SANTO DOMINGO DE GUZMAN</Municipio>
+    <Sector>ARROYO HONDO VIEJO</Sector>
+    <CorreoElectronico>URESA2004@HOTMAIL.COM</CorreoElectronico>
+  </Contribuyente>
+  <Representante>
+    <RNCRepresentante>00104120522</RNCRepresentante>
+    <NombreRepresentante>JUAN PABLO UREÑA PAYANO</NombreRepresentante>
+    <TelefonoRepresentante>8095410401</TelefonoRepresentante>
+    <CelularRepresentante>8293803232</CelularRepresentante>
+    <DireccionRepresentante>ERICK LEONARD ECKMAN, No. 37, APTO. EDIF URESA LOCAL 201, VIEJO ARROYO HONDO</DireccionRepresentante>
+    <ProvinciaRepresentante>DISTRITO NACIONAL</ProvinciaRepresentante>
+    <MunicipioRepresentante>SANTO DOMINGO DE GUZMAN</MunicipioRepresentante>
+    <SectorRepresentante>VIEJO ARROYO HONDO</SectorRepresentante>
+    <CorreoElectronicoRepresentante>uresa2004@hotmail.com</CorreoElectronicoRepresentante>
+  </Representante>
+  <Software>
+    <TipoDesarrollo>1</TipoDesarrollo>
+    <NombreSoftware>URESAX INVOICE SYS</NombreSoftware>
+    <VersionSoftware>1.0.0+1</VersionSoftware>
+  </Software>
+  <FechaSolicitud>2025-06-30T23:03:59.2413402-04:00</FechaSolicitud>
+</Postulacion>

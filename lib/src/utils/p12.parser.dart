@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:basic_utils/basic_utils.dart';
 
 class AuthCertModel {
-  RSAPrivateKey privateKey;
+  String privateKey;
   String certBase64;
   AuthCertModel({required this.privateKey, required this.certBase64});
 }
@@ -24,14 +23,12 @@ Future<AuthCertModel> getAuthP12(
 
   final privateKeyPem = resultCerts?[1];
 
-  var key = CryptoUtils.rsaPrivateKeyFromPem(privateKeyPem!);
-
   final certBase64 = (resultCerts?[0])
           ?.replaceAll('-----BEGIN CERTIFICATE-----', '')
           .replaceAll('-----END CERTIFICATE-----', '')
           .replaceAll('\n', '') ??
       '';
-  return AuthCertModel(privateKey: key, certBase64: certBase64);
+  return AuthCertModel(privateKey: privateKeyPem!, certBase64: certBase64);
 }
 
 Future<List<String>?> extraerCertYKeyComoString({

@@ -21,7 +21,9 @@ Future<File> downloadSeed() async {
   if (response.statusCode == 200) {
     final file = File(path.join(tempDir.path, 'semilla.xml'));
     print(uri.toString());
-    return file.writeAsString(response.body);
+    await file.writeAsBytes(response.bodyBytes);
+
+    return file;
   } else {
     throw 'Error al obtener la semilla: ${response.statusCode}';
   }

@@ -1,43 +1,48 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
-import 'package:ecf_dgii/src/utils/directories.dart';
+import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
-import 'package:path/path.dart' as path;
+import 'package:xml_crypto/xml_crypto.dart';
+
+Uint8List loadPrivateKeyDer(String pem) {
+  final cleaned = pem
+      .replaceAll('-----BEGIN PRIVATE KEY-----', '')
+      .replaceAll('-----END PRIVATE KEY-----', '')
+      .replaceAll(RegExp(r'\s+'), '');
+
+  return utf8.encode(cleaned); // ✅ esto sí devuelve Uint8List válido
+}
+
+String removeXmlDeclaration(String xml) {
+  return xml.replaceFirst(RegExp(r'^<\?xml.*?\?>\s*'), '');
+}
 
 class XmlSignerService {
-  //final RSAPrivateKey privateKey;
-  //final String certificateBase64;
+  //File certFile;
+  //String password;
+  String rsaPrivateKey;
+  String certBase64;
+  XmlSignerService({required this.rsaPrivateKey, required this.certBase64});
 
-  File certFile;
-  String password;
-  XmlSignerService({required this.certFile, required this.password});
-
-  String removeXmlDeclaration(String xml) {
-    return xml.replaceFirst(RegExp(r'^<\?xml.*?\?>\s*'), '');
-  }
-
-  Future<XmlSignerModel> signXml(String xmlOriginal, File fileOutPath) async {
+  /*Future<XmlSignerModel> signXml(String xmlOriginal, File fileOutPath) async {
     final tempDir = path.join(dirProject.path, 'temp');
-    final tempSeedFile = File(path.join(tempDir, 'semilla.xml'));
     final c14nFile = File(path.join(tempDir, 'c14n.xml'));
     final signedInfoFile = File(path.join(tempDir, 'signed_info.xml'));
+    final tempSeed = File(path.join(tempDir, 'semilla.xml'));
 
-    var canonDigestResult = await canonicalFile(tempSeedFile);
+    // Asegúrate que aquí no haya ningún nodo <Signature>, ni siquiera vacío
+    var canonicalXml = await canonicalFile(tempSeed); // c14n (no firma aún)
 
-    var canonicalXml = canonDigestResult;
-    await c14nFile.writeAsString(canonicalXml);
-    canonicalXml = await c14nFile.readAsString();
+    await c14nFile.writeAsBytes(utf8.encode(canonicalXml));
+
+    canonicalXml = utf8.decode(await c14nFile.readAsBytes());
 
     final digestBase64 = await calcularDigest(canonicalXml);
 
-    print(canonicalXml);
-    print(digestBase64);
-
-    // 2️⃣ Construir SignedInfo
     final signedInfoXml = '''
-<SignedInfo>
-  <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/RECxml-c14n-20010315"/>
+<SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+  <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
   <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
   <Reference URI="">
     <Transforms>
@@ -70,9 +75,7 @@ class XmlSignerService {
 
     var certificadoBase64 = result[1].trim();
 
-    final signatureValue = base64.encode(firmaBytes);
-
-    print(certificadoBase64);
+    final signatureValue = base64Encode(firmaBytes);
 
     // 5️⃣ Construir nodo Signature
     final signatureXml = '''
@@ -92,138 +95,63 @@ $canonicalSignedInfo
 
     await fileOutPath.writeAsString(finalXmlStr);
 
-    finalXmlStr = await fileOutPath.readAsString();
-
     await verificarDigestCorrecto(
         canonicalXmlOriginal: canonicalXml, signedXmlFinal: finalXmlStr);
 
-    print(fileOutPath);
+    String code = getSecurityCode(signatureValue);
 
     return XmlSignerModel(
       xmlStr: finalXmlStr,
       xmlFile: fileOutPath,
-      codigoSeguridad: '', // Puedes obtenerlo según sea necesario
+      codigoSeguridad: code, // Puedes obtenerlo según sea necesario
     );
+  }*/
+
+  signXml(String xmlOriginal, File file) async {
+    // var key = loadPrivateKeyDer(rsaPrivateKey);
+    final canonical = await canonicalXml(xmlOriginal);
+    // 2) Construye el SignedXml
+    final signer = SignedXml()
+      // URI="" -> referencia al documento completo
+      ..addReference(
+        null, // no XPath
+        ['http://www.w3.org/2000/09/xmldsig#enveloped-signature'],
+        'http://www.w3.org/2001/04/xmlenc#sha256',
+        '', // URI vacío
+        null, // digestValue (se calculará)
+        null, // inclusiveNamespacesPrefixList
+        true, // isEmptyUri = true para que use URI=""
+      )
+      ..keyInfoProvider = X509KeyInfoProvider(certBase64, rsaPrivateKey)
+      ..canonicalizationAlgorithm =
+          'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
+      ..signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+
+      // Y computa la firma sobre el XML sin la cabecera <?xml…?>
+      ..computeSignature(canonical);
+
+    // 3) Escribe el resultado
+    await file.writeAsString(signer.signedXml);
+
+    print('Canonicalizado:\n$canonical');
+    print(await calcularDigest(canonical));
+
+    return XmlSignerModel(
+        xmlStr: signer.signedXml,
+        xmlFile: file,
+        codigoSeguridad: getSecurityCode(signer.signatureValue));
   }
 }
 
-String insertarFirmaXml(String xmlOriginal, String signatureXmlStr) {
-  // Parseamos el documento original
-  final document = XmlDocument.parse(xmlOriginal);
-  final root = document.rootElement;
+String getSecurityCode(String signatureValueBase64) {
+  // Decodificar la firma desde Base64 a bytes reales
+  final signatureBytes = base64.decode(signatureValueBase64);
 
-  // Parseamos el XML de la firma como fragmento
-  final frag = XmlDocument.parse('<Fragment>$signatureXmlStr</Fragment>');
+  // Obtener hash SHA256 de los bytes
+  final hash = sha256.convert(signatureBytes);
 
-  // Clonamos cada elemento hijo del fragmento y lo insertamos
-  for (final node in frag.rootElement.children) {
-    // .copy() crea un clon sin padre
-    root.children.add(node.copy());
-  }
-
-  // Reconstruimos el string completo con encabezado
-  return '<?xml version="1.0" encoding="utf-8"?>\n${document.toXmlString(pretty: true, indent: '  ')}';
-}
-
-Future<List<dynamic>> firmarSignedInfoConP12({
-  required String p12Path,
-  required String p12Password,
-  required String signedInfoXmlPath,
-}) async {
-  final tempDir = Directory(path.join(dirProject.path, 'temp', 'systemp'));
-  await tempDir.create(recursive: true);
-
-  final pemFile = File(path.join(tempDir.path, 'key_and_cert.pem'));
-  final keyFile = File(path.join(tempDir.path, 'key.pem'));
-  final sigBin = File(path.join(tempDir.path, 'signature.bin'));
-  final certOutPem = File(path.join(tempDir.path, 'cert.crt'));
-  //final c14nFile = File(path.join(tempDir.path, 'signed_info.c14n'));
-
-  try {
-    // 1️⃣ Extraer PEM completo desde el .p12
-    final extract = await Process.run('openssl', [
-      'pkcs12',
-      '-in',
-      p12Path,
-      '-nodes',
-      '-passin',
-      'pass:$p12Password',
-      '-out',
-      pemFile.path,
-      '-legacy',
-    ]);
-
-    if (extract.exitCode != 0) {
-      throw Exception('❌ Error extrayendo PEM del .p12: ${extract.stderr}');
-    }
-
-    // 2️⃣ Extraer solo el certificado (sin clave)
-    final extractCert = await Process.run('openssl', [
-      'pkcs12',
-      '-in',
-      p12Path,
-      '-clcerts',
-      '-nokeys',
-      '-passin',
-      'pass:$p12Password',
-      '-out',
-      certOutPem.path,
-      '-legacy',
-    ]);
-
-    if (extractCert.exitCode != 0) {
-      throw Exception(
-          '❌ Error extrayendo CERT del .p12: ${extractCert.stderr}');
-    }
-
-    // 3️⃣ Leer y limpiar el certificado en formato PEM
-    final pemContent = await certOutPem.readAsString(encoding: latin1);
-    final cleanPem = pemContent
-        .split('-----BEGIN CERTIFICATE-----')
-        .last
-        .split('-----END CERTIFICATE-----')
-        .first
-        .replaceAll(RegExp(r'\s+'), '')
-        .trim();
-
-    // 4️⃣ Extraer solo la clave privada en key.pem
-    final extractKey = await Process.run('openssl', [
-      'pkey',
-      '-in',
-      pemFile.path,
-      '-out',
-      keyFile.path,
-    ]);
-
-    if (extractKey.exitCode != 0) {
-      throw Exception('❌ Error extrayendo clave privada: ${extractKey.stderr}');
-    }
-
-    // 5️⃣ Firmar el archivo canonicalizado con clave RSA + SHA256
-    final firmar = await Process.run('openssl', [
-      'dgst',
-      '-sha256',
-      '-sign',
-      keyFile.path,
-      '-out',
-      sigBin.path,
-      signedInfoXmlPath,
-    ]);
-
-    if (firmar.exitCode != 0) {
-      throw Exception('❌ Error generando la firma: ${firmar.stderr}');
-    }
-
-    // 6️⃣ Validar que los archivos existen
-    if (!(await pemFile.exists()) ||
-        !(await keyFile.exists()) ||
-        !(await sigBin.exists()) ||
-        !(await certOutPem.exists())) {
-      throw Exception('❌ Archivos de firma no generados correctamente.');
-    }
-
-    return [await sigBin.readAsBytes(), cleanPem];
-  } finally {}
+  // Codificar el hash en Base64 y tomar los primeros 6 caracteres
+  return base64.encode(hash.bytes).substring(0, 6);
 }
 
 class XmlSignerModel {
@@ -238,13 +166,26 @@ class XmlSignerModel {
   });
 }
 
-Future<String> canonicalFile(File file) async {
-  final result = await Process.run('xmllint', ['--exc-c14n', file.path]);
-  if (result.exitCode != 0) {
-    throw Exception('❌ Error canonicalizando: ${result.stderr}');
+Future<String> canonicalXml(String xmlText) async {
+  final process = await Process.start('xmllint', ['--c14n', '-']);
+
+  // Escribimos el XML al stdin del proceso
+  process.stdin.write(xmlText);
+  await process.stdin.close();
+
+  // Esperamos la salida del proceso
+  final output =
+      await process.stdout.transform(SystemEncoding().decoder).join();
+  final errors =
+      await process.stderr.transform(SystemEncoding().decoder).join();
+
+  final exitCode = await process.exitCode;
+
+  if (exitCode != 0) {
+    throw Exception('❌ Error canonicalizando XML: $errors');
   }
 
-  return result.stdout;
+  return output;
 }
 
 Future<void> verificarDigestCorrecto({
@@ -281,27 +222,27 @@ Future<String> calcularDigest(String xml) async {
   return base64.encode(sha256Digest.bytes);
 }
 
-/// Canonicaliza el XML con xmllint, guarda el resultado y calcula digest sha256
-Future<String> calcularDigestConC14nYGuardar({
-  required String inputXmlPath,
-  required String outputC14nPath,
-}) async {
-  // Ejecutar xmllint para canonicalizar (exclusive c14n)
-  final result = await Process.run('xmllint', ['--exc-c14n', inputXmlPath]);
+class X509KeyInfoProvider implements KeyInfoProvider {
+  final String certBase64;
+  final String key;
+  X509KeyInfoProvider(this.certBase64, this.key);
 
-  if (result.exitCode != 0) {
-    throw Exception('Error canonicalizando XML: ${result.stderr}');
+  @override
+  String getKeyInfo(Uint8List? signingKey, String? prefix) {
+    // Si xml_crypto le pasa un prefijo (p.ej. "ds"), lo respetamos:
+    final p = (prefix != null && prefix.isNotEmpty) ? '$prefix:' : '';
+    return '<${p}X509Data>'
+        '<${p}X509Certificate>'
+        '$certBase64'
+        '</${p}X509Certificate>'
+        '</${p}X509Data>';
   }
 
-  final canonicalXml = result.stdout as String;
+  @override
+  Uint8List? getKey(String? keyInfo) {
+    return utf8.encode(key);
+  }
 
-  // Guardar el XML canonicalizado en el archivo de salida
-  final outputFile = File(outputC14nPath);
-  await outputFile.writeAsString(canonicalXml);
-
-  // Calcular digest SHA256 del XML canonicalizado
-  final sha256Digest = sha256.convert(utf8.encode(canonicalXml));
-
-  // Retornar digest en base64
-  return base64.encode(sha256Digest.bytes);
+  @override
+  Map<String, dynamic>? get attrs => {};
 }

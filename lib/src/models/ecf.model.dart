@@ -4,6 +4,7 @@ import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
+import 'package:pointycastle/asymmetric/api.dart';
 
 class EcfModel {
   EcfType tipoEcf;
@@ -25,10 +26,8 @@ class EcfModel {
   String codigoSeguridad = '';
   File? ecfXml;
 
-  //RSAPrivateKey privateKey;
-  //String certBase64;
-  File certFile;
-  String password;
+  String privateKey;
+  String certBase64;
   File? seedFile;
   String seedXml = '';
   File? seedSignFile;
@@ -71,9 +70,10 @@ class EcfModel {
       required this.montoExento,
       required this.tipoIngreso,
       required this.tipoPago,
-      required this.certFile,
-      required this.password}) {
-    signerService = XmlSignerService(certFile: certFile, password: password);
+      required this.privateKey,
+      required this.certBase64}) {
+    signerService =
+        XmlSignerService(rsaPrivateKey: privateKey, certBase64: certBase64);
   }
 
   String get tipo {
