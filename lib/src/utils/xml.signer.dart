@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
+import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
 import 'package:xml_crypto/xml_crypto.dart';
+import 'package:path/path.dart' as path;
 
 Uint8List loadPrivateKeyDer(String pem) {
   final cleaned = pem
@@ -19,8 +21,6 @@ String removeXmlDeclaration(String xml) {
 }
 
 class XmlSignerService {
-  //File certFile;
-  //String password;
   String rsaPrivateKey;
   String certBase64;
   XmlSignerService({required this.rsaPrivateKey, required this.certBase64});
@@ -107,9 +107,9 @@ $canonicalSignedInfo
     );
   }*/
 
-  signXml(String xmlOriginal, File file) async {
-    // var key = loadPrivateKeyDer(rsaPrivateKey);
-    final canonical = await canonicalXml(xmlOriginal);
+  Future<XmlSignerModel> signXml(String xmlOriginal, File file) async {
+    final unsignedXml = removeXmlDeclaration(xmlOriginal);
+
     // 2) Construye el SignedXml
     final signer = SignedXml()
       // URI="" -> referencia al documento completo
@@ -128,13 +128,10 @@ $canonicalSignedInfo
       ..signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
 
       // Y computa la firma sobre el XML sin la cabecera <?xml…?>
-      ..computeSignature(canonical);
+      ..computeSignature(unsignedXml);
 
     // 3) Escribe el resultado
     await file.writeAsString(signer.signedXml);
-
-    print('Canonicalizado:\n$canonical');
-    print(await calcularDigest(canonical));
 
     return XmlSignerModel(
         xmlStr: signer.signedXml,
@@ -240,7 +237,8 @@ class X509KeyInfoProvider implements KeyInfoProvider {
 
   @override
   Uint8List? getKey(String? keyInfo) {
-    return utf8.encode(key);
+    return File(path.join(dirProject.path, 'temp', 'systemp', 'key.pem'))
+        .readAsBytesSync();
   }
 
   @override
