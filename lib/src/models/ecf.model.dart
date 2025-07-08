@@ -252,6 +252,7 @@ class EcfModel {
     }).join()}
       </TablaFormasPago>
       <BancoPago>$bancoPago</BancoPago>
+      <TotalPaginas>1</TotalPaginas>
     </IdDoc>
     <Emisor>
       <RNCEmisor>$rncEmisor</RNCEmisor>
@@ -276,20 +277,24 @@ class EcfModel {
       <CodigoInternoComprador>$codigoInternoComprador</CodigoInternoComprador>
     </Comprador>
     <Totales>
+      <MontoGravadoTotal>$montoNeto</MontoGravadoTotal>
+      <MontoGravadoI1>$montoNeto18</MontoGravadoI1>
+      <MontoGravadoI2>$montoNeto16</MontoGravadoI2>
       <MontoGravadoI3>0.00</MontoGravadoI3>
       <MontoExento>$montoExento</MontoExento>
-      <ITBIS2>0</ITBIS2>
+      <ITBIS1>18</ITBIS1>
+      <ITBIS2>16</ITBIS2>
       <ITBIS3>0</ITBIS3>
       <TotalITBIS>$totalItbis</TotalITBIS>
-      <TotalITBIS1>$totalItbis16</TotalITBIS1>
-      <TotalITBIS2>$totalItbis18</TotalITBIS2>
+      <TotalITBIS1>$totalItbis18</TotalITBIS1>
+      <TotalITBIS2>$totalItbis16</TotalITBIS2>
+      <TotalITBIS3>0.00</TotalITBIS3>
       <MontoImpuestoAdicional>0.01</MontoImpuestoAdicional>
       <MontoTotal>$montoTotal</MontoTotal>
       <SaldoAnterior>0.00</SaldoAnterior>
       <MontoAvancePago>$montoPagado</MontoAvancePago>
       <ValorPagar>0.00</ValorPagar>
       <TotalITBISRetenido>$montoRetenidoItbis</TotalITBISRetenido>
-      <TotalITBISPercepcion>0.00</TotalITBISPercepcion>
     </Totales>
   </Encabezado>
   <DetallesItems>
@@ -309,7 +314,7 @@ class EcfModel {
     <IndicadorBienoServicio>${e.indicadorBienOServ}</IndicadorBienoServicio>
     <CantidadItem>${e.cantidad}</CantidadItem>
     <UnidadMedida>${e.unidadMedida}</UnidadMedida>
-    <CantidadReferencia>${e.cantidad}</CantidadReferencia>
+    <UnidadReferencia>${e.unidadMedida}</UnidadReferencia>
     <PrecioUnitarioReferencia>${e.precioUnitario}</PrecioUnitarioReferencia>
     <PrecioUnitarioItem>${e.precioUnitario}</PrecioUnitarioItem>
     <MontoItem>${e.montoItem}</MontoItem>
@@ -321,50 +326,33 @@ class EcfModel {
     <Subtotal>
       <NumeroSubTotal>1</NumeroSubTotal>
       <SubTotalMontoGravadoTotal>$montoNeto</SubTotalMontoGravadoTotal>
-      <SubTotalMontoGravadoI1>$montoNeto16</SubTotalMontoGravadoI1>
-      <SubTotalMontoGravadoI2>$montoNeto18</SubTotalMontoGravadoI2>
-      <SubTotalMontoGravadoI3>0.00</SubTotalMontoGravadoI3>
-      <SubTotaITBIS2>$totalItbis18</SubTotaITBIS2>
-      <SubTotaITBIS3>0.00</SubTotaITBIS3>
-      <SubTotalImpuestoAdicional>0.00</SubTotalImpuestoAdicional>
-      <SubTotalExento>$montoExento</SubTotalExento>
-      <MontoSubTotal>$montoNeto</MontoSubTotal>
-    </Subtotal>
-    <Subtotal>
-      <Orden>1</Orden>
-      <SubTotalMontoGravadoI2>$montoNeto18</SubTotalMontoGravadoI2>
+      <SubTotalMontoGravadoI1>$montoNeto18</SubTotalMontoGravadoI1>
+      <SubTotalMontoGravadoI2>$montoNeto16</SubTotalMontoGravadoI2>
       <SubTotalMontoGravadoI3>0.00</SubTotalMontoGravadoI3>
       <SubTotaITBIS>$totalItbis</SubTotaITBIS>
-      <SubTotaITBIS2>$totalItbis18</SubTotaITBIS2>
+      <SubTotaITBIS1>$totalItbis18</SubTotaITBIS1>
+      <SubTotaITBIS2>$totalItbis16</SubTotaITBIS2>
       <SubTotaITBIS3>0.00</SubTotaITBIS3>
-      <SubTotalImpuestoAdicional>0.00</SubTotalImpuestoAdicional>
-      <Lineas>${items.length}</Lineas>
+      <SubTotalImpuestoAdicional>0</SubTotalImpuestoAdicional>
+      <SubTotalExento>$montoExento</SubTotalExento>
+      <MontoSubTotal>$montoTotal</MontoSubTotal>
     </Subtotal>
   </Subtotales>
-  <DescuentosORecargos>
-    <DescuentoORecargo>
-      <NumeroLinea>1</NumeroLinea>
-      <TipoAjuste>R</TipoAjuste>
-      <IndicadorNorma1007>0</IndicadorNorma1007>
-      <DescripcionDescuentooRecargo>descuento</DescripcionDescuentooRecargo>
-      <TipoValor>\$</TipoValor>
-      <ValorDescuentooRecargo>0.01</ValorDescuentooRecargo>
-      <MontoDescuentooRecargo>0.01</MontoDescuentooRecargo>
-      <MontoDescuentooRecargoOtraMoneda>0.01</MontoDescuentooRecargoOtraMoneda>
-      <IndicadorFacturacionDescuentooRecargo>1</IndicadorFacturacionDescuentooRecargo>
-    </DescuentoORecargo>
-  </DescuentosORecargos>
   <Paginacion>
     <Pagina>
       <PaginaNo>1</PaginaNo>
       <NoLineaDesde>1</NoLineaDesde>
-      <SubtotalMontoGravado1Pagina>$montoNeto</SubtotalMontoGravado1Pagina>
-      <SubtotalMontoGravado2Pagina>0.00</SubtotalMontoGravado2Pagina>
+      <NoLineaHasta>1</NoLineaHasta>
+      <SubtotalMontoGravadoPagina>$montoNeto</SubtotalMontoGravadoPagina>
+      <SubtotalMontoGravado1Pagina>$montoNeto18</SubtotalMontoGravado1Pagina>
+      <SubtotalMontoGravado2Pagina>$montoNeto16</SubtotalMontoGravado2Pagina>
       <SubtotalMontoGravado3Pagina>0.00</SubtotalMontoGravado3Pagina>
       <SubtotalExentoPagina>0.00</SubtotalExentoPagina>
       <SubtotalItbisPagina>$totalItbis</SubtotalItbisPagina>
-      <SubtotalImpuestoAdicionalPagina>0.01</SubtotalImpuestoAdicionalPagina>
-      <SubtotalMontoNoFacturablePagina>0.01</SubtotalMontoNoFacturablePagina>
+      <SubtotalItbis1Pagina>$totalItbis18</SubtotalItbis1Pagina>
+      <SubtotalItbis2Pagina>$totalItbis16</SubtotalItbis2Pagina>
+      <SubtotalItbis3Pagina>0.00</SubtotalItbis3Pagina>
+      <MontoSubtotalPagina>$montoTotal</MontoSubtotalPagina>
     </Pagina>
   </Paginacion>
   <FechaHoraFirma>$fechaHoraFirma</FechaHoraFirma>
@@ -516,6 +504,8 @@ class EcfDetailsModel {
   String unidadMedida;
   String precioUnitario;
   String montoItem;
+  String tipoImpuesto;
+  String tasaImpuesto;
   String itbis;
   EcfDetailsModel(
       {required this.cantidad,
@@ -526,5 +516,7 @@ class EcfDetailsModel {
       required this.unidadMedida,
       required this.precioUnitario,
       required this.montoItem,
-      required this.itbis});
+      required this.itbis,
+      required this.tipoImpuesto,
+      required this.tasaImpuesto});
 }
