@@ -10,3 +10,5 @@ const kRecepcionEcfEndPoint = '/recepcion/api/facturaselectronicas';
 const kRecepcionFcEcfEndPoint = '/recepcionfc/api/recepcion/ecf';
 
 const kAprobacionEcfEndPoint = '/aprobacioncomercial/api/aprobacioncomercial';
+
+const kTrackIdEcfEndPoint = '/consultaresultado/api/consultas/estado';

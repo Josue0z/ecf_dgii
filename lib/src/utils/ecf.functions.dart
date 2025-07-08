@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:ecf_dgii/ecf_dgii.dart';
@@ -29,7 +30,7 @@ Future<File> downloadSeed() async {
   }
 }
 
-Future<Map<String, String>?> validarSignSeed(File xmlSign) async {
+FutureOr<Map<String, dynamic>?> validarSignSeed(File xmlSign) async {
   final uri = GeneratorEndPoint.getEndPoint(kValidarSemillaEndPoint);
   try {
     final request = http.MultipartRequest('POST', uri)
@@ -43,20 +44,12 @@ Future<Map<String, String>?> validarSignSeed(File xmlSign) async {
 
     final response = await request.send();
     final body = await response.stream.bytesToString();
-    print('✅ Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
-      dynamic json;
-      if (body.contains('{')) {
-        json = jsonDecode(body);
-        return json;
-      } else {
-        print('📨 Respuesta: $body');
-      }
+      return jsonDecode(body);
     } else {
       throw body;
     }
-    return null;
   } catch (error) {
     rethrow;
   } finally {
@@ -64,7 +57,7 @@ Future<Map<String, String>?> validarSignSeed(File xmlSign) async {
   }
 }
 
-Future<Map<String, String>> sendEcfSign(
+Future<Map<String, dynamic>> sendEcfSign(
     File xmlSign, EcfType type, String token) async {
   String endPoint = kRecepcionEcfEndPoint;
   switch (type) {
@@ -87,6 +80,30 @@ Future<Map<String, String>> sendEcfSign(
         contentType: MediaType('text', 'xml'),
         filename: path.basename(xmlSign.path),
       ));
+
+    final response = await request.send();
+    final body = await response.stream.bytesToString();
+
+    if (response.statusCode == 200) {
+      return jsonDecode(body);
+    } else {
+      throw body;
+    }
+  } catch (error) {
+    print(error);
+    rethrow;
+  } finally {
+    print(uri.toString());
+  }
+}
+
+Future<Map<String, dynamic>> getEcfStatus(String trackId, String token) async {
+  final uri =
+      GeneratorEndPoint.getEndPoint('$kTrackIdEcfEndPoint?trackId=$trackId');
+  try {
+    final request = http.MultipartRequest('GET', uri)
+      ..headers['accept'] = 'application/json'
+      ..headers['Authorization'] = 'Bearer $token';
 
     final response = await request.send();
     final body = await response.stream.bytesToString();

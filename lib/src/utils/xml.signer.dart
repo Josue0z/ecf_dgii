@@ -7,6 +7,44 @@ import 'package:xml/xml.dart';
 import 'package:xml_crypto/xml_crypto.dart';
 import 'package:path/path.dart' as path;
 
+class XmlSignerModel {
+  final String xmlStr;
+  final File xmlFile;
+  final String codigoSeguridad;
+
+  XmlSignerModel({
+    required this.xmlStr,
+    required this.xmlFile,
+    required this.codigoSeguridad,
+  });
+}
+
+class X509KeyInfoProvider implements KeyInfoProvider {
+  final String certBase64;
+  final String key;
+  X509KeyInfoProvider(this.certBase64, this.key);
+
+  @override
+  String getKeyInfo(Uint8List? signingKey, String? prefix) {
+    // Si xml_crypto le pasa un prefijo (p.ej. "ds"), lo respetamos:
+    final p = (prefix != null && prefix.isNotEmpty) ? '$prefix:' : '';
+    return '<${p}X509Data>'
+        '<${p}X509Certificate>'
+        '$certBase64'
+        '</${p}X509Certificate>'
+        '</${p}X509Data>';
+  }
+
+  @override
+  Uint8List? getKey(String? keyInfo) {
+    return File(path.join(dirProject.path, 'temp', 'systemp', 'key.pem'))
+        .readAsBytesSync();
+  }
+
+  @override
+  Map<String, dynamic>? get attrs => {};
+}
+
 Uint8List loadPrivateKeyDer(String pem) {
   final cleaned = pem
       .replaceAll('-----BEGIN PRIVATE KEY-----', '')
@@ -107,9 +145,14 @@ $canonicalSignedInfo
     );
   }*/
 
-  Future<XmlSignerModel> signXml(String xmlOriginal, File file) async {
-    final unsignedXml = removeXmlDeclaration(xmlOriginal);
+  Future<XmlSignerModel> signXml(String xmlOriginal, File outFile) async {
+    var canonical = (await canonicalXml(removeXmlDeclaration(xmlOriginal)))
+        .replaceAll('\n', '')
+        .replaceAll(RegExp(r'>\s+<'), '><');
 
+    var digestValue = await calcularDigest(canonical);
+
+    print(canonical);
     // 2) Construye el SignedXml
     final signer = SignedXml()
       // URI="" -> referencia al documento completo
@@ -118,7 +161,7 @@ $canonicalSignedInfo
         ['http://www.w3.org/2000/09/xmldsig#enveloped-signature'],
         'http://www.w3.org/2001/04/xmlenc#sha256',
         '', // URI vacío
-        null, // digestValue (se calculará)
+        digestValue, // digestValue (se calculará)
         null, // inclusiveNamespacesPrefixList
         true, // isEmptyUri = true para que use URI=""
       )
@@ -128,14 +171,15 @@ $canonicalSignedInfo
       ..signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
 
       // Y computa la firma sobre el XML sin la cabecera <?xml…?>
-      ..computeSignature(unsignedXml);
+      ..computeSignature(canonical);
 
     // 3) Escribe el resultado
-    await file.writeAsString(signer.signedXml);
+    await outFile.writeAsString(
+        '<?xml version="1.0" encoding="utf-8"?>${signer.signedXml}');
 
     return XmlSignerModel(
         xmlStr: signer.signedXml,
-        xmlFile: file,
+        xmlFile: outFile,
         codigoSeguridad: getSecurityCode(signer.signatureValue));
   }
 }
@@ -149,40 +193,6 @@ String getSecurityCode(String signatureValueBase64) {
 
   // Codificar el hash en Base64 y tomar los primeros 6 caracteres
   return base64.encode(hash.bytes).substring(0, 6);
-}
-
-class XmlSignerModel {
-  final String xmlStr;
-  final File xmlFile;
-  final String codigoSeguridad;
-
-  XmlSignerModel({
-    required this.xmlStr,
-    required this.xmlFile,
-    required this.codigoSeguridad,
-  });
-}
-
-Future<String> canonicalXml(String xmlText) async {
-  final process = await Process.start('xmllint', ['--c14n', '-']);
-
-  // Escribimos el XML al stdin del proceso
-  process.stdin.write(xmlText);
-  await process.stdin.close();
-
-  // Esperamos la salida del proceso
-  final output =
-      await process.stdout.transform(SystemEncoding().decoder).join();
-  final errors =
-      await process.stderr.transform(SystemEncoding().decoder).join();
-
-  final exitCode = await process.exitCode;
-
-  if (exitCode != 0) {
-    throw Exception('❌ Error canonicalizando XML: $errors');
-  }
-
-  return output;
 }
 
 Future<void> verificarDigestCorrecto({
@@ -219,28 +229,24 @@ Future<String> calcularDigest(String xml) async {
   return base64.encode(sha256Digest.bytes);
 }
 
-class X509KeyInfoProvider implements KeyInfoProvider {
-  final String certBase64;
-  final String key;
-  X509KeyInfoProvider(this.certBase64, this.key);
+Future<String> canonicalXml(String xmlText) async {
+  final process = await Process.start('xmllint', ['--c14n', '-']);
 
-  @override
-  String getKeyInfo(Uint8List? signingKey, String? prefix) {
-    // Si xml_crypto le pasa un prefijo (p.ej. "ds"), lo respetamos:
-    final p = (prefix != null && prefix.isNotEmpty) ? '$prefix:' : '';
-    return '<${p}X509Data>'
-        '<${p}X509Certificate>'
-        '$certBase64'
-        '</${p}X509Certificate>'
-        '</${p}X509Data>';
+  // Escribimos el XML al stdin del proceso
+  process.stdin.write(xmlText);
+  await process.stdin.close();
+
+  // Esperamos la salida del proceso
+  final output =
+      await process.stdout.transform(SystemEncoding().decoder).join();
+  final errors =
+      await process.stderr.transform(SystemEncoding().decoder).join();
+
+  final exitCode = await process.exitCode;
+
+  if (exitCode != 0) {
+    throw Exception('❌ Error canonicalizando XML: $errors');
   }
 
-  @override
-  Uint8List? getKey(String? keyInfo) {
-    return File(path.join(dirProject.path, 'temp', 'systemp', 'key.pem'))
-        .readAsBytesSync();
-  }
-
-  @override
-  Map<String, dynamic>? get attrs => {};
+  return output;
 }
