@@ -1,0 +1,4 @@
+https://fc.dgii.gov.do/testecf/ConsultaTimbreFC?RncEmisor=101675489&ENCF=E320000000024&MontoTotal=139787.78&CodigoSeguridad=n3QEQk
+https://ecf.dgii.gov.do/testecf/ConsultaTimbre?RncEmisor=101675489&RncComprador=124003091&ENCF=E310000000055&FechaEmision=09-07-2025&MontoTotal=139787.78&FechaFirma=09-07-2025%2001:54:03&CodigoSeguridad=HIbNvJ
+https://ecf.dgii.gov.do/testecf/ConsultaTimbre?RncEmisor=101675489&RncComprador=124003091&ENCF=E310000000056&FechaEmision=09-07-2025&MontoTotal=139787.78&FechaFirma=09-07-2025%2002:08:05&CodigoSeguridad=02e828
+https://ecf.dgii.gov.do/testecf/ConsultaTimbre?RncEmisor=101675489&RncComprador=124003091&ENCF=E310000000057&FechaEmision=09-07-2025&MontoTotal=139787.78&FechaFirma=09-07-2025%2002:13:35&CodigoSeguridad=042437

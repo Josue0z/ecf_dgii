@@ -58,9 +58,9 @@ FutureOr<Map<String, dynamic>?> validarSignSeed(File xmlSign) async {
 }
 
 Future<Map<String, dynamic>> sendEcfSign(
-    File xmlSign, EcfType type, String token) async {
+    File xmlSign, EcfType ecfType, String token) async {
   String endPoint = kRecepcionEcfEndPoint;
-  switch (type) {
+  switch (ecfType) {
     case EcfType.e31:
       endPoint = kRecepcionEcfEndPoint;
       break;
@@ -69,7 +69,7 @@ Future<Map<String, dynamic>> sendEcfSign(
       break;
     default:
   }
-  final uri = GeneratorEndPoint.getEndPoint(endPoint);
+  final uri = GeneratorEndPoint.getEndPoint(endPoint, ecfType: ecfType);
   try {
     final request = http.MultipartRequest('POST', uri)
       ..headers['accept'] = 'application/json'

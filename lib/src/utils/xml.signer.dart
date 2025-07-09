@@ -152,7 +152,6 @@ $canonicalSignedInfo
 
     var digestValue = await calcularDigest(canonical);
 
-    print(canonical);
     // 2) Construye el SignedXml
     final signer = SignedXml()
       // URI="" -> referencia al documento completo
@@ -177,6 +176,8 @@ $canonicalSignedInfo
     await outFile.writeAsString(
         '<?xml version="1.0" encoding="utf-8"?>${signer.signedXml}');
 
+    print('FIRMA: ${signer.signatureValue}');
+
     return XmlSignerModel(
         xmlStr: signer.signedXml,
         xmlFile: outFile,
@@ -185,14 +186,43 @@ $canonicalSignedInfo
 }
 
 String getSecurityCode(String signatureValueBase64) {
-  // Decodificar la firma desde Base64 a bytes reales
+  // 1. Decode SignatureValue (Base64) into bytes
   final signatureBytes = base64.decode(signatureValueBase64);
 
-  // Obtener hash SHA256 de los bytes
+  // 2. Hash the bytes with SHA256
   final hash = sha256.convert(signatureBytes);
 
-  // Codificar el hash en Base64 y tomar los primeros 6 caracteres
-  return base64.encode(hash.bytes).substring(0, 6);
+  // 3. Encode hash result to Base64
+  final hashBase64 = base64.encode(hash.bytes);
+
+  // 4. Extract digits only
+  final digitsOnly = hashBase64.replaceAll(RegExp(r'[^0-9]'), '');
+
+  if (digitsOnly.length < 6) {
+    throw Exception('El hash no contiene suficientes dígitos.');
+  }
+
+  // 5. Return the first 6 digits
+  return digitsOnly.substring(0, 6);
+}
+
+String getDgiiCode({
+  required String rncEmisor,
+  required String tipoComprobante,
+  required String numeroComprobante,
+  required String montoTotal,
+}) {
+  // 1. Concatenar los datos con '|'
+  final datos = '$rncEmisor|$tipoComprobante|$numeroComprobante|$montoTotal';
+
+  // 2. Codificar en UTF-8
+  final bytes = utf8.encode(datos);
+
+  // 3. Aplicar SHA-256
+  final hash = sha256.convert(bytes);
+
+  // 4. Retornar como string hexadecimal
+  return hash.toString().substring(0, 6);
 }
 
 Future<void> verificarDigestCorrecto({

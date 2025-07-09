@@ -56,7 +56,7 @@ void main() async {
         codigoInternoComprador: '10633440',
         fechaEmision: fechaHora,
         fechaVencimiento: '31-12-2025',
-        numeroComprobante: 'E310000000047',
+        numeroComprobante: 'E310000000057',
         montoTotal: '139787.78',
         totalItbis: '21323.56',
         totalItbis16: '0.00',
@@ -99,8 +99,9 @@ void main() async {
     await ecf.validarSign();
     await ecf.signer();
     await ecf.sendEcfSigned();
-    await ecf.getEcfStatusData();
-    await ecf.sendAprobacionComercialEcf();
+    //await ecf.getEcfStatusData();
+    //await ecf.sendAprobacionComercialEcf();
+    print(ecf.uriEcf);
   } catch (e) {
     print('⚠️ Error: $e');
   }

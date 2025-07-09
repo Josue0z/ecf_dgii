@@ -4,6 +4,9 @@ import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
+import 'dart:math' as math;
+
+import 'package:xml/xml.dart';
 
 class FormaDePago {
   final String codigo;
@@ -137,6 +140,10 @@ class EcfModel {
 
   String trackId = '';
 
+  String fechaHoraFirma = '';
+
+  String fechaFirma = '';
+
   XmlSignerModel? xmlSignerModel;
 
   EcfModel(
@@ -226,9 +233,10 @@ class EcfModel {
 
   String get xmlDefault {
     final now = DateTime.now();
-    final fechaHoraFirma = DateFormat('dd-MM-yyyy HH:mm:ss').format(now);
-
+    fechaHoraFirma = DateFormat('dd-MM-yyyy HH:mm:ss').format(now);
+    fechaFirma = DateFormat('dd-MM-yyyy').format(now);
     var ecfXsdFile = path.join(dirProject.path, 'e-CF 31 v.1.0.xsd');
+
     return '''
 <ECF xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="$ecfXsdFile">
   <Encabezado>
@@ -361,20 +369,20 @@ class EcfModel {
   }
 
   String get xmle32 {
+    final now = DateTime.now();
+    fechaHoraFirma = DateFormat('dd-MM-yyyy HH:mm:ss').format(now);
+    fechaFirma = DateFormat('dd-MM-yyyy').format(now);
+
+    var ecfXsdFile = path.join(dirProject.path, 'RFCE 32 v.1.0.xsd');
     return '''
- <RFCE xmlns="http://www.dgii.gov.do/ECF/ResumenFacturaConsumoElectronica">
+<RFCE xsi:noNamespaceSchemaLocation="$ecfXsdFile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Encabezado>
+    <Version>1.0</Version>
     <IdDoc>
       <TipoeCF>$tipo</TipoeCF>
       <eNCF>$numeroComprobante</eNCF>
       <TipoIngresos>$tipoIngreso</TipoIngresos>
       <TipoPago>$tipoPago</TipoPago>
-      <TablaFormasPago>
-        <FormaDePago>
-          <FormaPago>1</FormaPago>
-          <MontoPago>$montoPagado</MontoPago>
-        </FormaDePago>
-      </TablaFormasPago>
     </IdDoc>
     <Emisor>
       <RNCEmisor>$rncEmisor</RNCEmisor>
@@ -382,21 +390,17 @@ class EcfModel {
       <FechaEmision>$fechaEmision</FechaEmision>
     </Emisor>
     <Comprador>
-      <RNCComprador></RNCComprador>
-      <IdentificadorExtranjero></IdentificadorExtranjero>
-      <RazonSocialComprador>CLIENTE FINAL</RazonSocialComprador>
+      <RazonSocialComprador>$razonSocialComprador</RazonSocialComprador>
     </Comprador>
     <Totales>
       <MontoGravadoTotal>$montoNeto</MontoGravadoTotal>
-      <MontoGravadoI1>$montoNeto18</MontoGravadoI1>
-      <MontoGravadoI2>$montoNeto16</MontoGravadoI2>
+      <MontoGravadoI2>$montoNeto</MontoGravadoI2>
       <TotalITBIS>$totalItbis</TotalITBIS>
       <TotalITBIS1>$totalItbis18</TotalITBIS1>
       <TotalITBIS2>$totalItbis16</TotalITBIS2>
+      <TotalITBIS3>0.00</TotalITBIS3>
       <MontoTotal>$montoTotal</MontoTotal>
-      <MontoExento>$montoExento</MontoExento>
     </Totales>
-    <CodigoSeguridadeCF>[code]</CodigoSeguridadeCF>
   </Encabezado>
 </RFCE>
    ''';
@@ -417,6 +421,24 @@ class EcfModel {
     <FechaHoraAprobacionComercial>$fechaHora</FechaHoraAprobacionComercial>
     </AprobacionComercial>
   ''';
+  }
+
+  Uri get uriEcf {
+    String consultaTimbre = kConsultaTimbre;
+
+    String params =
+        '?RncEmisor=$rncEmisor&RncComprador=$rncComprador&ENCF=$numeroComprobante&FechaEmision=$fechaEmision&MontoTotal=$montoTotal&FechaFirma=$fechaHoraFirma&CodigoSeguridad=$codigoSeguridad';
+
+    if (tipoEcf == EcfType.e32) {
+      consultaTimbre = kConsultaTimbreFc;
+      params =
+          '''?RncEmisor=$rncEmisor&ENCF=$numeroComprobante&MontoTotal=$montoTotal&CodigoSeguridad=$codigoSeguridad'''
+              .trim();
+    }
+
+    var uri = GeneratorEndPoint.getEndPoint('''$consultaTimbre$params'''.trim(),
+        ecfType: tipoEcf);
+    return uri;
   }
 
   Future<void> downloadEcfSeed() async {
@@ -440,30 +462,81 @@ class EcfModel {
   }
 
   Future<XmlSignerModel> signer() async {
-    xmlSignerModel = await signerService.signXml(
-        xml,
-        File(path.join(
-            dirProject.path, 'temp', '$rncEmisor$numeroComprobante.xml')));
-    ecfFile = xmlSignerModel!.xmlFile;
+    final isE32 = tipoEcf == EcfType.e32;
+
+    final xmlFilePath =
+        path.join(dirProject.path, 'temp', '$rncEmisor$numeroComprobante.xml');
+
+    File xmlFile = File(xmlFilePath);
+
+    // 1. Firma el XML SIN CodigoSeguridadeCF
+    xmlSignerModel = await signerService.signXml(xml, xmlFile);
+
+    var finalXmlStr = xmlSignerModel?.xmlStr ?? '';
+
+    // 2. Solo si es tipo E32, insertamos CodigoSeguridadeCF
+    if (isE32) {
+      final signedXmlDoc = XmlDocument.parse(xml);
+
+      final encabezado = signedXmlDoc.findAllElements('Encabezado').first;
+
+      // Eliminamos cualquier valor anterior por si acaso
+      encabezado.children.removeWhere((node) =>
+          node is XmlElement && node.name.toString() == 'CodigoSeguridadeCF');
+
+      codigoSeguridad = xmlSignerModel?.codigoSeguridad ?? '000000';
+
+      // Insertamos el nodo como último hijo de <Encabezado>
+      encabezado.children.add(
+        XmlElement(
+            XmlName('CodigoSeguridadeCF'), [], [XmlText(codigoSeguridad)]),
+      );
+
+      finalXmlStr = signedXmlDoc.toXmlString();
+
+      xmlSignerModel = await signerService.signXml(finalXmlStr, xmlFile);
+    } else {
+      codigoSeguridad = xmlSignerModel?.codigoSeguridad ?? '';
+    }
+
+    ecfFile = xmlFile;
+
     ecfSignXml = xmlSignerModel?.xmlStr ?? '';
 
-    return xmlSignerModel!;
+    return XmlSignerModel(
+      xmlFile: xmlFile,
+      xmlStr: finalXmlStr,
+      codigoSeguridad: codigoSeguridad,
+    );
   }
 
   Future<bool> sendEcfSigned() async {
     try {
       if (ecfFile == null) throw 'Archivo Xml del ecf firmado no existe';
 
-      if (tipoEcf == EcfType.e32) {
-        await ecfFile?.writeAsBytes(utf8.encode(ecfSignXml.replaceFirst(
-            '[code]', xmlSignerModel?.codigoSeguridad ?? '')));
-      }
+      print(token);
 
       var res = await sendEcfSign(ecfFile!, tipoEcf, token);
 
-      trackId = res['trackId'];
+      if (res['trackId'] != null) {
+        trackId = res['trackId'];
+      } else {
+        print(res);
+      }
 
-      print(token);
+      var urlsDir = Directory(path.join(dirProject.path, 'urls'));
+
+      await urlsDir.create(recursive: true);
+
+      var fileUrlsPath = path.join(urlsDir.path, 'urls.txt');
+      File fileUrls = File(fileUrlsPath);
+
+      await fileUrls.create(recursive: true);
+
+      await fileUrls.writeAsString('${uriEcf.toString()}\n',
+          mode: FileMode.append);
+
+      print('TOKEN: $token');
 
       //await seedSignFile?.delete();
       //seedSignXml = '';
