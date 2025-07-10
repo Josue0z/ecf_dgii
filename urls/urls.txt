@@ -107,3 +107,4 @@ https://ecf.dgii.gov.do/certecf/ConsultaTimbre?RncEmisor=101675489&RncComprador=
 https://ecf.dgii.gov.do/certecf/ConsultaTimbre?RncEmisor=101675489&ENCF=E430000000010&FechaEmision=01-04-2020&MontoTotal=3960.00&FechaFirma=10-07-2025%2009:31:26&CodigoSeguridad=ATiEw0
 https://ecf.dgii.gov.do/certecf/ConsultaTimbre?RncEmisor=101675489&ENCF=E430000000010&FechaEmision=01-04-2020&MontoTotal=3960.00&FechaFirma=10-07-2025%2010:05:32&CodigoSeguridad=XJDOmP
 https://ecf.dgii.gov.do/testecf/ConsultaTimbre?RncEmisor=101675489&ENCF=E430000000001&FechaEmision=01-04-2020&MontoTotal=3960.00&FechaFirma=10-07-2025%2016:46:41&CodigoSeguridad=J7MqYP
+https://ecf.dgii.gov.do/testecf/ConsultaTimbre?RncEmisor=101675489&ENCF=E430000000002&FechaEmision=10-07-2025&MontoTotal=3960.00&FechaFirma=10-07-2025%2019:21:28&CodigoSeguridad=U9wo3T
