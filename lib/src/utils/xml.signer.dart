@@ -191,15 +191,6 @@ $canonicalSignedInfo
 }
 
 String getSecurityCode(String signatureValueBase64) {
-  // Decode the signature
-  final signatureBytes = base64.decode(signatureValueBase64);
-
-  // SHA256 hash
-  final hash = sha256.convert(signatureBytes);
-
-  // Base64 encode the hash
-  final hashBase64 = base64.encode(hash.bytes);
-
   // Just take the first 6 characters (not only digits)
   return signatureValueBase64.substring(0, 6);
 }
