@@ -10,5 +10,9 @@ build/
 .temp/
 temp/
 *.iml
+.e32menores250k/
+e32menores250k/
+.urls/
 urls/
+.test/
 test/
