@@ -6,8 +6,7 @@ import 'package:path/path.dart' as path;
 
 void main() async {
   try {
-    //GeneratorEndPoint.envEcfType = EnvEcfType.cert;
-    final cert = File(path.join(dirProject.path, 'CERTIFICADO-JPU-URESA.p12'));
+    final cert = File(path.join(dirProject.path, 'certificado.p12'));
 
     String password = 'INES1037';
 
@@ -36,7 +35,9 @@ void main() async {
         tipoEcf: EcfType.e43,
         numeroComprobante: 'E430000000001',
         codigoModificacion: '',
-        fechaEmisionNcfModificado: '09-07-2025',
+        fechaEmision: fechaEmision,
+        fechaVencimiento: '31-12-2025',
+        fechaEmisionNcfModificado: '',
         razonModificacion:
             'ANULACION DEL ENCF31 CON SECUENCIA QUE FINALIZA EN 61',
         tipoIngreso: '',
@@ -50,8 +51,6 @@ void main() async {
         telefonoEmisor1: '809-472-7676',
         telefonoEmisor2: '809-491-1918',
         telefonoEmisor3: '',
-        fechaEmision: '01-04-2020',
-        fechaVencimiento: '31-12-2025',
         totalPaginas: '',
         rncEmisor: '101675489',
         razonSocialEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
