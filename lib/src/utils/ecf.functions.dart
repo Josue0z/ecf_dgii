@@ -58,16 +58,12 @@ FutureOr<Map<String, dynamic>?> validarSignSeed(File xmlSign) async {
 }
 
 Future<Map<String, dynamic>> sendEcfSign(
-    File xmlSign, EcfType ecfType, String token) async {
+    File xmlSign, EcfType ecfType, String token, String montoTotal) async {
   String endPoint = kRecepcionEcfEndPoint;
-  switch (ecfType) {
-    case EcfType.e31:
-      endPoint = kRecepcionEcfEndPoint;
-      break;
-    case EcfType.e32:
-      endPoint = kRecepcionFcEcfEndPoint;
-      break;
-    default:
+  double monto = double.parse(montoTotal);
+
+  if (ecfType == EcfType.e32 && monto < 250000.00) {
+    endPoint = kRecepcionFcEcfEndPoint;
   }
   final uri = GeneratorEndPoint.getEndPoint(endPoint, ecfType: ecfType);
   try {

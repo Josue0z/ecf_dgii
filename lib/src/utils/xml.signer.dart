@@ -58,6 +58,10 @@ String removeXmlDeclaration(String xml) {
   return xml.replaceFirst(RegExp(r'^<\?xml.*?\?>\s*'), '');
 }
 
+String escapeXmlEntities(String input) {
+  return input.replaceAll('&', '&amp;');
+}
+
 class XmlSignerService {
   String rsaPrivateKey;
   String certBase64;
@@ -146,7 +150,8 @@ $canonicalSignedInfo
   }*/
 
   Future<XmlSignerModel> signXml(String xmlOriginal, File outFile) async {
-    var canonical = (await canonicalXml(removeXmlDeclaration(xmlOriginal)))
+    var sanitizedXml = escapeXmlEntities(xmlOriginal);
+    var canonical = (await canonicalXml(removeXmlDeclaration(sanitizedXml)))
         .replaceAll('\n', '')
         .replaceAll(RegExp(r'>\s+<'), '><');
 
@@ -186,24 +191,17 @@ $canonicalSignedInfo
 }
 
 String getSecurityCode(String signatureValueBase64) {
-  // 1. Decode SignatureValue (Base64) into bytes
+  // Decode the signature
   final signatureBytes = base64.decode(signatureValueBase64);
 
-  // 2. Hash the bytes with SHA256
+  // SHA256 hash
   final hash = sha256.convert(signatureBytes);
 
-  // 3. Encode hash result to Base64
+  // Base64 encode the hash
   final hashBase64 = base64.encode(hash.bytes);
 
-  // 4. Extract digits only
-  final digitsOnly = hashBase64.replaceAll(RegExp(r'[^0-9]'), '');
-
-  if (digitsOnly.length < 6) {
-    throw Exception('El hash no contiene suficientes dígitos.');
-  }
-
-  // 5. Return the first 6 digits
-  return digitsOnly.substring(0, 6);
+  // Just take the first 6 characters (not only digits)
+  return signatureValueBase64.substring(0, 6);
 }
 
 String getDgiiCode({

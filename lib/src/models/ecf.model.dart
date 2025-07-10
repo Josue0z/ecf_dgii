@@ -1,12 +1,30 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
-import 'dart:math' as math;
 
 import 'package:xml/xml.dart';
+
+class SubDescuento {
+  String tipoSubDescuento;
+  String subDescuentoPorcentaje;
+  String montoSubDescuento;
+  SubDescuento(
+      {required this.tipoSubDescuento,
+      required this.subDescuentoPorcentaje,
+      required this.montoSubDescuento});
+}
+
+class SubRecargo {
+  String tipoSubRecargo;
+  String subRecargoPorcentaje;
+  String montoSubRecargo;
+  SubRecargo(
+      {required this.tipoSubRecargo,
+      required this.subRecargoPorcentaje,
+      required this.montoSubRecargo});
+}
 
 class FormaDePago {
   final String codigo;
@@ -15,35 +33,139 @@ class FormaDePago {
   FormaDePago(this.codigo, this.monto);
 }
 
+class Pagina {
+  String noLineaDesde;
+  String noLineaHasta;
+  String subtotalMontoGravadoPagina;
+  String subtotalMontoGravado1Pagina;
+  String subtotalMontoGravado2Pagina;
+  String subtotalMontoGravado3Pagina;
+  String subtotalExentoPagina;
+  String subtotalItbisPagina;
+  String subtotalItbis1Pagina;
+  String subtotalItbis2Pagina;
+  String subtotalItbis3Pagina;
+  String subtotalImpuestoAdicionalPagina;
+  String subtotalImpuestoSelectivoConsumoEspecificoPagina;
+  String subtotalOtrosImpuesto;
+  String montoSubtotalPagina;
+  Pagina(
+      {required this.noLineaDesde,
+      required this.noLineaHasta,
+      required this.subtotalMontoGravadoPagina,
+      required this.subtotalMontoGravado1Pagina,
+      required this.subtotalMontoGravado2Pagina,
+      required this.subtotalMontoGravado3Pagina,
+      required this.subtotalExentoPagina,
+      required this.subtotalItbisPagina,
+      required this.subtotalItbis1Pagina,
+      required this.subtotalItbis2Pagina,
+      required this.subtotalItbis3Pagina,
+      required this.subtotalImpuestoAdicionalPagina,
+      required this.subtotalImpuestoSelectivoConsumoEspecificoPagina,
+      required this.subtotalOtrosImpuesto,
+      required this.montoSubtotalPagina});
+}
+
+class TipoCodigo {
+  String? tipoCodigo;
+  String? codigoItem;
+  TipoCodigo({this.tipoCodigo, this.codigoItem});
+}
+
+class ImpuestoAdicional {
+  String? tipoImpuesto;
+  String? tasaImpuestoAdicional;
+  String? montoImpuestoSelectivoConsumoEspecifico;
+  String? montoImpuestoSelectivoConsumoAdvalorem;
+  String? otrosImpuestosAdicionales;
+  ImpuestoAdicional(
+      {this.tipoImpuesto,
+      this.tasaImpuestoAdicional,
+      this.montoImpuestoSelectivoConsumoEspecifico,
+      this.otrosImpuestosAdicionales,
+      this.montoImpuestoSelectivoConsumoAdvalorem});
+}
+
+class Retencion {
+  String indicadorAgenteRetencionoPercepcion;
+  String montoITBISRetenido;
+  String montoISRRetenido;
+  Retencion(
+      {required this.indicadorAgenteRetencionoPercepcion,
+      this.montoITBISRetenido = '',
+      this.montoISRRetenido = ''});
+}
+
 class EcfModel {
   EcfType tipoEcf;
+
   String rncEmisor;
+
   String razonSocialEmisor;
+
   String nombreComercial;
+
   String rncComprador;
+
   String razonSocialComprador;
+
   String nombreComprador;
+
   String fechaEmision;
+
   String numeroComprobante;
+
   String montoTotal;
+
   String totalItbis;
+
   String totalItbis18;
+
   String totalItbis16;
-  String montoNeto;
-  String montoNeto18;
-  String montoNeto16;
-  String montoPagado;
+
+  String totalItbisTasa0;
+
+  String montoImpuestoAdicional;
+
+  List<ImpuestoAdicional> impuestosAdicionales;
+
+  List<Retencion> retenciones;
+
+  String totalGravado;
+
+  String totalGravado18;
+
+  String totalGravado16;
+
+  String totalGravadoTasa0;
+
+  String itbis1;
+
+  String itbis2;
+
+  String itbis3;
+
   String montoExento;
+
   String codigoSeguridad = '';
+
   File? ecfXml;
 
   String privateKey;
+
   String certBase64;
+
   File? seedFile;
+
   String seedXml = '';
+
   File? seedSignFile;
+
   String seedSignXml = '';
+
   File? ecfFile;
+
   String ecfSignXml = '';
 
   List<EcfDetailsModel> items = [];
@@ -55,8 +177,6 @@ class EcfModel {
   String tipoIngreso;
 
   String tipoPago;
-
-  String formaPago;
 
   String indicadorMontoGravado;
 
@@ -94,6 +214,8 @@ class EcfModel {
 
   String correoComprador;
 
+  String telefonoAdicional;
+
   String direccionComprador;
 
   String municipioComprador;
@@ -110,13 +232,13 @@ class EcfModel {
 
   String actividadEconomica;
 
-  String montoRetenidoIsr;
-
   String porcentajeRetencionIsr;
 
   String baseImponibleIsr;
 
-  String montoRetenidoItbis;
+  String totalItbisRetencion;
+
+  String totalIsrRetencion;
 
   String porcentajeRetencionItbis;
 
@@ -126,11 +248,31 @@ class EcfModel {
 
   String terminoPago = '4';
 
-  String? bancoPago;
+  String bancoPago;
 
-  String? fechaDesde;
+  List<Pagina> paginas;
 
-  String? fechaHasta;
+  String rncOtroContribuyente;
+
+  String? numeroComprobanteModificado;
+
+  String? fechaEmisionNcfModificado;
+
+  String? razonModificacion;
+
+  String? codigoModificacion;
+
+  String? indicadorNotaCredito;
+
+  String? totalPaginas;
+
+  String montoAvancePago;
+
+  String valorPagar;
+
+  String? saldoAnterior;
+
+  String? rutaVenta;
 
   File? xmlAprobacionFile;
 
@@ -147,96 +289,153 @@ class EcfModel {
   XmlSignerModel? xmlSignerModel;
 
   EcfModel(
-      {required this.tipoEcf,
-      required this.rncEmisor,
-      required this.razonSocialEmisor,
-      required this.nombreComercial,
-      required this.rncComprador,
-      required this.razonSocialComprador,
-      required this.nombreComprador,
-      required this.fechaEmision,
-      required this.numeroComprobante,
-      required this.montoTotal,
-      required this.montoPagado,
-      required this.totalItbis,
-      required this.totalItbis16,
-      required this.totalItbis18,
-      required this.montoNeto,
-      required this.montoNeto18,
-      required this.montoNeto16,
-      required this.montoExento,
-      required this.tipoIngreso,
-      required this.tipoPago,
-      required this.privateKey,
-      required this.certBase64,
-      required this.formaPago,
-      required this.indicadorMontoGravado,
-      required this.fechaVencimiento,
-      required this.direccionEmisor,
-      required this.sucursal,
-      required this.municipio,
-      required this.provincia,
-      required this.telefonoEmisor1,
-      required this.telefonoEmisor2,
-      required this.telefonoEmisor3,
-      required this.correoEmisor,
-      required this.website,
-      required this.codigoVendedor,
-      required this.numeroFacturaInterna,
-      required this.numeroPedidoInterno,
-      required this.zonaVenta,
-      required this.informacionAdicionalEmisor,
-      required this.contactoComprador,
-      required this.correoComprador,
-      required this.direccionComprador,
-      required this.municipioComprador,
-      required this.provinciaComprador,
-      required this.fechaEntrega,
-      required this.fechaOrdenCompra,
-      required this.numeroOrdenCompra,
-      required this.codigoInternoComprador,
-      required this.actividadEconomica,
-      required this.montoRetenidoIsr,
-      required this.porcentajeRetencionIsr,
-      required this.baseImponibleIsr,
-      required this.montoRetenidoItbis,
-      required this.porcentajeRetencionItbis,
-      required this.baseImponibleItbis,
-      required this.formasDePagos,
-      required this.terminoPago,
+      {this.tipoEcf = EcfType.e31,
+      this.rncEmisor = '',
+      this.razonSocialEmisor = '',
+      this.nombreComercial = '',
+      this.rncComprador = '',
+      this.razonSocialComprador = '',
+      this.nombreComprador = '',
+      this.fechaEmision = '',
+      this.fechaVencimiento = '',
+      this.numeroComprobante = '',
+      this.montoTotal = '',
+      this.totalItbis = '',
+      this.totalItbis16 = '',
+      this.totalItbis18 = '',
+      this.totalItbisTasa0 = '',
+      this.montoImpuestoAdicional = '',
+      this.impuestosAdicionales = const [],
+      this.totalGravado = '',
+      this.totalGravado18 = '',
+      this.totalGravado16 = '',
+      this.totalGravadoTasa0 = '',
+      this.itbis1 = '',
+      this.itbis2 = '',
+      this.itbis3 = '',
+      this.totalItbisRetencion = '',
+      this.totalIsrRetencion = '',
+      this.montoExento = '',
+      this.tipoIngreso = '',
+      this.tipoPago = '',
+      this.indicadorMontoGravado = '',
+      this.direccionEmisor = '',
+      this.sucursal = '',
+      this.municipio = '',
+      this.provincia = '',
+      this.telefonoEmisor1 = '',
+      this.telefonoEmisor2 = '',
+      this.telefonoEmisor3 = '',
+      this.correoEmisor = '',
+      this.website = '',
+      this.codigoVendedor = '',
+      this.numeroFacturaInterna = '',
+      this.numeroPedidoInterno = '',
+      this.zonaVenta = '',
+      this.informacionAdicionalEmisor = '',
+      this.contactoComprador = '',
+      this.correoComprador = '',
+      this.direccionComprador = '',
+      this.municipioComprador = '',
+      this.provinciaComprador = '',
+      this.fechaEntrega = '',
+      this.fechaOrdenCompra = '',
+      this.numeroOrdenCompra = '',
+      this.codigoInternoComprador = '',
+      this.actividadEconomica = '',
+      this.porcentajeRetencionIsr = '',
+      this.baseImponibleIsr = '',
+      this.retenciones = const [],
+      this.porcentajeRetencionItbis = '',
+      this.baseImponibleItbis = '',
+      this.formasDePagos = const [],
+      this.terminoPago = '',
+      this.paginas = const [],
       this.bancoPago = '',
-      this.fechaDesde = '',
-      this.fechaHasta = ''}) {
+      this.rncOtroContribuyente = '',
+      this.numeroComprobanteModificado = '',
+      this.fechaEmisionNcfModificado = '',
+      this.razonModificacion = '',
+      this.codigoModificacion = '',
+      this.indicadorNotaCredito = '',
+      this.totalPaginas = '',
+      this.montoAvancePago = '',
+      this.valorPagar = '',
+      this.saldoAnterior = '',
+      this.rutaVenta = '',
+      this.telefonoAdicional = '',
+      required this.items,
+      required this.privateKey,
+      required this.certBase64}) {
+    final now = DateTime.now();
+    fechaHoraFirma = DateFormat('dd-MM-yyyy HH:mm:ss').format(now);
+    fechaFirma = DateFormat('dd-MM-yyyy').format(now);
     signerService =
         XmlSignerService(rsaPrivateKey: privateKey, certBase64: certBase64);
+  }
+
+  bool get esResumenE32 {
+    double monto = double.parse(montoTotal);
+    return tipoEcf == EcfType.e32 && monto < 250000.00;
+  }
+
+  String get ecfXsdFile {
+    String dirName = 'eCFXmlModels';
+
+    if (tipoEcf == EcfType.e31) {
+      return path.join(dirProject.path, dirName, 'e-CF 31 v.1.0.xsd');
+    }
+    if (esResumenE32) {
+      return path.join(dirProject.path, dirName, 'RFCE 32 v.1.0.xsd');
+    }
+    if (tipoEcf == EcfType.e32) {
+      return path.join(dirProject.path, dirName, 'e-CF 32 v.1.0.xsd');
+    }
+    if (tipoEcf == EcfType.e34) {
+      return path.join(dirProject.path, dirName, 'e-CF 34 v.1.0.xsd');
+    }
+    if (tipoEcf == EcfType.e41) {
+      return path.join(dirProject.path, dirName, 'e-CF 41 v.1.0.xsd');
+    }
+    if (tipoEcf == EcfType.e43) {
+      return path.join(dirProject.path, dirName, 'e-CF 43 v.1.0.xsd');
+    }
+    return '';
   }
 
   String get tipo {
     if (tipoEcf == EcfType.e31) {
       return '31';
     }
+
     if (tipoEcf == EcfType.e32) {
       return '32';
     }
+
     if (tipoEcf == EcfType.e34) {
       return '34';
     }
+
+    if (tipoEcf == EcfType.e41) {
+      return '41';
+    }
+
+    if (tipoEcf == EcfType.e43) {
+      return '43';
+    }
+
     return '31';
   }
 
   String get xml {
-    if (tipoEcf == EcfType.e32) {
+    if (esResumenE32) {
       return xmle32;
     }
+
     return xmlDefault;
   }
 
   String get xmlDefault {
-    final now = DateTime.now();
-    fechaHoraFirma = DateFormat('dd-MM-yyyy HH:mm:ss').format(now);
-    fechaFirma = DateFormat('dd-MM-yyyy').format(now);
-    var ecfXsdFile = path.join(dirProject.path, 'e-CF 31 v.1.0.xsd');
-
     return '''
 <ECF xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="$ecfXsdFile">
   <Encabezado>
@@ -245,64 +444,103 @@ class EcfModel {
       <TipoeCF>$tipo</TipoeCF>
       <eNCF>$numeroComprobante</eNCF>
       <FechaVencimientoSecuencia>$fechaVencimiento</FechaVencimientoSecuencia>
-      <IndicadorMontoGravado>$indicadorMontoGravado</IndicadorMontoGravado>
-      <TipoIngresos>$tipoIngreso</TipoIngresos>
-      <TipoPago>$tipoPago</TipoPago>
-      <TerminoPago>$terminoPago</TerminoPago>
+      ${indicadorMontoGravado != '' ? '<IndicadorMontoGravado>$indicadorMontoGravado</IndicadorMontoGravado>' : ''}
+      ${tipoIngreso != '' ? '<TipoIngresos>$tipoIngreso</TipoIngresos>' : ''}
+      ${tipoPago != '' ? '<TipoPago>$tipoPago</TipoPago>' : ''}
+      ${terminoPago != '' ? '<TerminoPago>$terminoPago</TerminoPago>' : ''}
+
+     ${formasDePagos.isNotEmpty ? '''
       <TablaFormasPago>
-        ${formasDePagos.map((e) {
-      return '''
+ 
+      ${formasDePagos.map((e) {
+            return '''
          <FormaDePago>
           <FormaPago>${e.codigo}</FormaPago>
           <MontoPago>${e.monto}</MontoPago>
         </FormaDePago>
           ''';
-    }).join()}
+          }).join()}
+              
       </TablaFormasPago>
-      <BancoPago>$bancoPago</BancoPago>
-      <TotalPaginas>1</TotalPaginas>
+    
+    ''' : ''}
+      ${bancoPago != '' ? '<BancoPago>$bancoPago</BancoPago>' : ''}
+      ${totalPaginas != '' ? '<TotalPaginas>$totalPaginas</TotalPaginas>' : ''}
     </IdDoc>
     <Emisor>
       <RNCEmisor>$rncEmisor</RNCEmisor>
       <RazonSocialEmisor>$razonSocialEmisor</RazonSocialEmisor>
-      <Sucursal>$sucursal</Sucursal>
+      ${nombreComercial != '' ? '<NombreComercial>$nombreComercial</NombreComercial>' : ''}
+      ${sucursal != '' ? '<Sucursal>$sucursal</Sucursal>' : ''}
       <DireccionEmisor>$direccionEmisor</DireccionEmisor>
-      <Provincia>$provincia</Provincia>
-      <NumeroFacturaInterna>$numeroFacturaInterna</NumeroFacturaInterna>
-      <NumeroPedidoInterno>$numeroPedidoInterno</NumeroPedidoInterno>
-      <RutaVenta>$zonaVenta</RutaVenta>
+      ${municipio != '' ? '<Municipio>$municipio</Municipio>' : ''}
+      ${municipio != '' ? '<Provincia>$provincia</Provincia>' : ''}
+      <TablaTelefonoEmisor>
+        ${telefonoEmisor1 != '' ? '<TelefonoEmisor>$telefonoEmisor1</TelefonoEmisor>' : ''}
+        ${telefonoEmisor2 != '' ? '<TelefonoEmisor>$telefonoEmisor2</TelefonoEmisor>' : ''}
+      </TablaTelefonoEmisor>
+      ${correoEmisor != '' ? '<CorreoEmisor>$correoEmisor</CorreoEmisor>' : ''}
+      ${website != '' ? '<WebSite>$website</WebSite>' : ''}
+      ${actividadEconomica != '' ? '<ActividadEconomica>$actividadEconomica</ActividadEconomica>' : ''}
+      ${codigoVendedor != '' ? '<CodigoVendedor>$codigoVendedor</CodigoVendedor>' : ''}
+      ${numeroFacturaInterna != '' ? '<NumeroFacturaInterna>$numeroFacturaInterna</NumeroFacturaInterna>' : ''}
+      ${numeroPedidoInterno != '' ? '<NumeroPedidoInterno>$numeroPedidoInterno</NumeroPedidoInterno>' : ''}
+      ${zonaVenta != '' ? '<ZonaVenta>$zonaVenta</ZonaVenta>' : ''}
+      ${rutaVenta != '' ? '<RutaVenta>$rutaVenta</RutaVenta>' : ''}
+      ${informacionAdicionalEmisor != '' ? '<InformacionAdicionalEmisor>$informacionAdicionalEmisor</InformacionAdicionalEmisor>' : ''}
       <FechaEmision>$fechaEmision</FechaEmision>
     </Emisor>
-    <Comprador>
-      <RNCComprador>$rncComprador</RNCComprador>
-      <RazonSocialComprador>$razonSocialComprador</RazonSocialComprador>
-      <ContactoComprador>$contactoComprador</ContactoComprador>
-      <CorreoComprador>$correoComprador</CorreoComprador>
-      <DireccionComprador>$direccionComprador</DireccionComprador>
-      <MunicipioComprador>$municipioComprador</MunicipioComprador>
-      <ProvinciaComprador>$provinciaComprador</ProvinciaComprador>
-      <FechaEntrega>$fechaEntrega</FechaEntrega>
-      <CodigoInternoComprador>$codigoInternoComprador</CodigoInternoComprador>
+    ${tipoEcf == EcfType.e43 ? '' : '''
+          <Comprador>
+      ${rncComprador != '' ? '<RNCComprador>$rncComprador</RNCComprador>' : ''}
+      ${razonSocialComprador != '' ? '<RazonSocialComprador>$razonSocialComprador</RazonSocialComprador>' : ''}
+      ${contactoComprador != '' ? '<ContactoComprador>$contactoComprador</ContactoComprador>' : ''}
+      ${correoComprador != '' ? '<CorreoComprador>$correoComprador</CorreoComprador>' : ''}
+      ${direccionComprador != '' ? '<DireccionComprador>$direccionComprador</DireccionComprador>' : ''}
+      ${municipioComprador != '' ? '<MunicipioComprador>$municipioComprador</MunicipioComprador>' : ''}
+      ${provinciaComprador != '' ? '<ProvinciaComprador>$provinciaComprador</ProvinciaComprador>' : ''}
+      ${fechaEntrega != '' ? '<FechaEntrega>$fechaEntrega</FechaEntrega>' : ''}
+      ${telefonoAdicional != '' ? '<TelefonoAdicional>$telefonoAdicional</TelefonoAdicional>' : ''}
+      ${fechaOrdenCompra != '' ? '<FechaOrdenCompra>$fechaOrdenCompra</FechaOrdenCompra>' : ''}
+      ${numeroOrdenCompra != '' ? '<NumeroOrdenCompra>$numeroOrdenCompra</NumeroOrdenCompra>' : ''}
+      ${codigoInternoComprador != '' ? ' <CodigoInternoComprador>$codigoInternoComprador</CodigoInternoComprador>' : ''}
     </Comprador>
+       '''}
     <Totales>
-      <MontoGravadoTotal>$montoNeto</MontoGravadoTotal>
-      <MontoGravadoI1>$montoNeto18</MontoGravadoI1>
-      <MontoGravadoI2>$montoNeto16</MontoGravadoI2>
-      <MontoGravadoI3>0.00</MontoGravadoI3>
-      <MontoExento>$montoExento</MontoExento>
-      <ITBIS1>18</ITBIS1>
-      <ITBIS2>16</ITBIS2>
-      <ITBIS3>0</ITBIS3>
-      <TotalITBIS>$totalItbis</TotalITBIS>
-      <TotalITBIS1>$totalItbis18</TotalITBIS1>
-      <TotalITBIS2>$totalItbis16</TotalITBIS2>
-      <TotalITBIS3>0.00</TotalITBIS3>
-      <MontoImpuestoAdicional>0.01</MontoImpuestoAdicional>
+      ${totalGravado != '' ? '<MontoGravadoTotal>$totalGravado</MontoGravadoTotal>' : ''}
+      ${totalGravado18 != '' ? '<MontoGravadoI1>$totalGravado18</MontoGravadoI1>' : ''}
+      ${totalGravado16 != '' ? '<MontoGravadoI2>$totalGravado16</MontoGravadoI2>' : ''}
+      ${totalGravadoTasa0 != '' ? '<MontoGravadoI3>$totalGravadoTasa0</MontoGravadoI3>' : ''}
+      ${montoExento != '' ? '<MontoExento>$montoExento</MontoExento>' : ''}
+      ${itbis1 != '' ? '<ITBIS1>$itbis1</ITBIS1>' : ''}
+      ${itbis2 != '' ? '<ITBIS2>$itbis2</ITBIS2>' : ''}
+      ${itbis3 != '' ? '<ITBIS3>$itbis3</ITBIS3>' : ''}
+      ${totalItbis != '' ? '<TotalITBIS>$totalItbis</TotalITBIS>' : ''}
+      ${totalItbis18 != '' ? '<TotalITBIS1>$totalItbis18</TotalITBIS1>' : ''}
+      ${totalItbis16 != '' ? '<TotalITBIS2>$totalItbis16</TotalITBIS2>' : ''}
+      ${totalItbisTasa0 != '' ? '<TotalITBIS3>$totalItbisTasa0</TotalITBIS3>' : ''}
+      ${impuestosAdicionales.isNotEmpty ? '''
+       <MontoImpuestoAdicional>$montoImpuestoAdicional</MontoImpuestoAdicional>
+       <ImpuestosAdicionales>
+          ${impuestosAdicionales.map((impuesto) {
+            return '''
+         <ImpuestoAdicional>
+         <TipoImpuesto>${impuesto.tipoImpuesto}</TipoImpuesto>
+         <TasaImpuestoAdicional>${impuesto.tasaImpuestoAdicional}</TasaImpuestoAdicional>
+         ${impuesto.montoImpuestoSelectivoConsumoEspecifico != '' ? '<MontoImpuestoSelectivoConsumoEspecifico>${impuesto.montoImpuestoSelectivoConsumoEspecifico}</MontoImpuestoSelectivoConsumoEspecifico>' : ''}
+         ${impuesto.montoImpuestoSelectivoConsumoAdvalorem != '' ? '<MontoImpuestoSelectivoConsumoAdvalorem>${impuesto.montoImpuestoSelectivoConsumoAdvalorem}</MontoImpuestoSelectivoConsumoAdvalorem>' : ''}
+         ${impuesto.otrosImpuestosAdicionales != '' ? '<OtrosImpuestosAdicionales>${impuesto.otrosImpuestosAdicionales}</OtrosImpuestosAdicionales>' : ''}
+        </ImpuestoAdicional>
+         ''';
+          }).join()}
+       </ImpuestosAdicionales>
+      ''' : ''}
       <MontoTotal>$montoTotal</MontoTotal>
-      <SaldoAnterior>0.00</SaldoAnterior>
-      <MontoAvancePago>$montoPagado</MontoAvancePago>
-      <ValorPagar>0.00</ValorPagar>
-      <TotalITBISRetenido>$montoRetenidoItbis</TotalITBISRetenido>
+      ${saldoAnterior != '' ? '<SaldoAnterior>$saldoAnterior</SaldoAnterior>' : ''}
+      ${montoAvancePago != '' ? '<MontoAvancePago>$montoAvancePago</MontoAvancePago>' : ''}
+      ${valorPagar != '' ? '<ValorPagar>$valorPagar</ValorPagar>' : ''}
+      ${totalItbisRetencion != '' ? '<TotalITBISRetenido>$totalItbisRetencion</TotalITBISRetenido>' : ''}
+      ${totalIsrRetencion != '' ? '<TotalISRRetencion>$totalIsrRetencion</TotalISRRetencion>' : ''}
     </Totales>
   </Encabezado>
   <DetallesItems>
@@ -311,69 +549,127 @@ class EcfModel {
       return '''
  <Item>
     <NumeroLinea>${index + 1}</NumeroLinea>
-    <TablaCodigosItem>
+        ${e.codigos.isNotEmpty ? '''
+    ${e.codigos.map((codigo) {
+              return '''
+     <TablaCodigosItem>
       <CodigosItem>
-        <TipoCodigo>${e.tipoCodigo}</TipoCodigo>
-        <CodigoItem>${e.codigoItem}</CodigoItem>
+        <TipoCodigo>${codigo.tipoCodigo}</TipoCodigo>
+        <CodigoItem>${codigo.codigoItem}</CodigoItem>
       </CodigosItem>
-    </TablaCodigosItem>
-    <IndicadorFacturacion>${index + 1}</IndicadorFacturacion>
+     </TablaCodigosItem>
+      ''';
+            }).join()}
+     ''' : ''}
+    <IndicadorFacturacion>${e.indicadorFacturacion}</IndicadorFacturacion>
+    ${retenciones.isNotEmpty ? '''
+       <Retencion>
+          ${retenciones.map((e) {
+              return '''
+             <IndicadorAgenteRetencionoPercepcion>${e.indicadorAgenteRetencionoPercepcion}</IndicadorAgenteRetencionoPercepcion>
+            ${e.montoITBISRetenido != '' ? ' <MontoITBISRetenido>${e.montoITBISRetenido}</MontoITBISRetenido>' : ''}
+            ${e.montoISRRetenido != '' ? '<MontoISRRetenido>${e.montoISRRetenido}</MontoISRRetenido>' : ''}
+           ''';
+            }).join()}
+        </Retencion>
+     ''' : ''}
     <NombreItem>${e.descripcion}</NombreItem>
     <IndicadorBienoServicio>${e.indicadorBienOServ}</IndicadorBienoServicio>
+    ${e.descripcionItem != '' ? '<DescripcionItem>${e.descripcionItem}</DescripcionItem>' : ''}
     <CantidadItem>${e.cantidad}</CantidadItem>
     <UnidadMedida>${e.unidadMedida}</UnidadMedida>
-    <UnidadReferencia>${e.unidadMedida}</UnidadReferencia>
-    <PrecioUnitarioReferencia>${e.precioUnitario}</PrecioUnitarioReferencia>
+    ${e.unidadReferencia != '' ? '<UnidadReferencia>${e.unidadReferencia}</UnidadReferencia>' : ''}
+    ${e.precioUnitarioReferencia != '' ? '<PrecioUnitarioReferencia>${e.precioUnitarioReferencia}</PrecioUnitarioReferencia>' : ''}
     <PrecioUnitarioItem>${e.precioUnitario}</PrecioUnitarioItem>
+     ${e.subDescuentos.isNotEmpty ? '''
+       <DescuentoMonto>${e.descuentoMonto}</DescuentoMonto>
+       <TablaSubDescuento>
+          ${e.subDescuentos.map((subdescuento) {
+              return '''
+                 <SubDescuento>
+                      <TipoSubDescuento>${subdescuento.tipoSubDescuento}</TipoSubDescuento>
+                      <SubDescuentoPorcentaje>${subdescuento.subDescuentoPorcentaje}</SubDescuentoPorcentaje>
+                      <MontoSubDescuento>${subdescuento.montoSubDescuento}</MontoSubDescuento>
+                  </SubDescuento>
+               ''';
+            }).join()}
+       </TablaSubDescuento>
+       ''' : ''}
+
+      ${e.subRecargos.isNotEmpty ? '''
+       <RecargoMonto>${e.recargoMonto}</RecargoMonto>
+       <TablaSubRecargo>
+          ${e.subRecargos.map((recargo) {
+              return '''
+                 <SubRecargo>
+                      <TipoSubRecargo>${recargo.tipoSubRecargo}</TipoSubRecargo>
+                      <SubRecargoPorcentaje>${recargo.subRecargoPorcentaje}</SubRecargoPorcentaje>
+                      <MontoSubRecargo>${recargo.montoSubRecargo}</MontoSubRecargo>
+                  </SubRecargo>
+               ''';
+            }).join()}
+       </TablaSubRecargo>
+       ''' : ''}
+      ${e.impuestosAdicionales.isNotEmpty ? '''
+      <TablaImpuestoAdicional>
+         ${e.impuestosAdicionales.map((impuesto) {
+              return '''
+           <ImpuestoAdicional>
+            <TipoImpuesto>${impuesto.tipoImpuesto}</TipoImpuesto>
+           </ImpuestoAdicional>
+            ''';
+            }).join()}
+      </TablaImpuestoAdicional>
+     ''' : ''}
     <MontoItem>${e.montoItem}</MontoItem>
   </Item>
      ''';
     }).join()}
   </DetallesItems>
-  <Subtotales>
-    <Subtotal>
-      <NumeroSubTotal>1</NumeroSubTotal>
-      <SubTotalMontoGravadoTotal>$montoNeto</SubTotalMontoGravadoTotal>
-      <SubTotalMontoGravadoI1>$montoNeto18</SubTotalMontoGravadoI1>
-      <SubTotalMontoGravadoI2>$montoNeto16</SubTotalMontoGravadoI2>
-      <SubTotalMontoGravadoI3>0.00</SubTotalMontoGravadoI3>
-      <SubTotaITBIS>$totalItbis</SubTotaITBIS>
-      <SubTotaITBIS1>$totalItbis18</SubTotaITBIS1>
-      <SubTotaITBIS2>$totalItbis16</SubTotaITBIS2>
-      <SubTotaITBIS3>0.00</SubTotaITBIS3>
-      <SubTotalImpuestoAdicional>0</SubTotalImpuestoAdicional>
-      <SubTotalExento>$montoExento</SubTotalExento>
-      <MontoSubTotal>$montoTotal</MontoSubTotal>
-    </Subtotal>
-  </Subtotales>
-  <Paginacion>
+  ${paginas.isNotEmpty ? '''
+    <Paginacion>
+     ${paginas.map((pagina) {
+            var index = paginas.indexOf(pagina);
+            return '''
     <Pagina>
-      <PaginaNo>1</PaginaNo>
-      <NoLineaDesde>1</NoLineaDesde>
-      <NoLineaHasta>1</NoLineaHasta>
-      <SubtotalMontoGravadoPagina>$montoNeto</SubtotalMontoGravadoPagina>
-      <SubtotalMontoGravado1Pagina>$montoNeto18</SubtotalMontoGravado1Pagina>
-      <SubtotalMontoGravado2Pagina>$montoNeto16</SubtotalMontoGravado2Pagina>
-      <SubtotalMontoGravado3Pagina>0.00</SubtotalMontoGravado3Pagina>
-      <SubtotalExentoPagina>0.00</SubtotalExentoPagina>
-      <SubtotalItbisPagina>$totalItbis</SubtotalItbisPagina>
-      <SubtotalItbis1Pagina>$totalItbis18</SubtotalItbis1Pagina>
-      <SubtotalItbis2Pagina>$totalItbis16</SubtotalItbis2Pagina>
-      <SubtotalItbis3Pagina>0.00</SubtotalItbis3Pagina>
-      <MontoSubtotalPagina>$montoTotal</MontoSubtotalPagina>
+      <PaginaNo>${index + 1}</PaginaNo>
+      <NoLineaDesde>${pagina.noLineaDesde}</NoLineaDesde>
+      <NoLineaHasta>${pagina.noLineaHasta}</NoLineaHasta>
+      <SubtotalMontoGravadoPagina>${pagina.subtotalMontoGravadoPagina}</SubtotalMontoGravadoPagina>
+      <SubtotalMontoGravado1Pagina>${pagina.subtotalMontoGravado1Pagina}</SubtotalMontoGravado1Pagina>
+      <SubtotalMontoGravado2Pagina>${pagina.subtotalMontoGravado2Pagina}</SubtotalMontoGravado2Pagina>
+      <SubtotalMontoGravado3Pagina>${pagina.subtotalMontoGravado3Pagina}</SubtotalMontoGravado3Pagina>
+      <SubtotalExentoPagina>${pagina.subtotalExentoPagina}</SubtotalExentoPagina>
+      <SubtotalItbisPagina>${pagina.subtotalItbisPagina}</SubtotalItbisPagina>
+      <SubtotalItbis1Pagina>${pagina.subtotalItbis1Pagina}</SubtotalItbis1Pagina>
+      <SubtotalItbis2Pagina>${pagina.subtotalItbis2Pagina}</SubtotalItbis2Pagina>
+      <SubtotalItbis3Pagina>${pagina.subtotalItbis3Pagina}</SubtotalItbis3Pagina>
+      <SubtotalImpuestoAdicionalPagina>${pagina.subtotalImpuestoAdicionalPagina}</SubtotalImpuestoAdicionalPagina>
+     <SubtotalImpuestoAdicional>
+       ${pagina.subtotalImpuestoSelectivoConsumoEspecificoPagina != '' ? '<SubtotalImpuestoSelectivoConsumoEspecificoPagina>${pagina.subtotalImpuestoSelectivoConsumoEspecificoPagina}</SubtotalImpuestoSelectivoConsumoEspecificoPagina>' : ''}
+       ${pagina.subtotalOtrosImpuesto != '' ? '<SubtotalOtrosImpuesto>${pagina.subtotalOtrosImpuesto}</SubtotalOtrosImpuesto>' : ''}
+     </SubtotalImpuestoAdicional>
+      <MontoSubtotalPagina>${pagina.montoSubtotalPagina}</MontoSubtotalPagina>
     </Pagina>
+   ''';
+          }).join()}
   </Paginacion>
+    ''' : ''}
+   ${tipoEcf == EcfType.e34 ? '''
+    <InformacionReferencia>
+    <NCFModificado>$numeroComprobanteModificado</NCFModificado>
+    <RNCOtroContribuyente>$rncOtroContribuyente</RNCOtroContribuyente>
+    <FechaNCFModificado>$fechaEmisionNcfModificado</FechaNCFModificado>
+    <CodigoModificacion>$codigoModificacion</CodigoModificacion>
+    <RazonModificacion>$razonModificacion</RazonModificacion>
+  </InformacionReferencia>
+   ''' : ''}
   <FechaHoraFirma>$fechaHoraFirma</FechaHoraFirma>
 </ECF>
    ''';
   }
 
   String get xmle32 {
-    final now = DateTime.now();
-    fechaHoraFirma = DateFormat('dd-MM-yyyy HH:mm:ss').format(now);
-    fechaFirma = DateFormat('dd-MM-yyyy').format(now);
-
-    var ecfXsdFile = path.join(dirProject.path, 'RFCE 32 v.1.0.xsd');
     return '''
 <RFCE xsi:noNamespaceSchemaLocation="$ecfXsdFile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Encabezado>
@@ -387,19 +683,51 @@ class EcfModel {
     <Emisor>
       <RNCEmisor>$rncEmisor</RNCEmisor>
       <RazonSocialEmisor>$razonSocialEmisor</RazonSocialEmisor>
+      ${municipio != '' ? '<Municipio>$municipio</Municipio>' : ''}
+      ${municipio != '' ? '<Provincia>$provincia</Provincia>' : ''}
+      ${numeroFacturaInterna != '' ? '<NumeroFacturaInterna>$numeroFacturaInterna</NumeroFacturaInterna>' : ''}
+      ${numeroPedidoInterno != '' ? '<NumeroPedidoInterno>$numeroPedidoInterno</NumeroPedidoInterno>' : ''}
+      ${zonaVenta != '' ? '<ZonaVenta>$zonaVenta</ZonaVenta>' : ''}
+      ${rutaVenta != '' ? '<RutaVenta>$rutaVenta</RutaVenta>' : ''}
       <FechaEmision>$fechaEmision</FechaEmision>
     </Emisor>
     <Comprador>
-      <RazonSocialComprador>$razonSocialComprador</RazonSocialComprador>
+       ${rncComprador != '' ? '<RNCComprador>$rncComprador</RNCComprador>' : ''}
+      ${razonSocialComprador != '' ? '<RazonSocialComprador>$razonSocialComprador</RazonSocialComprador>' : ''}
+      ${contactoComprador != '' ? '<ContactoComprador>$contactoComprador</ContactoComprador>' : ''}
     </Comprador>
     <Totales>
-      <MontoGravadoTotal>$montoNeto</MontoGravadoTotal>
-      <MontoGravadoI2>$montoNeto</MontoGravadoI2>
+      <MontoGravadoTotal>$totalGravado</MontoGravadoTotal>
+      <MontoGravadoI1>$totalGravado18</MontoGravadoI1>
+      ${totalGravado16 != '' ? '<MontoGravadoI2>$totalGravado16</MontoGravadoI2>' : ''}
+      ${totalGravadoTasa0 != '' ? '<MontoGravadoI3>$totalGravadoTasa0</MontoGravadoI3>' : ''}
+      ${montoExento != '' ? '<MontoExento>$montoExento</MontoExento>' : ''}
       <TotalITBIS>$totalItbis</TotalITBIS>
       <TotalITBIS1>$totalItbis18</TotalITBIS1>
-      <TotalITBIS2>$totalItbis16</TotalITBIS2>
-      <TotalITBIS3>0.00</TotalITBIS3>
+      ${totalItbis16 != '' ? '<TotalITBIS2>$totalItbis16</TotalITBIS2>' : ''}
+      ${totalItbisTasa0 != '' ? '<TotalITBIS3>$totalItbisTasa0</TotalITBIS3>' : ''}
+      ${impuestosAdicionales.isNotEmpty ? '''
+       <MontoImpuestoAdicional>$montoImpuestoAdicional</MontoImpuestoAdicional>
+       <ImpuestosAdicionales>
+          ${impuestosAdicionales.map((impuesto) {
+            return '''
+         <ImpuestoAdicional>
+         <TipoImpuesto>${impuesto.tipoImpuesto}</TipoImpuesto>
+         <TasaImpuestoAdicional>${impuesto.tasaImpuestoAdicional}</TasaImpuestoAdicional>
+         ${impuesto.montoImpuestoSelectivoConsumoEspecifico != '' ? '<MontoImpuestoSelectivoConsumoEspecifico>${impuesto.montoImpuestoSelectivoConsumoEspecifico}</MontoImpuestoSelectivoConsumoEspecifico>' : ''}
+         ${impuesto.montoImpuestoSelectivoConsumoAdvalorem != '' ? '<MontoImpuestoSelectivoConsumoAdvalorem>${impuesto.montoImpuestoSelectivoConsumoAdvalorem}</MontoImpuestoSelectivoConsumoAdvalorem>' : ''}
+         ${impuesto.otrosImpuestosAdicionales != '' ? '<OtrosImpuestosAdicionales>${impuesto.otrosImpuestosAdicionales}</OtrosImpuestosAdicionales>' : ''}
+        </ImpuestoAdicional>
+         ''';
+          }).join()}
+       </ImpuestosAdicionales>
+      ''' : ''}
       <MontoTotal>$montoTotal</MontoTotal>
+      ${saldoAnterior != '' ? '<SaldoAnterior>$saldoAnterior</SaldoAnterior>' : ''}
+      ${montoAvancePago != '' ? '<MontoAvancePago>$montoAvancePago</MontoAvancePago>' : ''}
+      ${valorPagar != '' ? '<ValorPagar>$valorPagar</ValorPagar>' : ''}
+      ${totalItbisRetencion != '' ? '<TotalITBISRetenido>$totalItbisRetencion</TotalITBISRetenido>' : ''}
+      ${totalIsrRetencion != '' ? '<TotalISRRetencion>$totalIsrRetencion</TotalISRRetencion>' : ''}
     </Totales>
   </Encabezado>
 </RFCE>
@@ -426,8 +754,34 @@ class EcfModel {
   Uri get uriEcf {
     String consultaTimbre = kConsultaTimbre;
 
-    String params =
-        '?RncEmisor=$rncEmisor&RncComprador=$rncComprador&ENCF=$numeroComprobante&FechaEmision=$fechaEmision&MontoTotal=$montoTotal&FechaFirma=$fechaHoraFirma&CodigoSeguridad=$codigoSeguridad';
+    String params = '?';
+
+    if (rncEmisor != '') {
+      params += 'RncEmisor=$rncEmisor';
+    }
+
+    if (rncComprador != '') {
+      params += '&RncComprador=$rncComprador';
+    }
+
+    if (numeroComprobante != '') {
+      params += '&ENCF=$numeroComprobante';
+    }
+
+    if (fechaEmision != '') {
+      params += '&FechaEmision=$fechaEmision';
+    }
+
+    if (montoTotal != '') {
+      params += '&MontoTotal=$montoTotal';
+    }
+
+    if (fechaHoraFirma != '') {
+      params += '&FechaFirma=$fechaHoraFirma';
+    }
+    if (codigoSeguridad != '') {
+      params += '&CodigoSeguridad=$codigoSeguridad';
+    }
 
     if (tipoEcf == EcfType.e32) {
       consultaTimbre = kConsultaTimbreFc;
@@ -516,10 +870,11 @@ class EcfModel {
 
       print(token);
 
-      var res = await sendEcfSign(ecfFile!, tipoEcf, token);
+      var res = await sendEcfSign(ecfFile!, tipoEcf, token, montoTotal);
 
       if (res['trackId'] != null) {
         trackId = res['trackId'];
+        print('TRACKID: $trackId');
       } else {
         print(res);
       }
@@ -570,26 +925,81 @@ class EcfModel {
 
 class EcfDetailsModel {
   String cantidad;
-  String tipoCodigo;
-  String codigoItem;
+
+  List<TipoCodigo> codigos;
+
   String descripcion;
+
   String indicadorBienOServ;
+
+  String indicadorFacturacion;
+
   String unidadMedida;
+
+  String unidadReferencia;
+
+  String precioUnitarioReferencia;
+
   String precioUnitario;
+
   String montoItem;
+
   String tipoImpuesto;
+
   String tasaImpuesto;
+
   String itbis;
-  EcfDetailsModel(
-      {required this.cantidad,
-      required this.tipoCodigo,
-      required this.codigoItem,
-      required this.descripcion,
-      required this.indicadorBienOServ,
-      required this.unidadMedida,
-      required this.precioUnitario,
-      required this.montoItem,
-      required this.itbis,
-      required this.tipoImpuesto,
-      required this.tasaImpuesto});
+
+  String descuentoMonto;
+
+  String recargoMonto;
+
+  List<SubDescuento> subDescuentos = [];
+
+  List<SubRecargo> subRecargos = [];
+
+  List<ImpuestoAdicional> impuestosAdicionales;
+
+  String descripcionItem;
+
+  EcfDetailsModel({
+    required this.cantidad,
+    this.codigos = const [],
+    required this.descripcion,
+    this.descripcionItem = '',
+    required this.indicadorBienOServ,
+    required this.indicadorFacturacion,
+    required this.unidadMedida,
+    this.unidadReferencia = '',
+    required this.precioUnitario,
+    this.precioUnitarioReferencia = '',
+    required this.montoItem,
+    required this.itbis,
+    required this.tipoImpuesto,
+    required this.tasaImpuesto,
+    this.descuentoMonto = '',
+    this.recargoMonto = '',
+    this.subDescuentos = const [],
+    this.subRecargos = const [],
+    this.impuestosAdicionales = const [],
+  });
 }
+
+
+/**
+ *   <Subtotales>
+    <Subtotal>
+      <NumeroSubTotal>1</NumeroSubTotal>
+      <SubTotalMontoGravadoTotal>$totalGravado</SubTotalMontoGravadoTotal>
+      <SubTotalMontoGravadoI1>$totalGravado18</SubTotalMontoGravadoI1>
+      ${totalGravado16 != '' ? '<SubTotalMontoGravadoI2>$totalGravado16</SubTotalMontoGravadoI2>' : ''}
+      ${totalGravadoTasa0 != '' ? '<SubTotalMontoGravadoI3>$totalGravadoTasa0</SubTotalMontoGravadoI3>' : ''}
+      <SubTotaITBIS>$totalItbis</SubTotaITBIS>
+      <SubTotaITBIS1>$totalItbis18</SubTotaITBIS1>
+      ${totalItbis16 != '' ? '<SubTotaITBIS2>$totalItbis16</SubTotaITBIS2>' : ''}
+      ${totalItbisTasa0 != '' ? '<SubTotaITBIS3>$totalItbisTasa0</SubTotaITBIS3>' : ''}
+      ${montoExento != '' ? '<SubTotalExento>$montoExento</SubTotalExento>' : ''}
+      <MontoSubTotal>$montoTotal</MontoSubTotal>
+    </Subtotal>
+  </Subtotales>
+ */

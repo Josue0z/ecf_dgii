@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:ecf_dgii/ecf_dgii.dart';
-
 import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
@@ -16,17 +14,35 @@ void main() async {
     AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
 
     final now = DateTime.now();
-    final fechaHora = DateFormat('dd-MM-yyyy').format(now);
+    final fechaEmision = DateFormat('dd-MM-yyyy').format(now);
+
+    List<EcfDetailsModel> items = [
+      EcfDetailsModel(
+          cantidad: '12.00',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '2',
+          unidadMedida: '43',
+          tipoImpuesto: '1',
+          tasaImpuesto: '18',
+          descripcion: 'Gasto personal en comida (kiosko)',
+          descripcionItem: '',
+          precioUnitario: '330.00',
+          itbis: '0.00',
+          montoItem: '3960.00',
+          impuestosAdicionales: []),
+    ];
 
     EcfModel ecf = EcfModel(
-        tipoEcf: EcfType.e31,
-        tipoIngreso: '01',
-        tipoPago: '1',
-        formaPago: '2',
-        rncEmisor: '101675489',
-        razonSocialEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
-        nombreComercial: 'DOCUMENTOS ELECTRONICOS DE 02',
-        sucursal: '#e',
+        tipoEcf: EcfType.e43,
+        numeroComprobante: 'E430000000001',
+        codigoModificacion: '',
+        fechaEmisionNcfModificado: '09-07-2025',
+        razonModificacion:
+            'ANULACION DEL ENCF31 CON SECUENCIA QUE FINALIZA EN 61',
+        tipoIngreso: '',
+        tipoPago: '',
+        formasDePagos: [],
+        sucursal: '',
         direccionEmisor:
             'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
         municipio: '010100',
@@ -34,73 +50,69 @@ void main() async {
         telefonoEmisor1: '809-472-7676',
         telefonoEmisor2: '809-491-1918',
         telefonoEmisor3: '',
-        correoEmisor: 'DOCUMENTOSELECTRONICOSDE0612345678969789@123.COM',
+        fechaEmision: '01-04-2020',
+        fechaVencimiento: '31-12-2025',
+        totalPaginas: '',
+        rncEmisor: '101675489',
+        razonSocialEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
+        nombreComercial: 'DOCUMENTOS ELECTRONICOS DE 02',
+        correoEmisor:
+            'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
         website: 'www.facturaelectronica.com',
-        codigoVendedor: 'AA00000001000000050000000006',
-        numeroFacturaInterna: '123456789016',
-        numeroPedidoInterno: '123456789016',
-        zonaVenta: 'NORTE',
-        informacionAdicionalEmisor: 'string',
-        rncComprador: '124003091',
-        razonSocialComprador: 'KENTUCKY FOODS GROUP LIMITED',
-        nombreComprador: 'KENTUCKY FOODS GROUP LIMITED',
-        contactoComprador: 'MARCOS LATIPLOL',
-        correoComprador: 'MARCOSLATIPLOL@KKKK.COM',
-        direccionComprador:
-            'CALLE JACINTO DE LA CONCHA FELIZ ESQUINA 27 DE FEBRERO,FRENTE A DOMINO',
+        actividadEconomica: '',
+        codigoVendedor: '',
+        codigoInternoComprador: '',
+        numeroFacturaInterna: '',
+        numeroPedidoInterno: '',
+        informacionAdicionalEmisor: '',
+        rncComprador: '',
+        razonSocialComprador: '',
+        nombreComprador: '',
+        contactoComprador: '',
+        correoComprador: '',
+        telefonoAdicional: '',
+        direccionComprador: '',
         municipioComprador: '010100',
         provinciaComprador: '010000',
-        fechaEntrega: fechaHora,
-        fechaOrdenCompra: fechaHora,
-        numeroOrdenCompra: '4500352238',
-        codigoInternoComprador: '10633440',
-        fechaEmision: fechaHora,
-        fechaVencimiento: '31-12-2025',
-        numeroComprobante: 'E310000000057',
-        montoTotal: '139787.78',
-        totalItbis: '21323.56',
-        totalItbis16: '0.00',
-        totalItbis18: '21323.56',
-        montoNeto: '118464.21',
-        montoNeto18: '118464.21',
-        montoNeto16: '0.00',
-        montoExento: '0.00',
-        montoPagado: '139787.78',
-        bancoPago: 'Banco Popular Dominicano',
-        montoRetenidoIsr: '0.00',
-        porcentajeRetencionIsr: '0',
-        baseImponibleIsr: '0.00',
-        montoRetenidoItbis: '0.00',
-        porcentajeRetencionItbis: '0',
-        baseImponibleItbis: '0.00',
-        indicadorMontoGravado: '0',
-        actividadEconomica: 'LEGALES',
-        terminoPago: '4',
-        formasDePagos: [FormaDePago('2', '139787.77')],
+        fechaEntrega: '',
+        fechaOrdenCompra: '',
+        numeroOrdenCompra: '',
+        zonaVenta: '',
+        rutaVenta: '',
+        indicadorMontoGravado: '',
+        totalGravado: '',
+        totalGravado18: '',
+        totalGravado16: '',
+        montoExento: '3960.00',
+        totalItbis: '',
+        totalItbis18: '',
+        totalItbis16: '',
+        itbis1: '',
+        itbis2: '',
+        itbis3: '',
+        montoTotal: '3960.00',
+        montoAvancePago: '',
+        valorPagar: '',
+        totalItbisRetencion: '',
+        totalIsrRetencion: '',
+        porcentajeRetencionIsr: '',
+        baseImponibleIsr: '',
+        porcentajeRetencionItbis: '',
+        baseImponibleItbis: '',
+        retenciones: [],
+        montoImpuestoAdicional: '',
+        impuestosAdicionales: [],
+        terminoPago: '',
+        bancoPago: '',
+        paginas: [],
+        items: items,
         privateKey: authModel.privateKey,
         certBase64: authModel.certBase64);
 
-    List<EcfDetailsModel> items = [
-      EcfDetailsModel(
-          cantidad: '1',
-          tipoCodigo: 'S',
-          codigoItem: '01',
-          indicadorBienOServ: '2',
-          unidadMedida: '1',
-          tipoImpuesto: '1',
-          tasaImpuesto: '18',
-          descripcion: 'IGUALA R LOPEZ 04-2025',
-          precioUnitario: '118464.21',
-          montoItem: '118464.21',
-          itbis: '21323.56'),
-    ];
-    ecf.items.addAll(items);
     await ecf.downloadEcfSeed();
     await ecf.validarSign();
     await ecf.signer();
     await ecf.sendEcfSigned();
-    //await ecf.getEcfStatusData();
-    //await ecf.sendAprobacionComercialEcf();
     print(ecf.uriEcf);
   } catch (e) {
     print('⚠️ Error: $e');
