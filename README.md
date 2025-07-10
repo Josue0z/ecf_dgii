@@ -1,10 +1,30 @@
 # ecf_dgii 🧾🇩🇴
 
-Librería Dart para generar, firmar y enviar Comprobantes Fiscales Electrónicos (e-CF) conforme al esquema DGII en República Dominicana. (Uso de Openssl para validar certificados)
+Librería Dart para generar, firmar y enviar Comprobantes Fiscales Electrónicos (e-CF) conforme al esquema establecido por la DGII (República Dominicana).
 
-por lo tanto debera instalar Openssl en Windows y agregarla al Path, en caso de MacOs Openssl esta por defecto en las versiones mas recientes de ese sistema operativo
+Incluye validación de estructura XML, firma digital RSA-SHA256, canonicalización XML usando `xmllint`, y comunicación con el servicio de timbrado oficial.
 
 ---
+
+## ⚙️ Requisitos
+
+🔐 **OpenSSL**  
+Usado para extraer claves privadas desde certificados `.p12` y generar la firma digital.
+
+- **Windows**: instalar desde [Win32 OpenSSL](https://slproweb.com/products/Win32OpenSSL.html) y agregar la carpeta `bin` al `PATH`.
+- **macOS/Linux**: viene preinstalado en la mayoría de distribuciones.
+
+🧰 **xmllint (libxml2-utils)**  
+Utilizado para canonicalizar el XML con el algoritmo `c14n`, requerido por XMLDSig antes de calcular el `digestValue`.
+
+### 💡 Instalación en Windows
+
+1. Instala [MSYS2](https://www.msys2.org/)
+2. Abre la terminal MSYS2 y ejecuta:
+
+   ```bash
+   pacman -S libxml2
+
 
 ## 🚀 Ejemplo de uso completo
 
