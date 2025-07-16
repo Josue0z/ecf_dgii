@@ -21,8 +21,6 @@ void main() async {
           indicadorFacturacion: '4',
           indicadorBienOServ: '2',
           unidadMedida: '43',
-          tipoImpuesto: '1',
-          tasaImpuesto: '18',
           descripcion: 'Gasto personal en comida (kiosko)',
           descripcionItem: '',
           precioUnitario: '330.00',

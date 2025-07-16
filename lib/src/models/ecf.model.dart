@@ -3,7 +3,6 @@ import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
-
 import 'package:xml/xml.dart';
 
 class SubDescuento {
@@ -989,10 +988,6 @@ class EcfDetailsModel {
 
   String montoItem;
 
-  String tipoImpuesto;
-
-  String tasaImpuesto;
-
   String descuentoMonto;
 
   String recargoMonto;
@@ -1019,8 +1014,6 @@ class EcfDetailsModel {
     required this.precioUnitario,
     this.precioUnitarioReferencia = '',
     required this.montoItem,
-    required this.tipoImpuesto,
-    required this.tasaImpuesto,
     this.descuentoMonto = '',
     this.recargoMonto = '',
     this.subDescuentos = const [],
@@ -1042,8 +1035,6 @@ class EcfDetailsModel {
       'precioUnitarioReferencia': precioUnitarioReferencia,
       'precioUnitario': precioUnitario,
       'montoItem': montoItem,
-      'tipoImpuesto': tipoImpuesto,
-      'tasaImpuesto': tasaImpuesto,
       'descuentoMonto': descuentoMonto,
       'recargoMonto': recargoMonto,
       'subDescuentos': subDescuentos.map((e) => e.toMap()).toList(),
@@ -1056,7 +1047,7 @@ class EcfDetailsModel {
   @override
   String toString() {
     return '''
-        'EcfDetailsModel(cantidad: $cantidad, codigos: $codigos, descripcion: $descripcion, indicadorBienOServ: $indicadorBienOServ, indicadorFacturacion: $indicadorFacturacion, unidadMedida: $unidadMedida, unidadReferencia: $unidadReferencia, precioUnitarioReferencia: $precioUnitarioReferencia, precioUnitario: $precioUnitario, montoItem: $montoItem, tipoImpuesto: $tipoImpuesto, tasaImpuesto: $tasaImpuesto, descuentoMonto: $descuentoMonto, recargoMonto: $recargoMonto, subDescuentos: $subDescuentos, subRecargos: $subRecargos, impuestosAdicionales: $impuestosAdicionales, descripcionItem: $descripcionItem)''';
+        'EcfDetailsModel(cantidad: $cantidad, codigos: $codigos, descripcion: $descripcion, indicadorBienOServ: $indicadorBienOServ, indicadorFacturacion: $indicadorFacturacion, unidadMedida: $unidadMedida, unidadReferencia: $unidadReferencia, precioUnitarioReferencia: $precioUnitarioReferencia, precioUnitario: $precioUnitario, montoItem: $montoItem, descuentoMonto: $descuentoMonto, recargoMonto: $recargoMonto, subDescuentos: $subDescuentos, subRecargos: $subRecargos, impuestosAdicionales: $impuestosAdicionales, descripcionItem: $descripcionItem)''';
   }
 }
 
