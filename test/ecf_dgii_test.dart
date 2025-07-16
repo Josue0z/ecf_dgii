@@ -26,7 +26,6 @@ void main() async {
           descripcion: 'Gasto personal en comida (kiosko)',
           descripcionItem: '',
           precioUnitario: '330.00',
-          itbis: '0.00',
           montoItem: '3960.00',
           impuestosAdicionales: []),
     ];
@@ -98,7 +97,6 @@ void main() async {
         baseImponibleIsr: '',
         porcentajeRetencionItbis: '',
         baseImponibleItbis: '',
-        retenciones: [],
         montoImpuestoAdicional: '',
         impuestosAdicionales: [],
         terminoPago: '',

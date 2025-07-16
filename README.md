@@ -39,7 +39,7 @@ void main() async {
   try {
     final cert = File(path.join(dirProject.path, 'certificado.p12'));
 
-    String password = '********';
+    String password = '*********';
 
     AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
 
@@ -57,14 +57,14 @@ void main() async {
           descripcion: 'Gasto personal en comida (kiosko)',
           descripcionItem: '',
           precioUnitario: '330.00',
-          itbis: '0.00',
           montoItem: '3960.00',
+          retencion: null,
           impuestosAdicionales: []),
     ];
 
     EcfModel ecf = EcfModel(
         tipoEcf: EcfType.e43,
-        numeroComprobante: 'E430000000001',
+        numeroComprobante: 'E430000000002',
         codigoModificacion: '',
         fechaEmision: fechaEmision,
         fechaVencimiento: '31-12-2025',
@@ -91,9 +91,6 @@ void main() async {
         website: 'www.facturaelectronica.com',
         actividadEconomica: '',
         codigoVendedor: '',
-        codigoInternoComprador: '',
-        numeroFacturaInterna: '',
-        numeroPedidoInterno: '',
         informacionAdicionalEmisor: '',
         rncComprador: '',
         razonSocialComprador: '',
@@ -104,9 +101,12 @@ void main() async {
         direccionComprador: '',
         municipioComprador: '010100',
         provinciaComprador: '010000',
+        codigoInternoComprador: '',
         fechaEntrega: '',
         fechaOrdenCompra: '',
         numeroOrdenCompra: '',
+        numeroFacturaInterna: '',
+        numeroPedidoInterno: '',
         zonaVenta: '',
         rutaVenta: '',
         indicadorMontoGravado: '',
@@ -129,7 +129,6 @@ void main() async {
         baseImponibleIsr: '',
         porcentajeRetencionItbis: '',
         baseImponibleItbis: '',
-        retenciones: [],
         montoImpuestoAdicional: '',
         impuestosAdicionales: [],
         terminoPago: '',

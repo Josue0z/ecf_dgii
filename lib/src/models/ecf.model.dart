@@ -14,6 +14,20 @@ class SubDescuento {
       {required this.tipoSubDescuento,
       required this.subDescuentoPorcentaje,
       required this.montoSubDescuento});
+
+  @override
+  String toString() {
+    return ''
+        'SubDescuento(tipoSubDescuento: $tipoSubDescuento, subDescuentoPorcentaje: $subDescuentoPorcentaje, montoSubDescuento: $montoSubDescuento)';
+  }
+
+  toMap() {
+    return {
+      'tipoSubDescuento': tipoSubDescuento,
+      'subDescuentoPorcentaje': subDescuentoPorcentaje,
+      'montoSubDescuento': montoSubDescuento,
+    };
+  }
 }
 
 class SubRecargo {
@@ -24,6 +38,20 @@ class SubRecargo {
       {required this.tipoSubRecargo,
       required this.subRecargoPorcentaje,
       required this.montoSubRecargo});
+
+  @override
+  toString() {
+    return '''
+        'SubRecargo(tipoSubRecargo: $tipoSubRecargo, subRecargoPorcentaje: $subRecargoPorcentaje, montoSubRecargo: $montoSubRecargo)''';
+  }
+
+  toMap() {
+    return {
+      'tipoSubRecargo': tipoSubRecargo,
+      'subRecargoPorcentaje': subRecargoPorcentaje,
+      'montoSubRecargo': montoSubRecargo,
+    };
+  }
 }
 
 class FormaDePago {
@@ -71,6 +99,19 @@ class TipoCodigo {
   String? tipoCodigo;
   String? codigoItem;
   TipoCodigo({this.tipoCodigo, this.codigoItem});
+
+  @override
+  toString() {
+    return '''
+        'TipoCodigo(tipoCodigo: $tipoCodigo, codigoItem: $codigoItem)''';
+  }
+
+  toMap() {
+    return {
+      'tipoCodigo': tipoCodigo,
+      'codigoItem': codigoItem,
+    };
+  }
 }
 
 class ImpuestoAdicional {
@@ -85,6 +126,17 @@ class ImpuestoAdicional {
       this.montoImpuestoSelectivoConsumoEspecifico,
       this.otrosImpuestosAdicionales,
       this.montoImpuestoSelectivoConsumoAdvalorem});
+  toMap() {
+    return {
+      'tipoImpuesto': tipoImpuesto,
+      'tasaImpuestoAdicional': tasaImpuestoAdicional,
+      'montoImpuestoSelectivoConsumoEspecifico':
+          montoImpuestoSelectivoConsumoEspecifico,
+      'montoImpuestoSelectivoConsumoAdvalorem':
+          montoImpuestoSelectivoConsumoAdvalorem,
+      'otrosImpuestosAdicionales': otrosImpuestosAdicionales,
+    };
+  }
 }
 
 class Retencion {
@@ -129,8 +181,6 @@ class EcfModel {
   String montoImpuestoAdicional;
 
   List<ImpuestoAdicional> impuestosAdicionales;
-
-  List<Retencion> retenciones;
 
   String totalGravado;
 
@@ -345,7 +395,6 @@ class EcfModel {
       this.actividadEconomica = '',
       this.porcentajeRetencionIsr = '',
       this.baseImponibleIsr = '',
-      this.retenciones = const [],
       this.porcentajeRetencionItbis = '',
       this.baseImponibleItbis = '',
       this.formasDePagos = const [],
@@ -550,34 +599,30 @@ class EcfModel {
  <Item>
     <NumeroLinea>${index + 1}</NumeroLinea>
         ${e.codigos.isNotEmpty ? '''
+   <TablaCodigosItem>
     ${e.codigos.map((codigo) {
               return '''
-     <TablaCodigosItem>
       <CodigosItem>
         <TipoCodigo>${codigo.tipoCodigo}</TipoCodigo>
         <CodigoItem>${codigo.codigoItem}</CodigoItem>
       </CodigosItem>
-     </TablaCodigosItem>
       ''';
             }).join()}
+      </TablaCodigosItem>
      ''' : ''}
     <IndicadorFacturacion>${e.indicadorFacturacion}</IndicadorFacturacion>
-    ${retenciones.isNotEmpty ? '''
-       <Retencion>
-          ${retenciones.map((e) {
-              return '''
-             <IndicadorAgenteRetencionoPercepcion>${e.indicadorAgenteRetencionoPercepcion}</IndicadorAgenteRetencionoPercepcion>
-            ${e.montoITBISRetenido != '' ? ' <MontoITBISRetenido>${e.montoITBISRetenido}</MontoITBISRetenido>' : ''}
-            ${e.montoISRRetenido != '' ? '<MontoISRRetenido>${e.montoISRRetenido}</MontoISRRetenido>' : ''}
-           ''';
-            }).join()}
-        </Retencion>
+    ${e.retencion != null ? '''
+         <Retencion>
+                 <IndicadorAgenteRetencionoPercepcion>${e.retencion?.indicadorAgenteRetencionoPercepcion}</IndicadorAgenteRetencionoPercepcion>
+                 ${e.retencion?.montoITBISRetenido != '' ? ' <MontoITBISRetenido>${e.retencion?.montoITBISRetenido}</MontoITBISRetenido>' : ''}
+                 ${e.retencion?.montoISRRetenido != '' ? '<MontoISRRetenido>${e.retencion?.montoISRRetenido}</MontoISRRetenido>' : ''}
+         </Retencion>
      ''' : ''}
     <NombreItem>${e.descripcion}</NombreItem>
     <IndicadorBienoServicio>${e.indicadorBienOServ}</IndicadorBienoServicio>
     ${e.descripcionItem != '' ? '<DescripcionItem>${e.descripcionItem}</DescripcionItem>' : ''}
     <CantidadItem>${e.cantidad}</CantidadItem>
-    <UnidadMedida>${e.unidadMedida}</UnidadMedida>
+    ${e.unidadMedida != '' ? '<UnidadMedida>${e.unidadMedida}</UnidadMedida>' : ''}
     ${e.unidadReferencia != '' ? '<UnidadReferencia>${e.unidadReferencia}</UnidadReferencia>' : ''}
     ${e.precioUnitarioReferencia != '' ? '<PrecioUnitarioReferencia>${e.precioUnitarioReferencia}</PrecioUnitarioReferencia>' : ''}
     <PrecioUnitarioItem>${e.precioUnitario}</PrecioUnitarioItem>
@@ -948,8 +993,6 @@ class EcfDetailsModel {
 
   String tasaImpuesto;
 
-  String itbis;
-
   String descuentoMonto;
 
   String recargoMonto;
@@ -959,6 +1002,8 @@ class EcfDetailsModel {
   List<SubRecargo> subRecargos = [];
 
   List<ImpuestoAdicional> impuestosAdicionales;
+
+  Retencion? retencion;
 
   String descripcionItem;
 
@@ -974,15 +1019,45 @@ class EcfDetailsModel {
     required this.precioUnitario,
     this.precioUnitarioReferencia = '',
     required this.montoItem,
-    required this.itbis,
     required this.tipoImpuesto,
     required this.tasaImpuesto,
     this.descuentoMonto = '',
     this.recargoMonto = '',
     this.subDescuentos = const [],
     this.subRecargos = const [],
+    this.retencion,
     this.impuestosAdicionales = const [],
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'cantidad': cantidad,
+      'codigos': codigos.map((e) => e.toMap()).toList(),
+      'descripcion': descripcion,
+      'descripcionItem': descripcionItem,
+      'indicadorBienOServ': indicadorBienOServ,
+      'indicadorFacturacion': indicadorFacturacion,
+      'unidadMedida': unidadMedida,
+      'unidadReferencia': unidadReferencia,
+      'precioUnitarioReferencia': precioUnitarioReferencia,
+      'precioUnitario': precioUnitario,
+      'montoItem': montoItem,
+      'tipoImpuesto': tipoImpuesto,
+      'tasaImpuesto': tasaImpuesto,
+      'descuentoMonto': descuentoMonto,
+      'recargoMonto': recargoMonto,
+      'subDescuentos': subDescuentos.map((e) => e.toMap()).toList(),
+      'subRecargos': subRecargos.map((e) => e.toMap()).toList(),
+      'impuestosAdicionales':
+          impuestosAdicionales.map((e) => e.toMap()).toList(),
+    };
+  }
+
+  @override
+  String toString() {
+    return '''
+        'EcfDetailsModel(cantidad: $cantidad, codigos: $codigos, descripcion: $descripcion, indicadorBienOServ: $indicadorBienOServ, indicadorFacturacion: $indicadorFacturacion, unidadMedida: $unidadMedida, unidadReferencia: $unidadReferencia, precioUnitarioReferencia: $precioUnitarioReferencia, precioUnitario: $precioUnitario, montoItem: $montoItem, tipoImpuesto: $tipoImpuesto, tasaImpuesto: $tasaImpuesto, descuentoMonto: $descuentoMonto, recargoMonto: $recargoMonto, subDescuentos: $subDescuentos, subRecargos: $subRecargos, impuestosAdicionales: $impuestosAdicionales, descripcionItem: $descripcionItem)''';
+  }
 }
 
 
