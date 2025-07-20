@@ -32,49 +32,76 @@ Utilizado para canonicalizar el XML con el algoritmo `c14n`, requerido por XMLDS
 import 'dart:io';
 import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 
 void main() async {
   try {
+    //GeneratorEndPoint.envEcfType = EnvEcfType.cert;
     final cert = File(path.join(dirProject.path, 'certificado.p12'));
 
-    String password = '*********';
+    String password = 'INES1037';
 
     AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
 
-    final now = DateTime.now();
-    final fechaEmision = DateFormat('dd-MM-yyyy').format(now);
-
     List<EcfDetailsModel> items = [
       EcfDetailsModel(
-          cantidad: '12.00',
-          indicadorFacturacion: '4',
-          indicadorBienOServ: '2',
+          cantidad: '1.00',
           unidadMedida: '43',
-          descripcion: 'Gasto personal en comida (kiosko)',
+          indicadorFacturacion: '1',
+          indicadorBienOServ: '2',
+          nombreItem: 'Renta Total',
           descripcionItem: '',
-          precioUnitario: '330.00',
-          montoItem: '3960.00',
-          retencion: null
-          impuestosAdicionales: []),
+          precioUnitario: '107766.57',
+          descuentoMonto: '',
+          subDescuentos: [],
+          recargoMonto: '',
+          subRecargos: [],
+          impuestosAdicionales: [
+            ImpuestoAdicional(
+              tipoImpuesto: '002',
+            ),
+            ImpuestoAdicional(
+              tipoImpuesto: '004',
+            )
+          ],
+          montoItem: '107766.57'),
+      EcfDetailsModel(
+          cantidad: '1.00',
+          unidadMedida: '43',
+          indicadorFacturacion: '1',
+          indicadorBienOServ: '2',
+          nombreItem: 'Uso total',
+          descripcionItem: '',
+          precioUnitario: '10697.64',
+          descuentoMonto: '',
+          subDescuentos: [],
+          recargoMonto: '',
+          subRecargos: [],
+          impuestosAdicionales: [
+            ImpuestoAdicional(
+              tipoImpuesto: '002',
+            ),
+            ImpuestoAdicional(
+              tipoImpuesto: '004',
+            )
+          ],
+          montoItem: '10697.64'),
     ];
 
     EcfModel ecf = EcfModel(
-        tipoEcf: EcfType.e43,
-        numeroComprobante: 'E430000000002',
+        tipoEcf: EcfType.e31,
+        tempDirName: 'temp_2',
+        numeroComprobante: 'E310000000003',
+        fechaHoraAprobacionComercial: '18-07-2025 10:11:59',
         codigoModificacion: '',
-        fechaEmision: fechaEmision,
+        fechaEmision: '01-04-2020',
         fechaVencimiento: '31-12-2025',
         fechaEmisionNcfModificado: '',
-        razonModificacion:
-            'ANULACION DEL ENCF31 CON SECUENCIA QUE FINALIZA EN 61',
-        tipoIngreso: '',
-        tipoPago: '',
+        razonModificacion: '',
+        tipoIngreso: '01',
+        tipoPago: '1',
         formasDePagos: [],
         sucursal: '',
-        direccionEmisor:
-            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
         municipio: '010100',
         provincia: '010000',
         telefonoEmisor1: '809-472-7676',
@@ -84,51 +111,63 @@ void main() async {
         rncEmisor: '101675489',
         razonSocialEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
         nombreComercial: 'DOCUMENTOS ELECTRONICOS DE 02',
+        direccionEmisor:
+            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
         correoEmisor:
             'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
         website: 'www.facturaelectronica.com',
         actividadEconomica: '',
-        codigoVendedor: '',
+        codigoVendedor:
+            'AA0000000100000000010000000002000000000300000000050000000006',
         informacionAdicionalEmisor: '',
-        rncComprador: '',
-        razonSocialComprador: '',
+        rncComprador: '131880681',
+        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 03',
         nombreComprador: '',
-        contactoComprador: '',
-        correoComprador: '',
+        contactoComprador: 'MARCOS LATIPLOL',
+        correoComprador: 'MARCOSLATIPLOL@KKKK.COM',
         telefonoAdicional: '',
-        direccionComprador: '',
+        direccionComprador:
+            'CALLE JACINTO DE LA CONCHA FELIZ ESQUINA 27 DE FEBRERO,FRENTE A DOMINO',
         municipioComprador: '010100',
         provinciaComprador: '010000',
-        codigoInternoComprador: '',
-        fechaEntrega: '',
-        fechaOrdenCompra: '',
-        numeroOrdenCompra: '',
-        numeroFacturaInterna: '',
-        numeroPedidoInterno: '',
-        zonaVenta: '',
+        codigoInternoComprador: '10633440',
+        fechaEntrega: '10-10-2020',
+        fechaOrdenCompra: '10-11-2018',
+        numeroOrdenCompra: '4500352238',
+        numeroFacturaInterna: '123456789016',
+        numeroPedidoInterno: '123456789016',
+        zonaVenta: 'NORTE',
         rutaVenta: '',
-        indicadorMontoGravado: '',
-        totalGravado: '',
-        totalGravado18: '',
+        indicadorMontoGravado: '0',
+        totalGravado: '118464.21',
+        totalGravado18: '118464.21',
         totalGravado16: '',
-        montoExento: '3960.00',
-        totalItbis: '',
-        totalItbis18: '',
+        totalGravadoTasa0: '',
+        montoExento: '',
+        totalItbis: '21323.56',
+        totalItbis18: '21323.56',
         totalItbis16: '',
-        itbis1: '',
+        totalItbisTasa0: '',
+        itbis1: '18',
         itbis2: '',
         itbis3: '',
-        montoTotal: '3960.00',
+        montoPeriodo: '',
         montoAvancePago: '',
         valorPagar: '',
         totalItbisRetencion: '',
         totalIsrRetencion: '',
-        porcentajeRetencionIsr: '',
-        baseImponibleIsr: '',
-        porcentajeRetencionItbis: '',
-        baseImponibleItbis: '',
-        montoImpuestoAdicional: '',
-        impuestosAdicionales: [],
+        montoImpuestoAdicional: '14215.71',
+        impuestosAdicionales: [
+          ImpuestoAdicional(
+              tipoImpuesto: '002',
+              tasaImpuestoAdicional: '2',
+              otrosImpuestosAdicionales: '2369.28'),
+          ImpuestoAdicional(
+              tipoImpuesto: '004',
+              tasaImpuestoAdicional: '10',
+              otrosImpuestosAdicionales: '11846.42')
+        ],
+        montoTotal: '154003.47',
         terminoPago: '',
         bancoPago: '',
         paginas: [],
@@ -136,12 +175,142 @@ void main() async {
         privateKey: authModel.privateKey,
         certBase64: authModel.certBase64);
 
-    await ecf.downloadEcfSeed();
+    await ecf.descargarSemilla();
     await ecf.validarSemilla();
-    await ecf.signer();
-    await ecf.sendEcfSigned();
+    await ecf.firmar();
+    await ecf.enviarEcf();
     print(ecf.uriEcf);
   } catch (e) {
     print('⚠️ Error: $e');
   }
 }
+
+// Generar aprobacion comercial
+
+final List<List<String>> datos = [
+      [
+        '131880681',
+        'E310000000003',
+        '01-04-2020',
+        '154003.47',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E310000000007',
+        '01-04-2020',
+        '228460.5',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E310000000009',
+        '01-04-2020',
+        '41450',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E310000000012',
+        '01-04-2020',
+        '45253',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E330000000001',
+        '02-04-2020',
+        '400000',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E340000000013',
+        '02-04-2020',
+        '917095',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E340000000015',
+        '02-04-2020',
+        '0',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E440000000008',
+        '01-04-2020',
+        '432000',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E440000000013',
+        '01-04-2020',
+        '917095',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880657',
+        'E450000000001',
+        '01-04-2020',
+        '35400',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ], // ⚠️ No autorizado
+      [
+        '131880681',
+        'E450000000011',
+        '01-04-2020',
+        '96657.8',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+];
+
+for (var fila in datos) {
+      final rncEmisor = fila[0];
+      final encf = fila[1];
+      final fechaEmision = fila[2];
+      final montoTotal = fila[3];
+      final rncComprador = fila[4];
+      final fechaHoraAprobacionComercial = fila[5];
+
+      final aprobacion = AprobacionComercial(
+        rncEmisor: rncEmisor,
+        numeroComprobante: encf,
+        fechaEmision: fechaEmision,
+        montoTotal: montoTotal,
+        rncComprador: rncComprador,
+        fechaHoraAprobacionComercial:
+            fechaHoraAprobacionComercial, // ✔️ Fecha fija del set
+        estado: '1',
+        detalleMotivoRechazo: '',
+        rsaPrivateKey: authModel.privateKey,
+        certBase64: authModel.certBase64,
+      );
+
+      try {
+        print('⏳ Procesando $encf...');
+        await aprobacion.descargarSemilla();
+        await aprobacion.validarSemilla();
+        await aprobacion.enviarAprobacionComercialEcf();
+        print('✅ Aprobación enviada: $encf');
+      } catch (e) {
+        print('⚠️ Error en $encf: $e');
+      }
+
+  await Future.delayed(Duration(seconds: 3));
+}
+
+

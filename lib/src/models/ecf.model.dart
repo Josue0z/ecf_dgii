@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:xml/xml.dart';
@@ -546,32 +544,41 @@ class EcfModel {
   }
 
   String get ecfXsdFile {
-    String dirName = 'eCFXmlModels';
-
     if (tipoEcf == EcfType.e31) {
-      return path.join(dirProject.path, dirName, 'e-CF 31 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/a41fd2d80d6de98c501272295d3e28c9/raw/5c6de98633c6fe4e0e4852e159709ae0e098bbe9/e-CF%252031%2520v.1.0.xsd';
     }
     if (esResumenE32) {
-      return path.join(dirProject.path, dirName, 'RFCE 32 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/RFCE%252032%2520v.1.0.xsd';
     }
     if (tipoEcf == EcfType.e32) {
-      return path.join(dirProject.path, dirName, 'e-CF 32 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/e-CF%252032%2520v.1.0.xsd';
     }
     if (tipoEcf == EcfType.e33) {
-      return path.join(dirProject.path, dirName, 'e-CF 33 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/e-CF%252033%2520v.1.0.xsd';
     }
     if (tipoEcf == EcfType.e34) {
-      return path.join(dirProject.path, dirName, 'e-CF 34 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/e-CF%252034%2520v.1.0.xsd';
     }
     if (tipoEcf == EcfType.e41) {
-      return path.join(dirProject.path, dirName, 'e-CF 41 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/e-CF%252041%2520v.1.0.xsd';
     }
     if (tipoEcf == EcfType.e43) {
-      return path.join(dirProject.path, dirName, 'e-CF 43 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/e-CF%252043%2520v.1.0.xsd';
     }
 
+    if (tipoEcf == EcfType.e44) {
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/2d4895ec43e5cd03fd177a0215325b24d8a90838/e-CF%252044%2520v.1.0.xsd';
+    }
+
+    if (tipoEcf == EcfType.e45) {
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/2d4895ec43e5cd03fd177a0215325b24d8a90838/e-CF%252045%2520v.1.0.xsd';
+    }
+
+    if (tipoEcf == EcfType.e46) {
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/19eb8869850a1c30b36b6d829a90d13ec3ac99ae/e-CF%252046%2520v.1.0.xsd';
+    }
     if (tipoEcf == EcfType.e47) {
-      return path.join(dirProject.path, dirName, 'e-CF 47 v.1.0.xsd');
+      return 'https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/e-CF%252047%2520v.1.0.xsd';
     }
     return '';
   }
@@ -1016,94 +1023,97 @@ class EcfModel {
   }
 
   Future<void> descargarSemilla() async {
-    seedFile = await descargarSemillaDgii(tempDirName);
-    seedXml = await seedFile?.readAsString() ?? '';
+    try {
+      seedFile = await descargarSemillaDgii(tempDirName);
+      seedXml = await seedFile?.readAsString() ?? '';
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<XmlSignerModel> validarSemilla() async {
-    var xmlSignerModel = await signerService.firmarXml(
-      seedXml,
-      File(path.join(dirProject.path, tempDirName, 'semilla_firmada.xml')),
-    );
+    try {
+      var xmlSignerModel = await signerService.firmarXml(
+        seedXml,
+        File(path.join(dirProject.path, tempDirName, 'semilla_firmada.xml')),
+      );
 
-    json = await validarSemillaFirmada(xmlSignerModel.xmlFile);
-    token = json?['token'] ?? '';
-    seedSignFile = xmlSignerModel.xmlFile;
-    seedSignXml = xmlSignerModel.xmlStr;
-    return xmlSignerModel;
+      json = await validarSemillaFirmada(xmlSignerModel.xmlFile);
+      token = json?['token'] ?? '';
+      seedSignFile = xmlSignerModel.xmlFile;
+      seedSignXml = xmlSignerModel.xmlStr;
+      return xmlSignerModel;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<XmlSignerModel> firmar() async {
-    String tag = '';
+    try {
+      String tag = '';
 
-    if (esResumenE32) {
-      tag = 'ECF_';
-    }
-    final xmlFilePath = path.join(
-        dirProject.path, tempDirName, '$tag$rncEmisor$numeroComprobante.xml');
+      if (esResumenE32) {
+        tag = 'ECF_';
+      }
+      final xmlFilePath = path.join(
+          dirProject.path, tempDirName, '$tag$rncEmisor$numeroComprobante.xml');
 
-    final rfceFilePath = path.join(
-        dirProject.path, tempDirName, '$rncEmisor$numeroComprobante.xml');
+      final rfceFilePath = path.join(
+          dirProject.path, tempDirName, '$rncEmisor$numeroComprobante.xml');
 
-    File xmlFile = File(xmlFilePath);
+      File xmlFile = File(xmlFilePath);
 
-    File rfceFile = File(rfceFilePath);
+      File rfceFile = File(rfceFilePath);
 
-    // 1. Firma el XML SIN CodigoSeguridadeCF
-    xmlSignerModel = await signerService.firmarXml(xml, xmlFile);
+      // 1. Firma el XML SIN CodigoSeguridadeCF
+      xmlSignerModel = await signerService.firmarXml(xml, xmlFile);
 
-    var finalXmlStr = xmlSignerModel?.xmlStr ?? '';
+      var finalXmlStr = xmlSignerModel?.xmlStr ?? '';
 
-    // 2. Solo si es tipo E32, insertamos CodigoSeguridadeCF
-    if (esResumenE32) {
-      final signedXmlDoc = XmlDocument.parse(xmle32);
+      // 2. Solo si es tipo E32, insertamos CodigoSeguridadeCF
+      if (esResumenE32) {
+        final signedXmlDoc = XmlDocument.parse(xmle32);
 
-      final encabezado = signedXmlDoc.findAllElements('Encabezado').first;
+        final encabezado = signedXmlDoc.findAllElements('Encabezado').first;
 
-      // Eliminamos cualquier valor anterior por si acaso
-      encabezado.children.removeWhere((node) =>
-          node is XmlElement && node.name.toString() == 'CodigoSeguridadeCF');
+        // Eliminamos cualquier valor anterior por si acaso
+        encabezado.children.removeWhere((node) =>
+            node is XmlElement && node.name.toString() == 'CodigoSeguridadeCF');
 
-      codigoSeguridad = xmlSignerModel?.codigoSeguridad ?? '000000';
+        codigoSeguridad = xmlSignerModel?.codigoSeguridad ?? '000000';
 
-      // Insertamos el nodo como último hijo de <Encabezado>
-      encabezado.children.add(
-        XmlElement(
-            XmlName('CodigoSeguridadeCF'), [], [XmlText(codigoSeguridad)]),
+        // Insertamos el nodo como último hijo de <Encabezado>
+        encabezado.children.add(
+          XmlElement(
+              XmlName('CodigoSeguridadeCF'), [], [XmlText(codigoSeguridad)]),
+        );
+
+        finalXmlStr = signedXmlDoc.toXmlString();
+
+        xmlSignerModel = await signerService.firmarXml(finalXmlStr, rfceFile);
+        ecfFile = rfceFile;
+      } else {
+        codigoSeguridad = xmlSignerModel?.codigoSeguridad ?? '';
+        ecfFile = xmlFile;
+      }
+
+      ecfSignXml = xmlSignerModel?.xmlStr ?? '';
+
+      return XmlSignerModel(
+        xmlFile: xmlFile,
+        xmlStr: finalXmlStr,
+        codigoSeguridad: codigoSeguridad,
       );
-
-      finalXmlStr = signedXmlDoc.toXmlString();
-
-      xmlSignerModel = await signerService.firmarXml(finalXmlStr, rfceFile);
-      ecfFile = rfceFile;
-    } else {
-      codigoSeguridad = xmlSignerModel?.codigoSeguridad ?? '';
-      ecfFile = xmlFile;
+    } catch (e) {
+      rethrow;
     }
-
-    ecfSignXml = xmlSignerModel?.xmlStr ?? '';
-
-    return XmlSignerModel(
-      xmlFile: xmlFile,
-      xmlStr: finalXmlStr,
-      codigoSeguridad: codigoSeguridad,
-    );
   }
 
-  Future<bool> enviarEcf() async {
+  Future<Map<String, dynamic>> enviarEcf() async {
     try {
       if (ecfFile == null) throw 'Archivo Xml del ecf firmado no existe';
 
-      print(token);
-
       var res = await enviarEcfFirmado(ecfFile!, tipoEcf, token, esResumenE32);
-
-      if (res['trackId'] != null) {
-        trackId = res['trackId'];
-        print('TRACKID: $trackId');
-      } else {
-        print(res);
-      }
 
       var urlsDir = Directory(path.join(dirProject.path, 'urls'));
 
@@ -1117,13 +1127,7 @@ class EcfModel {
       await fileUrls.writeAsString('${uriEcf.toString()}\n',
           mode: FileMode.append);
 
-      print('TOKEN: $token');
-
-      //await seedSignFile?.delete();
-      //seedSignXml = '';
-      //print(ecfFile);
-
-      return true;
+      return res;
     } catch (e) {
       rethrow;
     }
@@ -1297,7 +1301,7 @@ class AprobacionComercial {
 
   String get xmlAprobacion {
     return '''
-  <ACECF xsi:noNamespaceSchemaLocation="/Users/josue/Documents/ecf_dgii/eCFXmlModels/ACECF v.1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ACECF xsi:noNamespaceSchemaLocation="https://gist.githubusercontent.com/Josue0z/51657e8972853c993d4bd88bd316e093/raw/78d2557e77505265b66bcc69db15579b8616151c/ACECF%2520v.1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <DetalleAprobacionComercial>
     <Version>1.0</Version>
     <RNCEmisor>$rncEmisor</RNCEmisor>
