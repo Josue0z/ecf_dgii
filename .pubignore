@@ -11,10 +11,10 @@ temp/
 *.iml
 .e32menores250k/
 e32menores250k/
-.urls/
-urls/
-.test/
-test/
+test/ecfs/
+test/ecfs2.0/
+test/aprobaciones/
+test/test.invoice.dart
 temp_1/
 temp_2/
 temp_3/

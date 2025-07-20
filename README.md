@@ -39,7 +39,7 @@ void main() async {
     //GeneratorEndPoint.envEcfType = EnvEcfType.cert;
     final cert = File(path.join(dirProject.path, 'certificado.p12'));
 
-    String password = 'INES1037';
+    String password = '*******';
 
     AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
 
