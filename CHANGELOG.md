@@ -1,3 +1,3 @@
-## 1.0.10
+## 1.0.11
 
-- Update DirProject
+- Actualizacion en estado funcional y reciente segun el modelo de la DGII

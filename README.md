@@ -137,7 +137,7 @@ void main() async {
         certBase64: authModel.certBase64);
 
     await ecf.downloadEcfSeed();
-    await ecf.validarSign();
+    await ecf.validarSemilla();
     await ecf.signer();
     await ecf.sendEcfSigned();
     print(ecf.uriEcf);

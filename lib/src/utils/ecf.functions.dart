@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 //import 'package:path_provider/path_provider.dart';
 
-Future<File> downloadSeed() async {
+Future<File> descargarSemillaDgii(String dirName) async {
   var dir = Directory(dirProject.path);
   Uri uri = GeneratorEndPoint.getEndPoint(kSemillaEndPoint);
   final response = await http.get(
@@ -16,7 +16,7 @@ Future<File> downloadSeed() async {
     headers: {'accept': 'application/xml'},
   );
 
-  final tempDir = Directory(path.join(dir.path, 'temp'));
+  final tempDir = Directory(path.join(dir.path, dirName));
   await tempDir.create(recursive: true);
 
   if (response.statusCode == 200) {
@@ -30,7 +30,7 @@ Future<File> downloadSeed() async {
   }
 }
 
-FutureOr<Map<String, dynamic>?> validarSignSeed(File xmlSign) async {
+FutureOr<Map<String, dynamic>?> validarSemillaFirmada(File xmlSign) async {
   final uri = GeneratorEndPoint.getEndPoint(kValidarSemillaEndPoint);
   try {
     final request = http.MultipartRequest('POST', uri)
@@ -57,15 +57,16 @@ FutureOr<Map<String, dynamic>?> validarSignSeed(File xmlSign) async {
   }
 }
 
-Future<Map<String, dynamic>> sendEcfSign(
-    File xmlSign, EcfType ecfType, String token, String montoTotal) async {
+Future<Map<String, dynamic>> enviarEcfFirmado(
+    File xmlSign, EcfType ecfType, String token, bool esResumen) async {
   String endPoint = kRecepcionEcfEndPoint;
-  double monto = double.parse(montoTotal);
 
-  if (ecfType == EcfType.e32 && monto < 250000.00) {
+  if (esResumen) {
     endPoint = kRecepcionFcEcfEndPoint;
   }
-  final uri = GeneratorEndPoint.getEndPoint(endPoint, ecfType: ecfType);
+
+  final uri = GeneratorEndPoint.getEndPoint(endPoint, esResumen: esResumen);
+
   try {
     final request = http.MultipartRequest('POST', uri)
       ..headers['accept'] = 'application/json'
@@ -93,7 +94,8 @@ Future<Map<String, dynamic>> sendEcfSign(
   }
 }
 
-Future<Map<String, dynamic>> getEcfStatus(String trackId, String token) async {
+Future<Map<String, dynamic>> obtenerEcfEstado(
+    String trackId, String token) async {
   final uri =
       GeneratorEndPoint.getEndPoint('$kTrackIdEcfEndPoint?trackId=$trackId');
   try {
@@ -119,7 +121,7 @@ Future<Map<String, dynamic>> getEcfStatus(String trackId, String token) async {
   }
 }
 
-Future<Map<String, String>> sendAprobacionComercial(
+Future<Map<String, dynamic>> enviarAprobacionComercial(
     File file, String token) async {
   final uri = GeneratorEndPoint.getEndPoint(kAprobacionEcfEndPoint);
   try {

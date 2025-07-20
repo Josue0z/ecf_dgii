@@ -5,21 +5,21 @@ class GeneratorEndPoint {
   static String envName = 'testecf';
   GeneratorEndPoint._();
 
-  static Uri getEndPoint(String endPointName, {EcfType ecfType = EcfType.e31}) {
+  static Uri getEndPoint(String endPointName, {bool esResumen = false}) {
     String baseUrl = kBaseEcfUrl;
 
-    if (ecfType == EcfType.e32) {
+    if (esResumen) {
       baseUrl = kBaseUrlFc;
     }
 
     if (envEcfType == EnvEcfType.testEcf) {
-      envName = 'testecf';
+      envName = 'TesteCF';
     }
     if (envEcfType == EnvEcfType.cert) {
-      envName = 'certecf';
+      envName = 'CerteCF';
     }
     if (envEcfType == EnvEcfType.ecf) {
-      envName = 'ecf';
+      envName = 'Ecf';
     }
 
     return Uri.parse('$baseUrl/$envName$endPointName');

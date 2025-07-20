@@ -6,110 +6,144 @@ import 'package:path/path.dart' as path;
 
 void main() async {
   try {
+    GeneratorEndPoint.envEcfType = EnvEcfType.cert;
     final cert = File(path.join(dirProject.path, 'certificado.p12'));
+    final password = 'INES1037';
 
-    String password = 'INES1037';
+    final authModel = await getAuthP12(cert: cert, password: password);
+    final dateFormat = DateFormat('dd-MM-yyyy HH:mm:ss');
 
-    AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
-
-    final now = DateTime.now();
-    final fechaEmision = DateFormat('dd-MM-yyyy').format(now);
-
-    List<EcfDetailsModel> items = [
-      EcfDetailsModel(
-          cantidad: '12.00',
-          indicadorFacturacion: '4',
-          indicadorBienOServ: '2',
-          unidadMedida: '43',
-          descripcion: 'Gasto personal en comida (kiosko)',
-          descripcionItem: '',
-          precioUnitario: '330.00',
-          montoItem: '3960.00',
-          impuestosAdicionales: []),
+    final List<List<String>> datos = [
+      [
+        '131880681',
+        'E310000000003',
+        '01-04-2020',
+        '154003.47',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E310000000007',
+        '01-04-2020',
+        '228460.5',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E310000000009',
+        '01-04-2020',
+        '41450',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E310000000012',
+        '01-04-2020',
+        '45253',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E330000000001',
+        '02-04-2020',
+        '400000',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E340000000013',
+        '02-04-2020',
+        '917095',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E340000000015',
+        '02-04-2020',
+        '0',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E440000000008',
+        '01-04-2020',
+        '432000',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880681',
+        'E440000000013',
+        '01-04-2020',
+        '917095',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
+      [
+        '131880657',
+        'E450000000001',
+        '01-04-2020',
+        '35400',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ], // ⚠️ No autorizado
+      [
+        '131880681',
+        'E450000000011',
+        '01-04-2020',
+        '96657.8',
+        '101675489',
+        '20-07-2025 09:17:42'
+      ],
     ];
 
-    EcfModel ecf = EcfModel(
-        tipoEcf: EcfType.e43,
-        numeroComprobante: 'E430000000002',
-        codigoModificacion: '',
-        fechaEmision: fechaEmision,
-        fechaVencimiento: '31-12-2025',
-        fechaEmisionNcfModificado: '',
-        razonModificacion:
-            'ANULACION DEL ENCF31 CON SECUENCIA QUE FINALIZA EN 61',
-        tipoIngreso: '',
-        tipoPago: '',
-        formasDePagos: [],
-        sucursal: '',
-        direccionEmisor:
-            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
-        municipio: '010100',
-        provincia: '010000',
-        telefonoEmisor1: '809-472-7676',
-        telefonoEmisor2: '809-491-1918',
-        telefonoEmisor3: '',
-        totalPaginas: '',
-        rncEmisor: '101675489',
-        razonSocialEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
-        nombreComercial: 'DOCUMENTOS ELECTRONICOS DE 02',
-        correoEmisor:
-            'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
-        website: 'www.facturaelectronica.com',
-        actividadEconomica: '',
-        codigoVendedor: '',
-        informacionAdicionalEmisor: '',
-        rncComprador: '',
-        razonSocialComprador: '',
-        nombreComprador: '',
-        contactoComprador: '',
-        correoComprador: '',
-        telefonoAdicional: '',
-        direccionComprador: '',
-        municipioComprador: '010100',
-        provinciaComprador: '010000',
-        codigoInternoComprador: '',
-        fechaEntrega: '',
-        fechaOrdenCompra: '',
-        numeroOrdenCompra: '',
-        numeroFacturaInterna: '',
-        numeroPedidoInterno: '',
-        zonaVenta: '',
-        rutaVenta: '',
-        indicadorMontoGravado: '',
-        totalGravado: '',
-        totalGravado18: '',
-        totalGravado16: '',
-        montoExento: '3960.00',
-        totalItbis: '',
-        totalItbis18: '',
-        totalItbis16: '',
-        itbis1: '',
-        itbis2: '',
-        itbis3: '',
-        montoTotal: '3960.00',
-        montoAvancePago: '',
-        valorPagar: '',
-        totalItbisRetencion: '',
-        totalIsrRetencion: '',
-        porcentajeRetencionIsr: '',
-        baseImponibleIsr: '',
-        porcentajeRetencionItbis: '',
-        baseImponibleItbis: '',
-        montoImpuestoAdicional: '',
-        impuestosAdicionales: [],
-        terminoPago: '',
-        bancoPago: '',
-        paginas: [],
-        items: items,
-        privateKey: authModel.privateKey,
-        certBase64: authModel.certBase64);
+    for (var fila in datos) {
+      final rncEmisor = fila[0];
+      final encf = fila[1];
+      final fechaEmision = fila[2];
+      final montoTotal = fila[3];
+      final rncComprador = fila[4];
+      final fechaHoraAprobacionComercial = fila[5];
 
-    await ecf.downloadEcfSeed();
-    await ecf.validarSign();
-    await ecf.signer();
-    await ecf.sendEcfSigned();
-    print(ecf.uriEcf);
+      if (rncEmisor != '131880681') {
+        print('🚫 Omitiendo $encf — RNC no autorizado en tu modelo');
+        continue;
+      }
+
+      final aprobacion = AprobacionComercial(
+        rncEmisor: rncEmisor,
+        numeroComprobante: encf,
+        fechaEmision: fechaEmision,
+        montoTotal: montoTotal,
+        rncComprador: rncComprador,
+        fechaHoraAprobacionComercial:
+            fechaHoraAprobacionComercial, // ✔️ Fecha fija del set
+        estado: '1',
+        detalleMotivoRechazo: '',
+        rsaPrivateKey: authModel.privateKey,
+        certBase64: authModel.certBase64,
+      );
+
+      try {
+        print('⏳ Procesando $encf...');
+        await aprobacion.descargarSemilla();
+        await aprobacion.validarSemilla();
+        await aprobacion.enviarAprobacionComercialEcf();
+        print('✅ Aprobación enviada: $encf');
+      } catch (e) {
+        print('⚠️ Error en $encf: $e');
+      }
+
+      await Future.delayed(Duration(seconds: 3));
+    }
   } catch (e) {
-    print('⚠️ Error: $e');
+    print('⚠️ Error general: $e');
   }
 }
