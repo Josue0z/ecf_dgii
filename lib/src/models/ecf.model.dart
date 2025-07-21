@@ -10,11 +10,21 @@ import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+/// Creando [OtraMonedaDetalle]
 class OtraMonedaDetalle {
+  /// Precio [OtraMonedaDetalle]
   String precioOtraMoneda;
+
+  /// Descuento [OtraMonedaDetalle]
   String descuentoOtraMoneda;
+
+  /// Recargos [OtraMonedaDetalle]
   String recargoOtraMoneda;
+
+  /// Monto [OtraMonedaDetalle]
   String montoItemOtraMoneda;
+
+  /// Inicio [OtraMonedaDetalle]
   OtraMonedaDetalle(
       {required this.precioOtraMoneda,
       required this.descuentoOtraMoneda,
@@ -27,10 +37,18 @@ class OtraMonedaDetalle {
   }
 }
 
+/// Creando [SubDescuento]
 class SubDescuento {
+  /// Tipo de [SubDescuento]
   String tipoSubDescuento;
+
+  /// [SubDescuento] Porcentaje
   String subDescuentoPorcentaje;
+
+  /// Monto [SubDescuento]
   String montoSubDescuento;
+
+  /// Inicio de un [SubDescuento]
   SubDescuento(
       {required this.tipoSubDescuento,
       required this.subDescuentoPorcentaje,
@@ -42,6 +60,8 @@ class SubDescuento {
         'SubDescuento(tipoSubDescuento: $tipoSubDescuento, subDescuentoPorcentaje: $subDescuentoPorcentaje, montoSubDescuento: $montoSubDescuento)';
   }
 
+  /// Creando [Map] desde un [SubDescuento]
+
   toMap() {
     return {
       'tipoSubDescuento': tipoSubDescuento,
@@ -51,10 +71,18 @@ class SubDescuento {
   }
 }
 
+/// Creando [SubRecargo]
 class SubRecargo {
+  /// Tipo SubRecargo
   String tipoSubRecargo;
+
+  /// SubRecargo Porcentaje
   String subRecargoPorcentaje;
+
+  /// Monto SubRecargo
   String montoSubRecargo;
+
+  /// Inicio del [SubRecargo]
   SubRecargo(
       {required this.tipoSubRecargo,
       required this.subRecargoPorcentaje,
@@ -66,6 +94,8 @@ class SubRecargo {
         'SubRecargo(tipoSubRecargo: $tipoSubRecargo, subRecargoPorcentaje: $subRecargoPorcentaje, montoSubRecargo: $montoSubRecargo)''';
   }
 
+  /// Creando [Map] desde un [SubRecargo]
+
   toMap() {
     return {
       'tipoSubRecargo': tipoSubRecargo,
@@ -75,29 +105,72 @@ class SubRecargo {
   }
 }
 
+/// Creando [FormaDePago]
 class FormaDePago {
+  /// Tipo de forma de pago
   final String codigo;
+
+  /// Monto del Pago
   final String monto;
 
+  /// Inicio [FormaDePago]
+
   FormaDePago(this.codigo, this.monto);
+
+  @override
+  toString() {
+    return 'FormaDePago(codigo: $codigo, monto: $monto)';
+  }
 }
 
+/// Creando [Pagina]
 class Pagina {
+  /// Num de Linea desde
   String noLineaDesde;
+
+  /// Num de linea hasta
   String noLineaHasta;
+
+  /// Subtotal Monto Gravado Pagina
   String subtotalMontoGravadoPagina;
+
+  /// Subtotal Monto Gravado1 Pagina
   String subtotalMontoGravado1Pagina;
+
+  /// Subtotal Monto Gravado2 Pagina
   String subtotalMontoGravado2Pagina;
+
+  /// Subtotal MontoGravado3 Pagina
   String subtotalMontoGravado3Pagina;
+
+  /// Subtotal Exento Pagina
   String subtotalExentoPagina;
+
+  /// Subtotal Itbis Pagina
   String subtotalItbisPagina;
+
+  /// Subtotal Itbis1 Pagina
   String subtotalItbis1Pagina;
+
+  /// Subtotal Itbis2 Pagina
   String subtotalItbis2Pagina;
+
+  /// Subtotal Itbis3 Pagina
   String subtotalItbis3Pagina;
+
+  /// Subtotal [ImpuestoAdicional] Pagina
   String subtotalImpuestoAdicionalPagina;
+
+  /// Subtotal Impuesto Selectivo al Consumo Especifico de la Pagina
   String subtotalImpuestoSelectivoConsumoEspecificoPagina;
+
+  /// Subtotal Otros Impuestos
   String subtotalOtrosImpuesto;
+
+  /// Monto Subtotal Pagina
   String montoSubtotalPagina;
+
+  /// Inicio [Pagina]
   Pagina(
       {required this.noLineaDesde,
       required this.noLineaHasta,
@@ -121,9 +194,15 @@ class Pagina {
   }
 }
 
+/// Creando [TipoCodigo]
 class TipoCodigo {
+  /// Tipo de codigo de un [EcfDetailsModel]
   String? tipoCodigo;
+
+  /// Codigo Item de un [EcfDetailsModel]
   String? codigoItem;
+
+  /// Inicio de un [TipoCodigo]
   TipoCodigo({this.tipoCodigo, this.codigoItem});
 
   @override
@@ -131,6 +210,8 @@ class TipoCodigo {
     return '''
         'TipoCodigo(tipoCodigo: $tipoCodigo, codigoItem: $codigoItem)''';
   }
+
+  /// Creando [Map] de un [TipoCodigo]
 
   toMap() {
     return {
@@ -140,19 +221,34 @@ class TipoCodigo {
   }
 }
 
+/// Creando [ImpuestoAdicional]
 class ImpuestoAdicional {
+  /// Tipo de Impuesto
   String? tipoImpuesto;
+
+  /// Tasa de Impuesto Adicional
   String? tasaImpuestoAdicional;
+
+  /// Monto Impuestos Selectivo al consumo Especifico
   String? montoImpuestoSelectivoConsumoEspecifico;
+
+  /// Monto Impuesto selectivo al consumo
   String? montoImpuestoSelectivoConsumoAdvalorem;
+
+  /// Otros impuestos adicionales
   String? otrosImpuestosAdicionales;
+
+  /// Inicio de [ImpuestoAdicional]
   ImpuestoAdicional(
       {this.tipoImpuesto,
       this.tasaImpuestoAdicional,
       this.montoImpuestoSelectivoConsumoEspecifico = '',
       this.otrosImpuestosAdicionales = '',
       this.montoImpuestoSelectivoConsumoAdvalorem = ''});
-  toMap() {
+
+  /// Generando [Map] de un [ImpuestoAdicional]
+
+  Map<String, dynamic> toMap() {
     return {
       'tipoImpuesto': tipoImpuesto,
       'tasaImpuestoAdicional': tasaImpuestoAdicional,
@@ -165,10 +261,18 @@ class ImpuestoAdicional {
   }
 }
 
+/// Creando [Retencion]
 class Retencion {
+  /// Indicador Agente Retencion Percepcion del objeto [Retencion]
   String indicadorAgenteRetencionoPercepcion;
+
+  /// Monto Itbis Retenido del objeto [Retencion]
   String montoITBISRetenido;
+
+  /// Monto Isr Retenido del objeto [Retencion]
   String montoISRRetenido;
+
+  /// Inicio [Retencion]
   Retencion(
       {required this.indicadorAgenteRetencionoPercepcion,
       required this.montoITBISRetenido,
@@ -180,258 +284,485 @@ class Retencion {
   }
 }
 
+/// Creando [EcfModel]
+
 class EcfModel {
+  /// Tipo de [EcfModel] en formato [EcfType]
   EcfType tipoEcf;
+
+  /// Rnc del Emisor del objeto [EcfModel]
 
   String rncEmisor;
 
+  /// Razon social del Emisor del objeto [EcfModel]
+
   String razonSocialEmisor;
+
+  /// Nombre del comercial
 
   String nombreComercial;
 
+  /// Rnc del comprador
+
   String rncComprador;
+
+  /// Identificador extranjero del comprador
 
   String identificadorExtranjero;
 
+  /// Razon social del comprador
+
   String razonSocialComprador;
+
+  /// Nombre de comprador
 
   String nombreComprador;
 
+  /// Fecha de emision del objeto [EcfModel]
+
   String fechaEmision;
+
+  /// Numero de comprobante del objeto [EcfModel]
 
   String numeroComprobante;
 
+  /// Monto Total del objeto [EcfModel]
+
   String montoTotal;
+
+  /// Monto no facturable del [EcfModel]
 
   String montoNoFacturable;
 
+  /// Total Itbis Gravado
+
   String totalItbis;
+
+  /// Total Itbis Gravado tasa 18
 
   String totalItbis18;
 
+  /// Total Itbis Gravado tasa 16
+
   String totalItbis16;
+
+  /// Total Itbis Gravado Tasa 0
 
   String totalItbisTasa0;
 
+  /// Monto Impuesto Adicional Total del Objeto [EcfModel]
+
   String montoImpuestoAdicional;
+
+  /// Lista [ImpuestoAdicional] del objeto [EcfModel]
 
   List<ImpuestoAdicional> impuestosAdicionales;
 
+  /// Total Gravado del [EcfModel]
+
   String totalGravado;
+
+  /// Total Gravado tasa 18 del [EcfModel]
 
   String totalGravado18;
 
+  /// Total Gravado tasa 16 del [EcfModel]
+
   String totalGravado16;
+
+  /// Total Gravado tasa 0 del [EcfModel]
 
   String totalGravadoTasa0;
 
+  /// Itbis etiqueta tasa 18 de la DGII
+
   String itbis1;
+
+  /// Itbis etiqueta tasa 16 de la DGII
 
   String itbis2;
 
+  /// Itbis etiqueta Tasa 0 de la DGII
+
   String itbis3;
+
+  /// Monto Exento del [EcfModel]
 
   String montoExento;
 
+  /// Codigo de seguridad del [EcfModel] en formato [String]
+
   String codigoSeguridad = '';
+
+  /// Archivo Ecf en formato [File]
 
   File? ecfXml;
 
+  /// LLave privada del certificado
+
   String privateKey;
+
+  /// Certificado en base64
 
   String certBase64;
 
+  /// Archivo de semilla de la DGII en formato [File]
+
   File? seedFile;
+
+  /// Semilla de la DGII en formato [String]
 
   String seedXml = '';
 
+  /// Archivo de semilla firmado en formato [File]
+
   File? seedSignFile;
+
+  /// Semilla firmada en formato [String]
 
   String seedSignXml = '';
 
+  /// Archivo Ecf firmado en formato [File]
+
   File? ecfFile;
+
+  /// Ecf firmado en formato [String]
 
   String ecfSignXml = '';
 
+  /// Lista [EcfDetailsModel]
+
   List<EcfDetailsModel> items = [];
+
+  /// Servicio de firmado del objeto [EcfModel]
 
   late XmlSignerService signerService;
 
+  /// Datos en formato [Map] del objeto token de la DGII
+
   Map<String, dynamic>? json;
+
+  /// Tipo de ingreso
 
   String tipoIngreso;
 
+  /// Tipo de pago
+
   String tipoPago;
+
+  /// Indicador Monto Gravado
 
   String indicadorMontoGravado;
 
+  /// Fecha de Vencimiento
+
   String fechaVencimiento;
+
+  /// Direccion del Emisor
 
   String direccionEmisor;
 
+  /// Sucursal del Emisor
+
   String sucursal;
+
+  /// Municipio del Emisor
 
   String municipio;
 
+  /// Provincia del Emisor
+
   String provincia;
+
+  /// Telefono Emisor 1
 
   String telefonoEmisor1;
 
+  /// Telefono Emisor 2
+
   String telefonoEmisor2;
+
+  /// Telefono Emisor 3
 
   String telefonoEmisor3;
 
+  /// Correo Emisor
+
   String correoEmisor;
+
+  /// Website URL del emisor en formato [String]
 
   String website;
 
+  /// Codigo Vendedor
+
   String codigoVendedor;
+
+  /// Numero de Factura Interno
 
   String numeroFacturaInterna;
 
+  /// Numero de Pedido Interno
+
   String numeroPedidoInterno;
+
+  /// Zona de venta
 
   String zonaVenta;
 
+  /// Informacion adicional del emisor
+
   String informacionAdicionalEmisor;
+
+  /// Contacto del comprador
 
   String contactoComprador;
 
+  /// Correo del comprador
+
   String correoComprador;
+
+  /// Telefono Adicional del comprador
 
   String telefonoAdicional;
 
+  /// Direccion del comprador
+
   String direccionComprador;
+
+  /// Municipio del comprador
 
   String municipioComprador;
 
+  /// Provincia del comprador
+
   String provinciaComprador;
+
+  /// Fecha de entrega
 
   String fechaEntrega;
 
+  /// Fecha de orden de compra
+
   String fechaOrdenCompra;
+
+  /// Numero de orden de compra
 
   String numeroOrdenCompra;
 
+  /// Codigo interno del comprador
+
   String codigoInternoComprador;
+
+  /// Fecha de embarque
 
   String fechaEmbarque;
 
+  /// Numero de embarque
+
   String numeroEmbarque;
+
+  /// Numero de contenedor
 
   String numeroContenedor;
 
+  /// Numero de Referencia
+
   String numeroReferencia;
+
+  /// Nombre de puerto de embarque
 
   String nombrePuertoEmbarque;
 
+  /// Condiciones de entrega
+
   String condicionesEntrega;
+
+  /// Pais destino
 
   String paisDestino;
 
+  /// Nombre de Conductor
+
   String conductor;
+
+  /// Documento de Transporte
 
   String documentoTransporte;
 
+  /// Ficha
+
   String ficha;
+
+  /// Placa de vehiculo
 
   String placa;
 
+  /// Ruta de Transporte
+
   String rutaTransporte;
+
+  /// Zona de Transporte
 
   String zonaTransporte;
 
+  /// Numero albaran
+
   String numeroAlbaran;
+
+  /// Actividad Economica en formato [String]
 
   String actividadEconomica;
 
+  /// Total Itbis Retencion del objeto [EcfModel]
+
   String totalItbisRetencion;
+
+  /// Total Isr Retencion del objeto [EcfModel]
 
   String totalIsrRetencion;
 
+  /// Lista [FormaDePago] del objeto [EcfModel]
+
   List<FormaDePago> formasDePagos;
+
+  /// Termino de pago del [EcfModel]
 
   String terminoPago = '4';
 
+  /// Banco Pago
+
   String bancoPago;
+
+  /// Lista [Pagina] del objeto [EcfModel]
 
   List<Pagina> paginas;
 
+  /// Rnc otro contribuyente
+
   String rncOtroContribuyente;
+
+  /// Numero de comprobante modificado en formato [String]
 
   String? numeroComprobanteModificado;
 
+  /// Fecha de Emision Ncf Modificado
+
   String? fechaEmisionNcfModificado;
+
+  /// Una Razon por que se da la modificacion en formato [String]
 
   String? razonModificacion;
 
+  /// Codigo de Modificacion de la nota de credito
+
   String? codigoModificacion;
+
+  /// Indicador de nota de credito del objeto [EcfModel] debes pasar esto cuando emitas notas de credito
 
   String? indicadorNotaCredito;
 
+  /// Total de paginas
+
   String? totalPaginas;
+
+  /// Monto Facturado en el periodo
 
   String? montoPeriodo;
 
+  /// Monto Avance de Pago
+
   String montoAvancePago;
+
+  /// Valor a Pagar
 
   String valorPagar;
 
+  /// Tipo Moneda del objeto [EcfModel]
+
   String tipoMoneda;
+
+  /// Tipo de cambio del objeto [EcfModel]
 
   String tipoCambio;
 
+  /// Monto Gravado Total en otra moneda
+
   String montoGravadoTotalOtraMoneda;
+
+  /// Monto Gravado Total en tasa 18 en otra moneda
 
   String montoGravadoTotalOtraMoneda1;
 
+  /// Monto Gravado Total en tasa 16 en otra moneda
+
   String montoGravadoTotalOtraMoneda2;
+
+  /// Monto Gravado Total en tasa 0 en otra moneda
 
   String montoGravadoTotalOtraMoneda3;
 
+  /// Monto Exento en otra moneda
+
   String montoExentoOtraMoneda;
+
+  /// Total Itbis en otra moneda resultante de la suma
 
   String totalItbisOtraMoneda;
 
+  /// Total Itbis en tasa 18 en otra moneda
+
   String totalItbis1OtraMoneda;
+
+  /// Total Itbis en tasa 16 en otra moneda
 
   String totalItbis2OtraMoneda;
 
+  /// Total Itbis en tasa 0 en otra moneda
+
   String totalItbis3OtraMoneda;
+
+  /// Monto Total en otra moneda
 
   String montoTotalOtraMoneda;
 
+  /// Saldo Anterior
+
   String? saldoAnterior;
+
+  /// Ruta de venta
 
   String? rutaVenta;
 
-  File? xmlAprobacionFile;
-
-  String? xmlAprobacionSign = '';
+  /// Token de la DGII en formato [String]
 
   String token = '';
 
+  /// TrackId del [EcfModel]
+
   String trackId = '';
+
+  /// Fecha y Hora de la firma
 
   String fechaHoraFirma = '';
 
+  /// Fecha de la firma
+
   String fechaFirma = '';
+
+  /// [XmlSignerModel] objeto resultante de firmar el XML
 
   XmlSignerModel? xmlSignerModel;
 
-  bool habilitarNormale32;
+  /// Nombre de directorio de datos del objeto [EcfModel]
 
   String tempDirName;
-
-  String fechaHoraAprobacionComercial;
 
   /// Inicio de [EcfModel]
 
   EcfModel(
       {this.tipoEcf = EcfType.e31,
       this.tempDirName = 'temp',
-      this.fechaHoraAprobacionComercial = '',
-      this.habilitarNormale32 = false,
       this.rncEmisor = '',
       this.razonSocialEmisor = '',
       this.nombreComercial = '',
@@ -1201,42 +1532,82 @@ EcfModel(
   }
 }
 
+/// Creando objeto [EcfDetailsModel]
+
 class EcfDetailsModel {
+  /// Cantidad de [EcfDetailsModel]
+
   String cantidad;
+
+  /// Lista [TipoCodigo] del objeto [EcfDetailsModel]
 
   List<TipoCodigo> codigos;
 
+  /// Nombre Item del objeto [EcfDetailsModel]
+
   String nombreItem;
+
+  /// Indicador de bien o servicio del objeto [EcfDetailsModel]
 
   String indicadorBienOServ;
 
+  /// Indicador de facturacion del objeto [EcfDetailsModel]
+
   String indicadorFacturacion;
+
+  /// Unidad de Medida del objeto [EcfDetailsModel]
 
   String unidadMedida;
 
+  /// Unidad de Referencia del objeto [EcfDetailsModel]
+
   String unidadReferencia;
+
+  /// Precio Unitario de Referencia del objeto [EcfDetailsModel]
 
   String precioUnitarioReferencia;
 
+  /// Precio Unitario del objeto [EcfDetailsModel]
+
   String precioUnitario;
+
+  /// Monto Item del objeto [EcfDetailsModel]
 
   String montoItem;
 
+  /// Descuento Monto del objeto [EcfDetailsModel]
+
   String descuentoMonto;
+
+  /// Recargo Monto del objeto [EcfDetailsModel]
 
   String recargoMonto;
 
+  /// Lista [SubDescuento] del objeto [EcfDetailsModel]
+
   List<SubDescuento> subDescuentos = [];
+
+  /// Lista [SubRecargo] del objeto [EcfDetailsModel]
 
   List<SubRecargo> subRecargos = [];
 
+  /// Lista [ImpuestoAdicional] del objeto [EcfDetailsModel]
+
   List<ImpuestoAdicional> impuestosAdicionales;
+
+  /// Lista [OtraMonedaDetalle] del objeto [EcfDetailsModel]
 
   List<OtraMonedaDetalle> otraMonedaDetalles;
 
+  /// Objeto [Retencion] del objeto [EcfDetailsModel]
+
   Retencion? retencion;
 
+  /// Descripcion de item [EcfDetailsModel]
+
   String descripcionItem;
+
+  /// Inicio de [EcfDetailsModel]
 
   EcfDetailsModel(
       {required this.cantidad,
@@ -1257,6 +1628,8 @@ class EcfDetailsModel {
       this.retencion,
       this.impuestosAdicionales = const [],
       this.otraMonedaDetalles = const []});
+
+  /// Generar map de un [EcfDetailsModel]
 
   Map<String, dynamic> toMap() {
     return {
@@ -1281,33 +1654,77 @@ class EcfDetailsModel {
   }
 }
 
+/// Creando Objeto [AprobacionComercial]
+
 class AprobacionComercial {
+  /// Rnc Emisor de la [AprobacionComercial]
   String rncEmisor;
+
+  /// Numero de comprobante de la [AprobacionComercial]
+
   String numeroComprobante;
+
+  /// Rnc Comprador de la [AprobacionComercial]
+
   String rncComprador;
+
+  /// Monto Total de la [AprobacionComercial]
+
   String montoTotal;
+
+  /// Estado de la [AprobacionComercial]
+
   String estado;
+
+  /// Detalle o Motivo de Rechazo de la [AprobacionComercial] en formato [String]
+
   String detalleMotivoRechazo;
+
+  /// Fecha de Emision de [AprobacionComercial]
   String fechaEmision;
+
+  /// Fecha y Hora de [AprobacionComercial]
+
   String fechaHoraAprobacionComercial;
+
+  /// Clave privada en formato [String]
   String rsaPrivateKey;
+
+  /// Certificado en formato [String]
   String certBase64;
 
+  /// Nombre de Directorio de guardado de datos
   String tempDirName;
+
+  /// Archivo xml de [AprobacionComercial]
 
   File? xmlAprobacionFile;
 
+  /// Token de la DGII obtenido en formato [String]
+
   String token = '';
+
+  /// Archivo de semilla original
 
   File? seedFile;
 
+  /// Semilla en formato [String]
+
   String seedXml = '';
+
+  /// Archivo de semilla firmada
 
   File? seedSignFile;
 
+  /// Semilla firmada en formato [String]
+
   String seedSignXml = '';
 
+  /// Datos Map de la DGII que contienen el objeto Token y fecha de expiracion en formato [Map]
+
   Map<String, dynamic>? jsonData;
+
+  /// Servicio de firmado
 
   late XmlSignerService signerService;
 
@@ -1483,7 +1900,10 @@ class AprobacionComercial {
   }
 }
 
+/// Creando [EcfPdfExtension] del objeto [EcfModel]
+
 extension EcfPdfExtension on EcfModel {
+  /// Generar factura del objeto [EcfModel] en formato pdf
   Future<pw.Document> generarPdfFactura() async {
     final doc = pw.Document();
 

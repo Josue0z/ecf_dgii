@@ -6,8 +6,8 @@ import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
-//import 'package:path_provider/path_provider.dart';
 
+/// Descargar semilla original de la DGII
 Future<File> descargarSemillaDgii(String dirName) async {
   var dir = Directory(dirProject.path);
   Uri uri = GeneratorEndPoint.getEndPoint(kSemillaEndPoint);
@@ -29,6 +29,8 @@ Future<File> descargarSemillaDgii(String dirName) async {
     throw 'Error al obtener la semilla: ${response.statusCode}';
   }
 }
+
+/// Validar semilla firmada de la DGII
 
 FutureOr<Map<String, dynamic>?> validarSemillaFirmada(File xmlSign) async {
   final uri = GeneratorEndPoint.getEndPoint(kValidarSemillaEndPoint);
@@ -57,6 +59,7 @@ FutureOr<Map<String, dynamic>?> validarSemillaFirmada(File xmlSign) async {
   }
 }
 
+/// Enviar [EcfModel] firmado a la DGII
 Future<Map<String, dynamic>> enviarEcfFirmado(
     File xmlSign, EcfType ecfType, String token, bool esResumen) async {
   String endPoint = kRecepcionEcfEndPoint;
@@ -94,6 +97,8 @@ Future<Map<String, dynamic>> enviarEcfFirmado(
   }
 }
 
+/// Obtener estado del [EcfModel]
+
 Future<Map<String, dynamic>> obtenerEcfEstado(
     String trackId, String token) async {
   final uri =
@@ -121,6 +126,7 @@ Future<Map<String, dynamic>> obtenerEcfEstado(
   }
 }
 
+/// Enviar [AprobacionComercial] a la DGII
 Future<Map<String, dynamic>> enviarAprobacionComercial(
     File file, String token) async {
   final uri = GeneratorEndPoint.getEndPoint(kAprobacionEcfEndPoint);

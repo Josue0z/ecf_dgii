@@ -1,3 +1,4 @@
 import 'dart:io';
 
-final dirProject = Directory.current;
+/// Directorio de proyecto
+var dirProject = Directory.current;

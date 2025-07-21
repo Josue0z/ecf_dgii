@@ -7,10 +7,18 @@ import 'package:xml/xml.dart';
 import 'package:xml_crypto/xml_crypto.dart';
 import 'package:path/path.dart' as path;
 
+/// Creacion de un [XmlSignerModel]
 class XmlSignerModel {
+  /// XmlData en formato [String]
   final String xmlStr;
+
+  /// Xml Archivo en formato [File]
   final File xmlFile;
+
+  /// Codigo de seguridad del [EcfModel] en formato [String]
   final String codigoSeguridad;
+
+  /// Inicio de un [XmlSignerModel]
 
   XmlSignerModel({
     required this.xmlStr,
@@ -19,9 +27,16 @@ class XmlSignerModel {
   });
 }
 
+/// Creacion de un [X509KeyInfoProvider]
+
 class X509KeyInfoProvider implements KeyInfoProvider {
+  /// Certificado publico en formato [String]
   final String certBase64;
+
+  /// Clave privada en formato [String]
   final String key;
+
+  /// Inicio de un [X509KeyInfoProvider]
   X509KeyInfoProvider(this.certBase64, this.key);
 
   @override
@@ -45,6 +60,7 @@ class X509KeyInfoProvider implements KeyInfoProvider {
   Map<String, dynamic>? get attrs => {};
 }
 
+/// Cargar clave privada
 Uint8List loadPrivateKeyDer(String pem) {
   final cleaned = pem
       .replaceAll('-----BEGIN PRIVATE KEY-----', '')
@@ -54,18 +70,28 @@ Uint8List loadPrivateKeyDer(String pem) {
   return utf8.encode(cleaned); // ✅ esto sí devuelve Uint8List válido
 }
 
+/// Remover declaracion xml inicial
 String removeXmlDeclaration(String xml) {
   return xml.replaceFirst(RegExp(r'^<\?xml.*?\?>\s*'), '');
 }
 
+/// Escape de datos del xml
 String escapeXmlEntities(String input) {
   return input.replaceAll('&', '&amp;');
 }
 
+/// Creacion de un [XmlSignerService]
 class XmlSignerService {
+  /// Clave privada
   String rsaPrivateKey;
+
+  /// Certificado publico
   String certBase64;
+
+  /// Inicio de un [XmlSignerService]
   XmlSignerService({required this.rsaPrivateKey, required this.certBase64});
+
+  /// Firmar xml
 
   Future<XmlSignerModel> firmarXml(String xmlOriginal, File outFile) async {
     var sanitizedXml = escapeXmlEntities(xmlOriginal);
@@ -108,11 +134,13 @@ class XmlSignerService {
   }
 }
 
+/// Obtener codigo de seguridad desde la firma del xml
 String obtenerCodigoSeguridad(String signatureValueBase64) {
   // Just take the first 6 characters (not only digits)
   return signatureValueBase64.substring(0, 6);
 }
 
+/// Verificar valor digest
 Future<void> verificarDigestCorrecto({
   required String canonicalXmlOriginal,
   required String signedXmlFinal,
@@ -142,11 +170,13 @@ Future<void> verificarDigestCorrecto({
   }
 }
 
+/// Calcular Digest Value
 Future<String> calcularDigest(String xml) async {
   final sha256Digest = sha256.convert(utf8.encode(xml));
   return base64.encode(sha256Digest.bytes);
 }
 
+/// Aplicar C14 al xml
 Future<String> canonicalXml(String xmlText) async {
   final process = await Process.start('xmllint', ['--c14n', '-']);
 

@@ -1,12 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 
+/// Creacion de un [AuthCertModel]
 class AuthCertModel {
+  /// Clave Privada
   String privateKey;
+
+  /// Certificado Publico
   String certBase64;
+
+  /// Inicio de un [AuthCertModel]
   AuthCertModel({required this.privateKey, required this.certBase64});
 }
 
+/// Extraer primer cert
 String? extraerPrimerCert(String fullPem) {
   final regex = RegExp(
     r'-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----',
@@ -16,6 +23,7 @@ String? extraerPrimerCert(String fullPem) {
   return match?.group(0)!.trim();
 }
 
+/// Autenticar certificado y retornar un [AuthCertModel]
 Future<AuthCertModel> getAuthP12(
     {required File cert, required String password}) async {
   var resultCerts =
@@ -31,6 +39,7 @@ Future<AuthCertModel> getAuthP12(
   return AuthCertModel(privateKey: privateKeyPem!, certBase64: certBase64);
 }
 
+/// Extrear certificado
 Future<List<String>?> extraerCertYKeyComoString({
   required String p12Path,
   required String password,
