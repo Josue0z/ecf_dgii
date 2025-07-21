@@ -425,6 +425,8 @@ class EcfModel {
 
   String fechaHoraAprobacionComercial;
 
+  /// Inicio de [EcfModel]
+
   EcfModel(
       {this.tipoEcf = EcfType.e31,
       this.tempDirName = 'temp',
@@ -538,10 +540,14 @@ class EcfModel {
         XmlSignerService(rsaPrivateKey: privateKey, certBase64: certBase64);
   }
 
+  /// Determinar si es una factura de consumo menor a 250k
+
   bool get esResumenE32 {
     double monto = double.parse(montoTotal);
     return tipoEcf == EcfType.e32 && monto < 250000.00;
   }
+
+  /// Obtener [EcfModel] esquema desde una [Uri]
 
   String get ecfXsdFile {
     if (tipoEcf == EcfType.e31) {
@@ -582,6 +588,8 @@ class EcfModel {
     }
     return '';
   }
+
+  /// Obtener tipo de [EcfModel]
 
   String get tipo {
     if (tipoEcf == EcfType.e31) {
@@ -626,9 +634,13 @@ class EcfModel {
     return '31';
   }
 
+  /// Obtener [EcfModel] xml en formato [String]
+
   String get xml {
     return xmlDefault;
   }
+
+  /// Generar representacion de un [EcfModel] segun el modelo de la DGII
 
   String get xmlDefault {
     return '''
@@ -918,6 +930,8 @@ class EcfModel {
    ''';
   }
 
+  /// Generar representacion de un RFCE (Factura de Consumo menor a 250k)
+
   String get xmle32 {
     return '''
 <RFCE xsi:noNamespaceSchemaLocation="$ecfXsdFile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -978,6 +992,8 @@ class EcfModel {
    ''';
   }
 
+  /// Generar [Uri] de la DGII
+
   Uri get uriEcf {
     String consultaTimbre = kConsultaTimbre;
 
@@ -1022,6 +1038,8 @@ class EcfModel {
     return uri;
   }
 
+  /// Descargar semilla DGII
+
   Future<void> descargarSemilla() async {
     try {
       seedFile = await descargarSemillaDgii(tempDirName);
@@ -1030,6 +1048,8 @@ class EcfModel {
       rethrow;
     }
   }
+
+  /// Validar semilla firmada DGII
 
   Future<XmlSignerModel> validarSemilla() async {
     try {
@@ -1047,6 +1067,8 @@ class EcfModel {
       rethrow;
     }
   }
+
+  /// Firmar [EcfModel]
 
   Future<XmlSignerModel> firmar() async {
     try {
@@ -1109,6 +1131,8 @@ class EcfModel {
     }
   }
 
+  /// Enviar [EcfModel]
+
   Future<Map<String, dynamic>> enviarEcf() async {
     try {
       if (ecfFile == null) throw 'Archivo Xml del ecf firmado no existe';
@@ -1133,6 +1157,8 @@ class EcfModel {
     }
   }
 
+  /// Obtener estado de [EcfModel]
+
   Future<Map<String, dynamic>> obtenerEcfEstadoDatos() async {
     try {
       var res = await obtenerEcfEstado(trackId, token);
@@ -1141,6 +1167,8 @@ class EcfModel {
       rethrow;
     }
   }
+
+  /// Generar [EcfModel] en formato [String]
 
   @override
   String toString() {
@@ -1283,6 +1311,8 @@ class AprobacionComercial {
 
   late XmlSignerService signerService;
 
+  /// Inicio de [AprobacionComercial]
+
   AprobacionComercial(
       {required this.rncEmisor,
       required this.numeroComprobante,
@@ -1298,6 +1328,8 @@ class AprobacionComercial {
     signerService =
         XmlSignerService(rsaPrivateKey: rsaPrivateKey, certBase64: certBase64);
   }
+
+  /// Representacion de [AprobacionComercial] basado en el modelo de la DGII
 
   String get xmlAprobacion {
     return '''
@@ -1317,10 +1349,14 @@ class AprobacionComercial {
   ''';
   }
 
+  /// Descargar semilla DGII
+
   Future<void> descargarSemilla() async {
     seedFile = await descargarSemillaDgii(tempDirName);
     seedXml = await seedFile?.readAsString() ?? '';
   }
+
+  /// Validar semilla firmada DGII
 
   Future<XmlSignerModel> validarSemilla() async {
     var xmlSignerModel = await signerService.firmarXml(
@@ -1336,6 +1372,8 @@ class AprobacionComercial {
     return xmlSignerModel;
   }
 
+  /// Enviar [AprobacionComercial] de un ecf
+
   Future<Map<String, dynamic>> enviarAprobacionComercialEcf() async {
     xmlAprobacionFile = File(path.join(dirProject.path, tempDirName,
         'ACECF_${rncComprador}_$numeroComprobante.xml'));
@@ -1345,6 +1383,8 @@ class AprobacionComercial {
 
     return result;
   }
+
+  /// Copiar datos de la [AprobacionComercial]
 
   AprobacionComercial copyWith({
     String? rncEmisor,
@@ -1370,6 +1410,8 @@ class AprobacionComercial {
         certBase64: certBase64);
   }
 
+  /// Generar un mapa de datos de una [AprobacionComercial]
+
   Map<String, dynamic> toMap() {
     return {
       'rncEmisor': rncEmisor,
@@ -1382,6 +1424,8 @@ class AprobacionComercial {
       'fechaHoraAprobacionComercial': fechaHoraAprobacionComercial,
     };
   }
+
+  /// Generar [AprobacionComercial] desde un map
 
   factory AprobacionComercial.fromMap(Map<String, dynamic> map) {
     return AprobacionComercial(
@@ -1398,11 +1442,14 @@ class AprobacionComercial {
     );
   }
 
+  /// Generar json de la [AprobacionComercial] desde un map
   String toJson() => json.encode(toMap());
 
+  /// Generar una aprobacion comercial desde un map
   factory AprobacionComercial.fromJson(String source) =>
       AprobacionComercial.fromMap(json.decode(source) as Map<String, dynamic>);
 
+  /// Generar una [AprobacionComercial] en formato [String]
   @override
   String toString() {
     return 'AprobacionComercial(rncEmisor: $rncEmisor, numeroComprobante: $numeroComprobante, rncComprador: $rncComprador, montoTotal: $montoTotal, estado: $estado, detalleMotivoRechazo: $detalleMotivoRechazo, fechaEmision: $fechaEmision, fechaHoraAprobacionComercial: $fechaHoraAprobacionComercial)';
@@ -1480,7 +1527,7 @@ extension EcfPdfExtension on EcfModel {
                     pw.SizedBox(height: 10),
                     pw.Text('Detalles',
                         style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                    pw.Table.fromTextArray(
+                    pw.TableHelper.fromTextArray(
                       headerDecoration:
                           pw.BoxDecoration(color: PdfColor.fromHex('#4E5C71')),
                       headerStyle:

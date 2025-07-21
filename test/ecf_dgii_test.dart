@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:ecf_dgii/ecf_dgii.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 
 void main() async {
@@ -11,7 +10,7 @@ void main() async {
     final password = 'INES1037';
 
     final authModel = await getAuthP12(cert: cert, password: password);
-    final dateFormat = DateFormat('dd-MM-yyyy HH:mm:ss');
+    //final dateFormat = DateFormat('dd-MM-yyyy HH:mm:ss');
 
     final List<List<String>> datos = [
       [
