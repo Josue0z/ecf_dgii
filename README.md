@@ -90,7 +90,7 @@ void main() async {
 
     EcfModel ecf = EcfModel(
         tipoEcf: EcfType.e31,
-        tempDirName: 'temp_2',
+        tempDirName: 'temp_4',
         numeroComprobante: 'E310000000003',
         fechaHoraAprobacionComercial: '18-07-2025 10:11:59',
         codigoModificacion: '',
@@ -179,6 +179,13 @@ void main() async {
     await ecf.validarSemilla();
     await ecf.firmar();
     await ecf.enviarEcf();
+
+    var doc = await ecf.generarPdfFactura();
+    var filePdf = File(path.join(dirProject.path, 'temp_4', 'pdfs',
+        '${ecf.rncEmisor}${ecf.numeroComprobante}.PDF'));
+
+    await filePdf.create(recursive: true);
+    await filePdf.writeAsBytes(await doc.save());
     print(ecf.uriEcf);
   } catch (e) {
     print('⚠️ Error: $e');

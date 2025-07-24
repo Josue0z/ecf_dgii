@@ -1,148 +1,192 @@
 import 'dart:io';
-import 'package:ecf_dgii/ecf_dgii.dart';
+import 'package:ecf_dgii/src/models/ecf.model.dart';
+import 'package:ecf_dgii/src/types/ecf.dart';
+import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
+import 'package:ecf_dgii/src/utils/p12.parser.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 
 void main() async {
   try {
     GeneratorEndPoint.envEcfType = EnvEcfType.cert;
     final cert = File(path.join(dirProject.path, 'certificado.p12'));
-    final password = 'INES1037';
 
-    final authModel = await getAuthP12(cert: cert, password: password);
-    //final dateFormat = DateFormat('dd-MM-yyyy HH:mm:ss');
+    String password = 'INES1037';
 
-    final List<List<String>> datos = [
-      [
-        '131880681',
-        'E310000000003',
-        '01-04-2020',
-        '154003.47',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E310000000007',
-        '01-04-2020',
-        '228460.5',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E310000000009',
-        '01-04-2020',
-        '41450',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E310000000012',
-        '01-04-2020',
-        '45253',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E330000000001',
-        '02-04-2020',
-        '400000',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E340000000013',
-        '02-04-2020',
-        '917095',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E340000000015',
-        '02-04-2020',
-        '0',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E440000000008',
-        '01-04-2020',
-        '432000',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E440000000013',
-        '01-04-2020',
-        '917095',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880657',
-        'E450000000001',
-        '01-04-2020',
-        '35400',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
-      [
-        '131880681',
-        'E450000000011',
-        '01-04-2020',
-        '96657.8',
-        '101675489',
-        '20-07-2025 09:17:42'
-      ],
+    AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
+
+    final now = DateTime.now();
+    final dateFormat = DateFormat('dd-MM-yyyy');
+
+    final fechaEmision = dateFormat.format(now);
+    List<EcfDetailsModel> items = [
+      EcfDetailsModel(
+          cantidad: '100.00',
+          unidadMedida: '19',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '2',
+          nombreItem: 'Asesoria Legal P/H',
+          descripcionItem: '',
+          precioUnitario: '35.0000',
+          descuentoMonto: '',
+          subDescuentos: [],
+          impuestosAdicionales: [],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '',
+              montoISRRetenido: '945.00'),
+          otraMonedaDetalles: [],
+          montoItem: '3500.00'),
+      EcfDetailsModel(
+          cantidad: '80.00',
+          unidadMedida: '19',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '2',
+          nombreItem: 'Asesoria Legal P/H',
+          descripcionItem: '',
+          precioUnitario: '145.0000',
+          descuentoMonto: '',
+          subDescuentos: [],
+          impuestosAdicionales: [],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '',
+              montoISRRetenido: '3132.00'),
+          otraMonedaDetalles: [],
+          montoItem: '11600.00'),
+      EcfDetailsModel(
+          cantidad: '50.00',
+          unidadMedida: '19',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '2',
+          nombreItem: 'Asesoria Legal P/H',
+          descripcionItem: '',
+          precioUnitario: '55.0000',
+          descuentoMonto: '',
+          subDescuentos: [],
+          impuestosAdicionales: [],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '',
+              montoISRRetenido: '742.50'),
+          otraMonedaDetalles: [],
+          montoItem: '2750.00'),
     ];
 
-    for (var fila in datos) {
-      final rncEmisor = fila[0];
-      final encf = fila[1];
-      final fechaEmision = fila[2];
-      final montoTotal = fila[3];
-      final rncComprador = fila[4];
-      final fechaHoraAprobacionComercial = fila[5];
-
-      if (rncEmisor != '131880681') {
-        print('🚫 Omitiendo $encf — RNC no autorizado en tu modelo');
-        continue;
-      }
-
-      final aprobacion = AprobacionComercial(
-        rncEmisor: rncEmisor,
-        numeroComprobante: encf,
+    EcfModel ecf = EcfModel(
+        tipoEcf: EcfType.e47,
+        tempDirName: 'temp_4',
+        indicadorMontoGravado: '',
+        numeroComprobante: 'E470000000981',
+        codigoModificacion: '',
         fechaEmision: fechaEmision,
-        montoTotal: montoTotal,
-        rncComprador: rncComprador,
-        fechaHoraAprobacionComercial:
-            fechaHoraAprobacionComercial, // ✔️ Fecha fija del set
-        estado: '1',
-        detalleMotivoRechazo: '',
-        rsaPrivateKey: authModel.privateKey,
-        certBase64: authModel.certBase64,
-      );
+        fechaVencimiento: '31-12-2025',
+        fechaEmisionNcfModificado: '',
+        razonModificacion:
+            'ANULACION DEL ENCF31 CON SECUENCIA QUE FINALIZA EN 61',
+        tipoIngreso: '',
+        tipoPago: '1',
+        formasDePagos: [FormaDePago('1', '14350.00')],
+        sucursal: '',
+        direccionEmisor:
+            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
+        municipio: '010100',
+        provincia: '010000',
+        telefonoEmisor1: '809-472-7676',
+        telefonoEmisor2: '809-491-1918',
+        telefonoEmisor3: '',
+        totalPaginas: '',
+        rncEmisor: '101675489',
+        razonSocialEmisor: 'URENA LORENZO Y ASOCIADOS SRL',
+        nombreComercial: 'URESA',
+        correoEmisor:
+            'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
+        website: 'www.facturaelectronica.com',
+        actividadEconomica: '',
+        codigoVendedor: '',
+        informacionAdicionalEmisor: '',
+        rncComprador: '',
+        identificadorExtranjero: '131880681',
+        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 03',
+        nombreComprador: '',
+        contactoComprador: '',
+        correoComprador: '',
+        telefonoAdicional: '',
+        direccionComprador: '',
+        municipioComprador: '',
+        provinciaComprador: '',
+        codigoInternoComprador: '',
+        fechaEntrega: '',
+        fechaOrdenCompra: '',
+        numeroOrdenCompra: '',
+        numeroFacturaInterna: '123456789016',
+        numeroPedidoInterno: '123456789016',
+        zonaVenta: '',
+        rutaVenta: '',
+        paisDestino: 'ESTADOS UNIDOS',
+        conductor: '',
+        documentoTransporte: '',
+        ficha: '',
+        placa: '',
+        rutaTransporte: '',
+        zonaTransporte: '',
+        numeroAlbaran: '',
+        totalGravado: '',
+        totalGravado18: '',
+        totalGravado16: '',
+        totalGravadoTasa0: '',
+        montoExento: '17850.00',
+        totalItbis: '',
+        totalItbis18: '',
+        totalItbis16: '',
+        totalItbisTasa0: '',
+        itbis1: '',
+        itbis2: '',
+        itbis3: '',
+        montoTotal: '17850.00',
+        montoPeriodo: '17850.00',
+        montoAvancePago: '',
+        valorPagar: '17850.00',
+        tipoMoneda: '',
+        tipoCambio: '',
+        montoGravadoTotalOtraMoneda: '',
+        montoGravadoTotalOtraMoneda1: '',
+        montoGravadoTotalOtraMoneda2: '',
+        montoGravadoTotalOtraMoneda3: '',
+        totalItbisOtraMoneda: '',
+        totalItbis1OtraMoneda: '',
+        totalItbis2OtraMoneda: '',
+        totalItbis3OtraMoneda: '',
+        montoExentoOtraMoneda: '',
+        montoTotalOtraMoneda: '',
+        totalItbisRetencion: '',
+        totalIsrRetencion: '4819.50',
+        montoImpuestoAdicional: '',
+        impuestosAdicionales: [],
+        terminoPago: '',
+        bancoPago: '',
+        paginas: [],
+        items: items,
+        privateKey: authModel.privateKey,
+        certBase64: authModel.certBase64);
 
-      try {
-        print('⏳ Procesando $encf...');
-        await aprobacion.descargarSemilla();
-        await aprobacion.validarSemilla();
-        await aprobacion.enviarAprobacionComercialEcf();
-        print('✅ Aprobación enviada: $encf');
-      } catch (e) {
-        print('⚠️ Error en $encf: $e');
-      }
+    await ecf.descargarSemilla();
+    await ecf.validarSemilla();
+    await ecf.firmar();
+    await ecf.enviarEcf();
 
-      await Future.delayed(Duration(seconds: 3));
-    }
+    print(ecf.trackId);
+    print(ecf.token);
+
+    var doc = await ecf.generarPdfFactura();
+    var filePdf = File(path.join(dirProject.path, 'temp_4', 'pdfs',
+        '${ecf.rncEmisor}${ecf.numeroComprobante}.PDF'));
+
+    await filePdf.create(recursive: true);
+    await filePdf.writeAsBytes(await doc.save());
+    print(ecf.uriEcf);
   } catch (e) {
-    print('⚠️ Error general: $e');
+    print('⚠️ Error: $e');
   }
 }

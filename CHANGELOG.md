@@ -1,3 +1,3 @@
-## 1.0.14
+## 1.0.15
 
-- Actualizacion en estado funcional y reciente segun el modelo de la DGII
+- Reordenamientos de los paquetes para adaptarlos a otros entornos de ejecucion

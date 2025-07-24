@@ -1,5 +1,4 @@
 export 'env.files/environment.dart';
-export 'src/utils/config.dart';
 export 'src/models/ecf.model.dart';
 export 'src/types/endpoints.dart';
 export 'src/types/ecf.dart';

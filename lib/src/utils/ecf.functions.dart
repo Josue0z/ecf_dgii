@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:ecf_dgii/ecf_dgii.dart';
+import 'package:ecf_dgii/src/types/ecf.dart';
+import 'package:ecf_dgii/src/types/endpoints.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
+import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;

@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:ecf_dgii/src/types/ecf.dart';
+import 'package:ecf_dgii/src/types/endpoints.dart';
+import 'package:ecf_dgii/src/utils/xml.signer.dart';
+import 'package:ecf_dgii/src/utils/ecf.functions.dart';
+import 'package:ecf_dgii/src/utils/directories.dart';
+import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:xml/xml.dart';
-
-import 'package:ecf_dgii/ecf_dgii.dart';
-import 'package:ecf_dgii/src/utils/directories.dart';
-
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -1472,6 +1474,10 @@ class EcfModel {
 
       var urlsDir = Directory(path.join(dirProject.path, 'urls'));
 
+      if (res['trackId'] != null) {
+        trackId = res['trackId'];
+      }
+
       await urlsDir.create(recursive: true);
 
       var fileUrlsPath = path.join(urlsDir.path, 'urls.txt');
@@ -1920,6 +1926,10 @@ extension EcfPdfExtension on EcfModel {
                           fontSize: 18, fontWeight: pw.FontWeight.bold)),
                   pw.SizedBox(height: 10),
                   pw.Text('Comprobante: $numeroComprobante'),
+                  numeroComprobanteModificado != ''
+                      ? pw.Text(
+                          'Comprobante afectado: $numeroComprobanteModificado')
+                      : pw.SizedBox(),
                   pw.Text('Fecha de Emisión: $fechaEmision'),
                   pw.Text('Fecha de Vencimiento: $fechaVencimiento'),
                   pw.Text(

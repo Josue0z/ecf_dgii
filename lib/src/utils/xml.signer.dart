@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
-import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
 import 'package:xml_crypto/xml_crypto.dart';
 import 'package:path/path.dart' as path;
