@@ -525,3 +525,6 @@ https://ecf.dgii.gov.do/CerteCF/ConsultaTimbre?RncEmisor=101675489&RncComprador=
 https://ecf.dgii.gov.do/CerteCF/ConsultaTimbre?RncEmisor=101675489&RncComprador=131880657&ENCF=E450000000981&FechaEmision=23-07-2025&MontoTotal=35400.00&FechaFirma=23-07-2025%2012:29:00&CodigoSeguridad=I5LPq6
 https://ecf.dgii.gov.do/CerteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000980&FechaEmision=23-07-2025&MontoTotal=17850.00&FechaFirma=23-07-2025%2012:31:51&CodigoSeguridad=cHUNOt
 https://ecf.dgii.gov.do/CerteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000981&FechaEmision=23-07-2025&MontoTotal=17850.00&FechaFirma=23-07-2025%2012:32:56&CodigoSeguridad=gOLwVT
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000980&FechaEmision=24-07-2025&MontoTotal=17850.00&FechaFirma=24-07-2025%2007:28:06&CodigoSeguridad=ct/daK
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000980&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2012:57:30&CodigoSeguridad=fLPchl
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000989&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2012:58:51&CodigoSeguridad=hSgxik

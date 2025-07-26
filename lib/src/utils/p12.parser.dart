@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart' as path;
+import 'package:ecf_dgii/src/utils/directories.dart';
 
 /// Creacion de un [AuthCertModel]
 class AuthCertModel {
@@ -96,6 +98,11 @@ Future<List<String>?> extraerCertYKeyComoString({
     print('⚠️ No se pudieron extraer cert o key desde el archivo .p12');
     return null;
   }
+
+  // 📂 Guardar key.pem en el path esperado
+  final keyPath = path.join(dirProject.path, 'temp', 'systemp', 'key.pem');
+  await Directory(path.dirname(keyPath)).create(recursive: true);
+  await File(keyPath).writeAsString(keyPem, encoding: latin1);
 
   return [extraerPrimerCert(certPem)!.trim(), keyPem.trim()];
 }

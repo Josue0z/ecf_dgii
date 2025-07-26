@@ -1,6 +1,6 @@
 name: ecf_dgii
 description: Generador de Ecf y Aprobaciones Comerciales firmados que seran enviados a la DGII para su posterior validacion
-version: 1.0.15
+version: 1.0.16
 repository: https://github.com/Josue0z/ecf_dgii.git
 
 environment:

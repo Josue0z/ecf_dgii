@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:ecf_dgii/src/models/ecf.model.dart';
 import 'package:ecf_dgii/src/types/ecf.dart';
-import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
 import 'package:ecf_dgii/src/utils/p12.parser.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +8,7 @@ import 'package:path/path.dart' as path;
 
 void main() async {
   try {
-    GeneratorEndPoint.envEcfType = EnvEcfType.cert;
+    //GeneratorEndPoint.envEcfType = EnvEcfType.cert;
     final cert = File(path.join(dirProject.path, 'certificado.p12'));
 
     String password = 'INES1037';
@@ -76,9 +75,9 @@ void main() async {
 
     EcfModel ecf = EcfModel(
         tipoEcf: EcfType.e47,
-        tempDirName: 'temp_4',
+        tempDirName: 'temp_7',
         indicadorMontoGravado: '',
-        numeroComprobante: 'E470000000981',
+        numeroComprobante: 'E470000000989',
         codigoModificacion: '',
         fechaEmision: fechaEmision,
         fechaVencimiento: '31-12-2025',
@@ -180,12 +179,28 @@ void main() async {
     print(ecf.token);
 
     var doc = await ecf.generarPdfFactura();
-    var filePdf = File(path.join(dirProject.path, 'temp_4', 'pdfs',
+    var filePdf = File(path.join(dirProject.path, 'temp_7', 'pdfs',
         '${ecf.rncEmisor}${ecf.numeroComprobante}.PDF'));
 
     await filePdf.create(recursive: true);
     await filePdf.writeAsBytes(await doc.save());
     print(ecf.uriEcf);
+
+    /* var pathFile =
+        '/Users/josue/development/proyectos/ecf_dgii/temp_4/101675489E310000000950.xml';
+    var fileName = path.basenameWithoutExtension(pathFile);
+    var doc = await generarPdfDesdeXmlFirmado(pathFile,
+        items: [],
+        fechaVencimiento: '31-12-2025',
+        url:
+            'https://ecf.dgii.gov.do/CerteCF/ConsultaTimbre?RncEmisor=101675489&RncComprador=131880681&ENCF=E310000000950&FechaEmision=23-07-2025&MontoTotal=154003.47&FechaFirma=23-07-2025%2011:51:23&CodigoSeguridad=an6Kc0');
+
+    fileName = fileName.replaceFirst('ECF_', '');
+    var filePdf =
+        File(path.join(dirProject.path, 'temp_6', 'pdfs', '$fileName.PDF'));
+
+    await filePdf.create(recursive: true);
+    await filePdf.writeAsBytes(await doc.save());*/
   } catch (e) {
     print('⚠️ Error: $e');
   }

@@ -1906,6 +1906,256 @@ class AprobacionComercial {
   }
 }
 
+String labelEcfTipo(String tipoEcf) {
+  const tipos = {
+    '31': 'FACTURA DE CRÉDITO FISCAL',
+    '32': 'FACTURA DE CONSUMIDOR FINAL',
+    '33': 'NOTA DE DÉBITO',
+    '34': 'NOTA DE CRÉDITO',
+    '41': 'COMPROBANTE DE COMPRAS',
+    '43': 'COMPROBANTE PARA GASTOS MENORES',
+    '44': 'COMPROBANTE PARA REGIMENES ESPECIALES',
+    '45': 'COMPROBANTE GUBERNAMENTAL',
+    '46': 'COMPROBANTE PARA EXPORTACIONES',
+    '47': 'COMPROBANTE PARA PAGOS AL EXTERIOR',
+  };
+
+  return tipos[tipoEcf] ?? 'TIPO DESCONOCIDO';
+}
+
+/// Generar pdf desde xml firmado
+Future<pw.Document> generarPdfDesdeXmlFirmado(String pathXml,
+    {required String url,
+    List<List<String>> items = const [],
+    String direccionEmisor = '',
+    String correoEmisor = '',
+    String fechaVencimiento = ''}) async {
+  final xmlContent = await File(pathXml).readAsString();
+  final xml = XmlDocument.parse(xmlContent);
+  final doc = pw.Document();
+
+  // 🔍 Helpers para extraer textos clave
+  String val(String tag) => xml.findAllElements(tag).firstOrNull?.text ?? '';
+
+  String labelEcftipoEcf = val('TipoeCF');
+  String labelNcf = labelEcfTipo(labelEcftipoEcf);
+
+  String monto(String tag) {
+    final m = val(tag);
+    return m.isEmpty ? '0.00' : double.parse(m).toStringAsFixed(2);
+  }
+
+  // ✨ Estructura como en el modelo PDF
+  final qr = pw.BarcodeWidget(
+    data: url,
+    barcode: pw.Barcode.qrCode(),
+    width: 100,
+    height: 100,
+  );
+
+  final detallesItems = items.isNotEmpty
+      ? items
+      : xml.findAllElements('Item').map((item) {
+          return [
+            item.getElement('CantidadItem')?.text ?? '',
+            item.getElement('UnidadMedida')?.text ?? '',
+            item.getElement('NombreItem')?.text ?? '',
+            monto(item.getElement('PrecioUnitarioItem')?.name.local ?? ''),
+            monto(item.getElement('MontoItem')?.name.local ?? ''),
+          ];
+        }).toList();
+
+  int pagina = 0;
+
+  Uri uriData = Uri.parse(url);
+  String fechaFirma = uriData.queryParameters['FechaFirma'] ?? '';
+
+  doc.addPage(
+    pw.MultiPage(
+      pageFormat: PdfPageFormat.a4,
+      footer: (ctx) {
+        return pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.center,
+            children: [pw.Text('Pagina ${pagina++}')]);
+      },
+      header: (ctx) {
+        return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(val('RazonSocialEmisor'),
+                  style: pw.TextStyle(
+                      fontSize: 20, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 10),
+              pw.Text(
+                'RNC: ${val('RNCEmisor')}',
+              ),
+              pw.Row(children: [
+                pw.Expanded(
+                    child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                      pw.Text('Dirección: ${val('DireccionEmisor')}'),
+                      pw.Text('Correo: ${val('CorreoEmisor')}'),
+                    ])),
+                pw.Expanded(
+                    child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                      pw.Text(labelNcf,
+                          style: pw.TextStyle(
+                              fontSize: 15, fontWeight: pw.FontWeight.bold),
+                          textAlign: pw.TextAlign.right),
+                      pw.Text('Comprobante: ${val('eNCF')}',
+                          textAlign: pw.TextAlign.right),
+                      val('NCFModificado') != ''
+                          ? pw.Text(
+                              'Comprobante Afectado: ${val('NCFModificado')}',
+                              textAlign: pw.TextAlign.right)
+                          : pw.SizedBox(),
+                      pw.Text('Fecha de Emisión: ${val('FechaEmision')}',
+                          textAlign: pw.TextAlign.right),
+                      pw.Text(
+                          'Fecha de Vencimiento: ${val('FechaVencimientoSecuencia') != '' ? val('FechaVencimientoSecuencia') : fechaVencimiento}',
+                          textAlign: pw.TextAlign.right),
+                    ]))
+              ]),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                  'RNC Cliente: ${val('RNCComprador') != '' ? val('RNCComprador') : 'S/N'}'),
+              pw.Text(
+                  'Razón Social Cliente: ${val('RazonSocialComprador') != '' ? val('RazonSocialComprador') : 'CLIENTE CONTADO'}'),
+              pw.Text(
+                  'Contacto: ${val('ContactoComprador') != '' ? val('ContactoComprador') : 'S/N'}'),
+              pw.Text(
+                  'Dirección: ${val('DireccionComprador') != '' ? val('DireccionComprador') : 'S/N'}'),
+              pw.SizedBox(height: 20)
+            ]);
+      },
+      build: (ctx) => [
+        pw.TableHelper.fromTextArray(
+          headerDecoration:
+              pw.BoxDecoration(color: PdfColor.fromHex('#4E5C71')),
+          headerStyle: pw.TextStyle(color: PdfColor.fromHex('#F8FAFC')),
+          rowDecoration: pw.BoxDecoration(
+              border: pw.Border(
+                  bottom: pw.BorderSide(color: PdfColor.fromHex('#DFE1E5')))),
+          border: pw.TableBorder(
+              bottom: pw.BorderSide(color: PdfColor.fromHex('#DFE1E5'))),
+          headers: ['Cant.', 'U.M', 'Descripción', 'Precio', 'Total'],
+          data: detallesItems,
+          headerAlignment: pw.Alignment.centerLeft,
+          cellAlignment: pw.Alignment.centerLeft,
+          cellStyle: pw.TextStyle(fontSize: 10),
+        ),
+        pw.SizedBox(height: 20),
+        pw.Row(children: [
+          pw.Expanded(
+              child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                qr,
+                pw.SizedBox(height: 20),
+                pw.Row(children: [
+                  pw.Text('Codigo de Seguridad:',
+                      style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.bold, fontSize: 10)),
+                  pw.SizedBox(width: 5),
+                  pw.Text(
+                      val('CodigoSeguridadeCF') != ''
+                          ? val('CodigoSeguridadeCF')
+                          : val('SignatureValue').substring(0, 6),
+                      style: pw.TextStyle(fontSize: 10)),
+                ]),
+                pw.Row(children: [
+                  pw.Text('Fecha de Firma:',
+                      style: pw.TextStyle(
+                          fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                  pw.SizedBox(width: 5),
+                  pw.Text(fechaFirma, style: pw.TextStyle(fontSize: 10)),
+                ])
+              ])),
+          pw.Expanded(
+              child: pw.Column(children: [
+            pw.Container(
+                margin: pw.EdgeInsets.symmetric(vertical: 10),
+                child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        'Total Gravado:',
+                      ),
+                      pw.Text('RD\$ ${monto('MontoGravadoTotal')}',
+                          textAlign: pw.TextAlign.right),
+                    ])),
+            pw.Divider(height: 0.5, color: PdfColor.fromHex('#DFE1E5')),
+            pw.Container(
+                margin: pw.EdgeInsets.symmetric(vertical: 10),
+                child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        'Total Itbis:',
+                      ),
+                      pw.Text('RD\$ ${monto('TotalITBIS')}',
+                          textAlign: pw.TextAlign.right),
+                    ])),
+            pw.Divider(height: 0.5, color: PdfColor.fromHex('#DFE1E5')),
+            pw.Container(
+                margin: pw.EdgeInsets.symmetric(vertical: 10),
+                child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        'Imp. Adicional:',
+                      ),
+                      pw.Text('RD\$ ${monto('MontoImpuestoAdicional')}',
+                          textAlign: pw.TextAlign.right),
+                    ])),
+            pw.Divider(height: 0.5, color: PdfColor.fromHex('#DFE1E5')),
+            pw.Container(
+                margin: pw.EdgeInsets.symmetric(vertical: 10),
+                child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        'Total Itbis Retenido:',
+                      ),
+                      pw.Text('RD\$ ${monto('TotalITBISRetenido')}',
+                          textAlign: pw.TextAlign.right),
+                    ])),
+            pw.Divider(height: 0.5, color: PdfColor.fromHex('#DFE1E5')),
+            pw.Container(
+                margin: pw.EdgeInsets.symmetric(vertical: 10),
+                child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        'Total Isr Retenido:',
+                      ),
+                      pw.Text('RD\$ ${monto('TotalISRRetencion')}',
+                          textAlign: pw.TextAlign.right),
+                    ])),
+            pw.Divider(height: 0.5, color: PdfColor.fromHex('#DFE1E5')),
+            pw.Container(
+                margin: pw.EdgeInsets.symmetric(vertical: 10),
+                child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Text(
+                        'Total Facturado:',
+                      ),
+                      pw.Text('RD\$ ${monto('MontoTotal')}',
+                          textAlign: pw.TextAlign.right),
+                    ])),
+          ]))
+        ]),
+      ],
+    ),
+  );
+
+  return doc;
+}
+
 /// Creando [EcfPdfExtension] del objeto [EcfModel]
 
 extension EcfPdfExtension on EcfModel {
