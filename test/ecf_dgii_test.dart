@@ -77,7 +77,7 @@ void main() async {
         tipoEcf: EcfType.e47,
         tempDirName: 'temp_7',
         indicadorMontoGravado: '',
-        numeroComprobante: 'E470000000989',
+        numeroComprobante: 'E470000001002',
         codigoModificacion: '',
         fechaEmision: fechaEmision,
         fechaVencimiento: '31-12-2025',

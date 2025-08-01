@@ -528,3 +528,16 @@ https://ecf.dgii.gov.do/CerteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E4700000
 https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000980&FechaEmision=24-07-2025&MontoTotal=17850.00&FechaFirma=24-07-2025%2007:28:06&CodigoSeguridad=ct/daK
 https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000980&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2012:57:30&CodigoSeguridad=fLPchl
 https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000989&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2012:58:51&CodigoSeguridad=hSgxik
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000990&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2018:38:48&CodigoSeguridad=ZqhZAt
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000991&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2018:41:54&CodigoSeguridad=cD3AKl
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000992&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2018:44:09&CodigoSeguridad=BlEfdD
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000993&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2018:46:25&CodigoSeguridad=hTEJo6
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000994&FechaEmision=26-07-2025&MontoTotal=17850.00&FechaFirma=26-07-2025%2018:48:13&CodigoSeguridad=isrJsz
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000995&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2014:49:42&CodigoSeguridad=k4jm3A
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000996&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2015:01:46&CodigoSeguridad=RoOqe1
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000997&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2015:10:34&CodigoSeguridad=Z+GpaS
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000998&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2015:11:19&CodigoSeguridad=MUcldO
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000000999&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2015:12:33&CodigoSeguridad=REVIoG
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000001000&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2015:13:20&CodigoSeguridad=PWjxOo
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000001001&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2015:18:19&CodigoSeguridad=kBiBmM
+https://ecf.dgii.gov.do/TesteCF/ConsultaTimbre?RncEmisor=101675489&ENCF=E470000001002&FechaEmision=27-07-2025&MontoTotal=17850.00&FechaFirma=27-07-2025%2015:20:20&CodigoSeguridad=UKTKK8

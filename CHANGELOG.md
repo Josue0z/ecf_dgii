@@ -1,3 +1,3 @@
-## 1.0.16
+## 1.0.17
 
-- Correpcion de error al generar key.pem del certificado
+- Correpcion de al generar factura a credito, se agrego al xml fecha limite de pago

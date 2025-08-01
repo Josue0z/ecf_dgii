@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:ecf_dgii/src/types/ecf.dart';
@@ -452,6 +453,10 @@ class EcfModel {
 
   String tipoPago;
 
+  /// Fecha limite de pago si la factura es a credito
+
+  String fechaLimitePago;
+
   /// Indicador Monto Gravado
 
   String indicadorMontoGravado;
@@ -740,6 +745,10 @@ class EcfModel {
 
   String token = '';
 
+  /// Fecha de expiracion token
+
+  DateTime? expira;
+
   /// TrackId del [EcfModel]
 
   String trackId = '';
@@ -794,6 +803,7 @@ class EcfModel {
       this.totalIsrRetencion = '',
       this.montoExento = '',
       this.tipoIngreso = '',
+      this.fechaLimitePago = '',
       this.tipoPago = '',
       this.indicadorMontoGravado = '',
       this.direccionEmisor = '',
@@ -988,6 +998,7 @@ class EcfModel {
       ${indicadorMontoGravado != '' ? '<IndicadorMontoGravado>$indicadorMontoGravado</IndicadorMontoGravado>' : ''}
       ${tipoIngreso != '' ? '<TipoIngresos>$tipoIngreso</TipoIngresos>' : ''}
       ${tipoPago != '' ? '<TipoPago>$tipoPago</TipoPago>' : ''}
+      ${fechaLimitePago != '' ? '<FechaLimitePago>$fechaLimitePago</FechaLimitePago>' : ''}
       ${terminoPago != '' ? '<TerminoPago>$terminoPago</TerminoPago>' : ''}
 
      ${formasDePagos.isNotEmpty ? '''
@@ -1384,15 +1395,49 @@ class EcfModel {
 
   /// Validar semilla firmada DGII
 
-  Future<XmlSignerModel> validarSemilla() async {
+  Future<XmlSignerModel?> validarSemilla() async {
     try {
-      var xmlSignerModel = await signerService.firmarXml(
+      var expiracionArchivo =
+          File(path.join(Directory.systemTemp.path, 'expiracion_data.txt'));
+
+      await expiracionArchivo.create(recursive: true);
+      DateTime now = DateTime.now();
+      XmlSignerModel? xmlSignerModel;
+
+      var tiempoActual = now.millisecondsSinceEpoch;
+
+      String expiracionData = await expiracionArchivo.readAsString();
+
+      if (expiracionData.isNotEmpty) {
+        json = jsonDecode(expiracionData);
+      }
+
+      if (json != null &&
+          json is Map<String, dynamic> &&
+          json?.containsKey('expira') == true) {
+        expira = DateTime.tryParse(json?['expira']);
+      }
+
+      var expiracionTiempoData = expira?.microsecondsSinceEpoch;
+      const margenSeguridadMs = 30000;
+
+      xmlSignerModel = await signerService.firmarXml(
         seedXml,
         File(path.join(dirProject.path, tempDirName, 'semilla_firmada.xml')),
       );
 
-      json = await validarSemillaFirmada(xmlSignerModel.xmlFile);
+      if (expiracionTiempoData != null &&
+          tiempoActual < (expiracionTiempoData - margenSeguridadMs)) {
+        print('no ha vencido el token');
+      } else {
+        json = await validarSemillaFirmada(xmlSignerModel.xmlFile);
+      }
       token = json?['token'] ?? '';
+
+      expira = DateTime.tryParse(json?['expira']);
+
+      await expiracionArchivo.writeAsString(jsonEncode(json));
+
       seedSignFile = xmlSignerModel.xmlFile;
       seedSignXml = xmlSignerModel.xmlStr;
       return xmlSignerModel;
@@ -2165,39 +2210,93 @@ extension EcfPdfExtension on EcfModel {
 
     final qrData = uriEcf.toString();
 
+    String labelNcf = labelEcfTipo(tipo);
+
+    var itbisRetencion = totalItbisRetencion;
+    var isrRetencion = totalIsrRetencion;
+    var itbisMonto = totalItbis;
+    var impuestoAdicional = montoImpuestoAdicional;
+    var gravado = totalGravado;
+
+    if (itbisRetencion == '') {
+      itbisRetencion = '0.00';
+    }
+
+    if (isrRetencion == '') {
+      isrRetencion = '0.00';
+    }
+
+    if (itbisMonto == '') {
+      itbisMonto = '0.00';
+    }
+
+    if (impuestoAdicional == '') {
+      impuestoAdicional = '0.00';
+    }
+
+    if (gravado == '') {
+      gravado = '0.00';
+    }
+    int pagina = 0;
+
     doc.addPage(
       pw.MultiPage(
+          footer: (ctx) {
+            return pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [pw.Text('Pagina ${pagina++}')]);
+          },
           header: (ctx) {
             return pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Factura Electrónica e-CF Tipo $tipo',
+                  pw.Text(razonSocialEmisor,
                       style: pw.TextStyle(
-                          fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                          fontSize: 20, fontWeight: pw.FontWeight.bold)),
                   pw.SizedBox(height: 10),
-                  pw.Text('Comprobante: $numeroComprobante'),
-                  numeroComprobanteModificado != ''
-                      ? pw.Text(
-                          'Comprobante afectado: $numeroComprobanteModificado')
-                      : pw.SizedBox(),
-                  pw.Text('Fecha de Emisión: $fechaEmision'),
-                  pw.Text('Fecha de Vencimiento: $fechaVencimiento'),
                   pw.Text(
-                      'Código de Seguridad: ${codigoSeguridad.substring(0, 6)}'),
-                  pw.Divider(),
-                  pw.Text('Emisor',
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                  pw.Text('RNC: $rncEmisor'),
-                  pw.Text('Nombre: $razonSocialEmisor'),
-                  pw.Text('Dirección: $direccionEmisor'),
-                  pw.Text('Correo: $correoEmisor'),
-                  pw.SizedBox(height: 10),
-                  pw.Text('Comprador',
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                  pw.Text('RNC: $rncComprador'),
-                  pw.Text('Nombre: $razonSocialComprador'),
-                  pw.Text('Contacto: $contactoComprador'),
-                  pw.Text('Dirección: $direccionComprador'),
+                    'RNC: $rncEmisor',
+                  ),
+                  pw.Row(children: [
+                    pw.Expanded(
+                        child: pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                          pw.Text('Dirección: $direccionEmisor'),
+                          pw.Text('Correo: $correoEmisor'),
+                        ])),
+                    pw.Expanded(
+                        child: pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.end,
+                            children: [
+                          pw.Text(labelNcf,
+                              style: pw.TextStyle(
+                                  fontSize: 15, fontWeight: pw.FontWeight.bold),
+                              textAlign: pw.TextAlign.right),
+                          pw.Text('Comprobante: $numeroComprobante',
+                              textAlign: pw.TextAlign.right),
+                          numeroComprobanteModificado != ''
+                              ? pw.Text(
+                                  'Comprobante Afectado: $numeroComprobanteModificado',
+                                  textAlign: pw.TextAlign.right)
+                              : pw.SizedBox(),
+                          pw.Text('Fecha de Emisión: $fechaEmision',
+                              textAlign: pw.TextAlign.right),
+                          pw.Text(
+                              'Fecha de Vencimiento: ${fechaVencimiento != '' ? fechaVencimiento : fechaVencimiento}',
+                              textAlign: pw.TextAlign.right),
+                        ]))
+                  ]),
+                  pw.SizedBox(height: 20),
+                  pw.Text(
+                      'RNC Cliente: ${rncComprador != '' ? rncComprador : 'S/N'}'),
+                  pw.Text(
+                      'Razón Social Cliente: ${razonSocialComprador != '' ? razonSocialComprador : 'CLIENTE CONTADO'}'),
+                  pw.Text(
+                      'Contacto: ${contactoComprador != '' ? contactoComprador : 'S/N'}'),
+                  pw.Text(
+                      'Dirección: ${direccionComprador != '' ? direccionComprador : 'S/N'}'),
+                  pw.SizedBox(height: 20)
                 ]);
           },
           build: (context) => [
@@ -2205,8 +2304,6 @@ extension EcfPdfExtension on EcfModel {
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.SizedBox(height: 10),
-                    pw.Text('Detalles',
-                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                     pw.TableHelper.fromTextArray(
                       headerDecoration:
                           pw.BoxDecoration(color: PdfColor.fromHex('#4E5C71')),
@@ -2219,12 +2316,21 @@ extension EcfPdfExtension on EcfModel {
                       border: pw.TableBorder(
                           bottom: pw.BorderSide(
                               color: PdfColor.fromHex('#DFE1E5'))),
-                      headers: ['Item', 'Cant', 'U.M', 'Precio', 'Total'],
+                      headerAlignment: pw.Alignment.centerLeft,
+                      cellAlignment: pw.Alignment.centerLeft,
+                      cellStyle: pw.TextStyle(fontSize: 10),
+                      headers: [
+                        'Cant',
+                        'U.M',
+                        'Descripcion',
+                        'Precio',
+                        'Total'
+                      ],
                       data: items
                           .map((item) => [
-                                item.nombreItem,
                                 item.cantidad,
                                 item.unidadMedida,
+                                item.nombreItem,
                                 item.precioUnitario,
                                 item.montoItem
                               ])
@@ -2239,10 +2345,6 @@ extension EcfPdfExtension on EcfModel {
                                   crossAxisAlignment:
                                       pw.CrossAxisAlignment.start,
                                   children: [
-                                pw.Text('Verificación QR',
-                                    style: pw.TextStyle(
-                                        fontWeight: pw.FontWeight.bold)),
-                                pw.SizedBox(height: 10),
                                 pw.BarcodeWidget(
                                   data: qrData,
                                   barcode: pw.Barcode.qrCode(),
@@ -2250,28 +2352,45 @@ extension EcfPdfExtension on EcfModel {
                                   height: 120,
                                 ),
                                 pw.SizedBox(height: 15),
-                                pw.Text(codigoSeguridad),
+                                pw.Row(children: [
+                                  pw.Text('Codigo de Seguridad:',
+                                      style: pw.TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: pw.FontWeight.bold)),
+                                  pw.SizedBox(width: 5),
+                                  pw.Text(codigoSeguridad,
+                                      style: pw.TextStyle(fontSize: 10)),
+                                ]),
+                                pw.SizedBox(height: 10),
+                                pw.Row(children: [
+                                  pw.Text('Fecha de Firma:',
+                                      style: pw.TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: pw.FontWeight.bold)),
+                                  pw.SizedBox(width: 5),
+                                  pw.Text(fechaHoraFirma,
+                                      style: pw.TextStyle(fontSize: 10)),
+                                ])
                               ])),
                           pw.Expanded(
                               child: pw.Column(
                                   crossAxisAlignment:
                                       pw.CrossAxisAlignment.start,
                                   children: [
-                                pw.Text('Totales',
-                                    style: pw.TextStyle(
-                                        fontWeight: pw.FontWeight.bold),
-                                    textAlign: pw.TextAlign.left),
                                 pw.Container(
                                   margin: pw.EdgeInsets.symmetric(vertical: 10),
                                   child: pw.Row(
                                       mainAxisAlignment:
                                           pw.MainAxisAlignment.spaceBetween,
                                       children: [
-                                        pw.Text('Gravado:'),
-                                        pw.Text('RD\$ $totalGravado',
+                                        pw.Text('Total Gravado:'),
+                                        pw.Text('RD\$ $gravado',
                                             textAlign: pw.TextAlign.right),
                                       ]),
                                 ),
+                                pw.Divider(
+                                    height: 0.5,
+                                    color: PdfColor.fromHex('#DFE1E5')),
                                 pw.Container(
                                   margin: pw.EdgeInsets.symmetric(vertical: 10),
                                   child: pw.Row(
@@ -2279,10 +2398,13 @@ extension EcfPdfExtension on EcfModel {
                                           pw.MainAxisAlignment.spaceBetween,
                                       children: [
                                         pw.Text('Total ITBIS:'),
-                                        pw.Text('RD\$ $totalItbis',
+                                        pw.Text('RD\$ $itbisMonto',
                                             textAlign: pw.TextAlign.right),
                                       ]),
                                 ),
+                                pw.Divider(
+                                    height: 0.5,
+                                    color: PdfColor.fromHex('#DFE1E5')),
                                 pw.Container(
                                   margin: pw.EdgeInsets.symmetric(vertical: 10),
                                   child: pw.Row(
@@ -2290,41 +2412,43 @@ extension EcfPdfExtension on EcfModel {
                                           pw.MainAxisAlignment.spaceBetween,
                                       children: [
                                         pw.Text('Imp. Adicional:'),
-                                        pw.Text('RD\$ $montoImpuestoAdicional',
+                                        pw.Text('RD\$ $impuestoAdicional',
                                             textAlign: pw.TextAlign.right),
                                       ]),
                                 ),
-                                totalItbisRetencion != ''
-                                    ? pw.Container(
-                                        margin: pw.EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        child: pw.Row(
-                                            mainAxisAlignment: pw
-                                                .MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              pw.Text(
-                                                'Total Itbis Retenido:',
-                                              ),
-                                              pw.Text(
-                                                  'RD\$ $totalItbisRetencion',
-                                                  textAlign:
-                                                      pw.TextAlign.right),
-                                            ]))
-                                    : pw.SizedBox(),
-                                totalIsrRetencion != ''
-                                    ? pw.Container(
-                                        margin: pw.EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        child: pw.Row(
-                                            mainAxisAlignment: pw
-                                                .MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              pw.Text('Total Isr Retenido:'),
-                                              pw.Text('RD\$ $totalIsrRetencion',
-                                                  textAlign:
-                                                      pw.TextAlign.right),
-                                            ]))
-                                    : pw.SizedBox(),
+                                pw.Divider(
+                                    height: 0.5,
+                                    color: PdfColor.fromHex('#DFE1E5')),
+                                pw.Container(
+                                    margin:
+                                        pw.EdgeInsets.symmetric(vertical: 10),
+                                    child: pw.Row(
+                                        mainAxisAlignment:
+                                            pw.MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          pw.Text(
+                                            'Total Itbis Retenido:',
+                                          ),
+                                          pw.Text('RD\$ $itbisRetencion',
+                                              textAlign: pw.TextAlign.right),
+                                        ])),
+                                pw.Divider(
+                                    height: 0.5,
+                                    color: PdfColor.fromHex('#DFE1E5')),
+                                pw.Container(
+                                    margin:
+                                        pw.EdgeInsets.symmetric(vertical: 10),
+                                    child: pw.Row(
+                                        mainAxisAlignment:
+                                            pw.MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          pw.Text('Total Isr Retenido:'),
+                                          pw.Text('RD\$ $isrRetencion',
+                                              textAlign: pw.TextAlign.right),
+                                        ])),
+                                pw.Divider(
+                                    height: 0.5,
+                                    color: PdfColor.fromHex('#DFE1E5')),
                                 pw.Container(
                                   margin: pw.EdgeInsets.symmetric(vertical: 10),
                                   child: pw.Row(
