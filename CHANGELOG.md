@@ -1,3 +1,3 @@
-## 1.0.17
+## 1.0.18
 
-- Correpcion de al generar factura a credito, se agrego al xml fecha limite de pago
+- Correpcion al generar token vencido
