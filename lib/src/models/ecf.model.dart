@@ -1404,7 +1404,7 @@ class EcfModel {
       DateTime now = DateTime.now();
       XmlSignerModel? xmlSignerModel;
 
-      var tiempoActual = now.millisecondsSinceEpoch;
+      int? tiempoActual = now.millisecondsSinceEpoch;
 
       String expiracionData = await expiracionArchivo.readAsString();
 
@@ -1412,13 +1412,11 @@ class EcfModel {
         json = jsonDecode(expiracionData);
       }
 
-      if (json != null &&
-          json is Map<String, dynamic> &&
-          json?.containsKey('expira') == true) {
+      if (json != null) {
         expira = DateTime.tryParse(json?['expira']);
       }
 
-      var expiracionTiempoData = expira?.millisecondsSinceEpoch;
+      int? expiracionTiempoData = expira?.millisecondsSinceEpoch;
 
       xmlSignerModel = await signerService.firmarXml(
         seedXml,
@@ -1427,6 +1425,8 @@ class EcfModel {
 
       if (expiracionTiempoData != null &&
           tiempoActual >= expiracionTiempoData) {
+        json = await validarSemillaFirmada(xmlSignerModel.xmlFile);
+      } else if (expiracionTiempoData == null) {
         json = await validarSemillaFirmada(xmlSignerModel.xmlFile);
       } else {
         print('no ha vencido el token');
