@@ -2,112 +2,75 @@ import 'dart:io';
 import 'package:ecf_dgii/src/models/ecf.model.dart';
 import 'package:ecf_dgii/src/types/ecf.dart';
 import 'package:ecf_dgii/src/utils/directories.dart';
+import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
 import 'package:ecf_dgii/src/utils/p12.parser.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 
 void main() async {
   try {
-    //GeneratorEndPoint.envEcfType = EnvEcfType.cert;
-    final cert = File(path.join(dirProject.path, 'certificado.p12'));
+    GeneratorEndPoint.envEcfType = EnvEcfType.cert;
+    final cert = File(path.join(dirProject.path, 'fyl.p12'));
 
-    String password = 'INES1037';
+    String password = 'URESA563';
 
     AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
 
     final now = DateTime.now();
     final dateFormat = DateFormat('dd-MM-yyyy');
+    final fechaEmision = '02-04-2020';
 
-    final fechaEmision = dateFormat.format(now);
     List<EcfDetailsModel> items = [
       EcfDetailsModel(
-          cantidad: '100.00',
-          unidadMedida: '19',
-          indicadorFacturacion: '4',
+          cantidad: '1.00',
+          unidadMedida: '',
+          indicadorFacturacion: '0',
           indicadorBienOServ: '2',
-          nombreItem: 'Asesoria Legal P/H',
+          nombreItem: 'SERVICIO PUBLICIDAD ACTUALIZADO',
           descripcionItem: '',
-          precioUnitario: '35.0000',
+          precioUnitario: '1.00',
           descuentoMonto: '',
           subDescuentos: [],
           impuestosAdicionales: [],
-          retencion: Retencion(
-              indicadorAgenteRetencionoPercepcion: '1',
-              montoITBISRetenido: '',
-              montoISRRetenido: '945.00'),
           otraMonedaDetalles: [],
-          montoItem: '3500.00'),
-      EcfDetailsModel(
-          cantidad: '80.00',
-          unidadMedida: '19',
-          indicadorFacturacion: '4',
-          indicadorBienOServ: '2',
-          nombreItem: 'Asesoria Legal P/H',
-          descripcionItem: '',
-          precioUnitario: '145.0000',
-          descuentoMonto: '',
-          subDescuentos: [],
-          impuestosAdicionales: [],
-          retencion: Retencion(
-              indicadorAgenteRetencionoPercepcion: '1',
-              montoITBISRetenido: '',
-              montoISRRetenido: '3132.00'),
-          otraMonedaDetalles: [],
-          montoItem: '11600.00'),
-      EcfDetailsModel(
-          cantidad: '50.00',
-          unidadMedida: '19',
-          indicadorFacturacion: '4',
-          indicadorBienOServ: '2',
-          nombreItem: 'Asesoria Legal P/H',
-          descripcionItem: '',
-          precioUnitario: '55.0000',
-          descuentoMonto: '',
-          subDescuentos: [],
-          impuestosAdicionales: [],
-          retencion: Retencion(
-              indicadorAgenteRetencionoPercepcion: '1',
-              montoITBISRetenido: '',
-              montoISRRetenido: '742.50'),
-          otraMonedaDetalles: [],
-          montoItem: '2750.00'),
+          montoItem: '1.00'),
     ];
 
     EcfModel ecf = EcfModel(
-        tipoEcf: EcfType.e47,
-        tempDirName: 'temp_7',
+        tipoEcf: EcfType.e34,
+        tempDirName: 'fylauto-reales',
         indicadorMontoGravado: '',
-        numeroComprobante: 'E470000001002',
-        codigoModificacion: '',
+        indicadorNotaCredito: '0',
+        rncOtroContribuyente: '',
+        numeroComprobante: 'E340000000091',
+        numeroComprobanteModificado: 'E410000000091',
+        codigoModificacion: '2',
         fechaEmision: fechaEmision,
-        fechaVencimiento: '31-12-2025',
-        fechaEmisionNcfModificado: '',
-        razonModificacion:
-            'ANULACION DEL ENCF31 CON SECUENCIA QUE FINALIZA EN 61',
-        tipoIngreso: '',
+        fechaVencimiento: '',
+        fechaEmisionNcfModificado: '01-04-2020',
+        razonModificacion: '',
+        tipoIngreso: '01',
         tipoPago: '1',
-        formasDePagos: [FormaDePago('1', '14350.00')],
+        formasDePagos: [],
         sucursal: '',
-        direccionEmisor:
-            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
-        municipio: '010100',
-        provincia: '010000',
-        telefonoEmisor1: '809-472-7676',
-        telefonoEmisor2: '809-491-1918',
+        direccionEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
+        municipio: '',
+        provincia: '',
+        telefonoEmisor1: '',
+        telefonoEmisor2: '',
         telefonoEmisor3: '',
         totalPaginas: '',
-        rncEmisor: '101675489',
-        razonSocialEmisor: 'URENA LORENZO Y ASOCIADOS SRL',
-        nombreComercial: 'URESA',
-        correoEmisor:
-            'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
-        website: 'www.facturaelectronica.com',
+        rncEmisor: '130718563',
+        razonSocialEmisor: 'F & L AUTOS SRL',
+        nombreComercial: '',
+        correoEmisor: '',
+        website: '',
         actividadEconomica: '',
         codigoVendedor: '',
         informacionAdicionalEmisor: '',
-        rncComprador: '',
-        identificadorExtranjero: '131880681',
-        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 03',
+        rncComprador: '131880681',
+        identificadorExtranjero: '',
+        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 02',
         nombreComprador: '',
         contactoComprador: '',
         correoComprador: '',
@@ -116,14 +79,16 @@ void main() async {
         municipioComprador: '',
         provinciaComprador: '',
         codigoInternoComprador: '',
+        numeroContenedor: '',
+        numeroReferencia: '',
         fechaEntrega: '',
         fechaOrdenCompra: '',
         numeroOrdenCompra: '',
-        numeroFacturaInterna: '123456789016',
-        numeroPedidoInterno: '123456789016',
+        numeroFacturaInterna: '',
+        numeroPedidoInterno: '',
         zonaVenta: '',
         rutaVenta: '',
-        paisDestino: 'ESTADOS UNIDOS',
+        paisDestino: '',
         conductor: '',
         documentoTransporte: '',
         ficha: '',
@@ -135,7 +100,7 @@ void main() async {
         totalGravado18: '',
         totalGravado16: '',
         totalGravadoTasa0: '',
-        montoExento: '17850.00',
+        montoExento: '',
         totalItbis: '',
         totalItbis18: '',
         totalItbis16: '',
@@ -143,10 +108,11 @@ void main() async {
         itbis1: '',
         itbis2: '',
         itbis3: '',
-        montoTotal: '17850.00',
-        montoPeriodo: '17850.00',
+        montoTotal: '0.00',
+        montoNoFacturable: '1.00',
+        montoPeriodo: '',
         montoAvancePago: '',
-        valorPagar: '17850.00',
+        valorPagar: '',
         tipoMoneda: '',
         tipoCambio: '',
         montoGravadoTotalOtraMoneda: '',
@@ -160,7 +126,7 @@ void main() async {
         montoExentoOtraMoneda: '',
         montoTotalOtraMoneda: '',
         totalItbisRetencion: '',
-        totalIsrRetencion: '4819.50',
+        totalIsrRetencion: '',
         montoImpuestoAdicional: '',
         impuestosAdicionales: [],
         terminoPago: '',
@@ -169,22 +135,20 @@ void main() async {
         items: items,
         privateKey: authModel.privateKey,
         certBase64: authModel.certBase64);
-
     await ecf.descargarSemilla();
     await ecf.validarSemilla();
     await ecf.firmar();
     await ecf.enviarEcf();
 
-    print(ecf.trackId);
-    print(ecf.token);
-
     var doc = await ecf.generarPdfFactura();
-    var filePdf = File(path.join(dirProject.path, 'temp_7', 'pdfs',
+    var filePdf = File(path.join(dirProject.path, 'fylauto-reales', 'pdfs',
         '${ecf.rncEmisor}${ecf.numeroComprobante}.PDF'));
 
     await filePdf.create(recursive: true);
     await filePdf.writeAsBytes(await doc.save());
     print(ecf.uriEcf);
+    print(ecf.trackId);
+    print(ecf.token);
 
     /* var pathFile =
         '/Users/josue/development/proyectos/ecf_dgii/temp_4/101675489E310000000950.xml';

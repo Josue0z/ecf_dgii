@@ -1,19 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:ecf_dgii/src/types/ecf.dart';
-import 'package:ecf_dgii/src/types/endpoints.dart';
-import 'package:ecf_dgii/src/utils/xml.signer.dart';
-import 'package:ecf_dgii/src/utils/ecf.functions.dart';
-import 'package:ecf_dgii/src/utils/directories.dart';
-import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
+
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
-import 'package:xml/xml.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:xml/xml.dart';
 
-/// Creando [OtraMonedaDetalle]
+import 'package:ecf_dgii/src/types/ecf.dart';
+import 'package:ecf_dgii/src/types/endpoints.dart';
+import 'package:ecf_dgii/src/utils/directories.dart';
+import 'package:ecf_dgii/src/utils/ecf.functions.dart';
+import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
+import 'package:ecf_dgii/src/utils/xml.signer.dart';
+
 class OtraMonedaDetalle {
   /// Precio [OtraMonedaDetalle]
   String precioOtraMoneda;
@@ -124,6 +125,60 @@ class FormaDePago {
   toString() {
     return 'FormaDePago(codigo: $codigo, monto: $monto)';
   }
+}
+
+class SubCantidad {
+  String subCantidad;
+  String codigoSubCantidad;
+  SubCantidad({
+    this.subCantidad = '',
+    this.codigoSubCantidad = '',
+  });
+
+  SubCantidad copyWith({
+    String subCantidad = '',
+    String codigoSubCantidad = '',
+  }) {
+    return SubCantidad(
+      subCantidad: subCantidad ?? this.subCantidad,
+      codigoSubCantidad: codigoSubCantidad ?? this.codigoSubCantidad,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'subCantidad': subCantidad,
+      'codigoSubCantidad': codigoSubCantidad,
+    };
+  }
+
+  factory SubCantidad.fromMap(Map<String, dynamic> map) {
+    return SubCantidad(
+      subCantidad: map['subCantidad'],
+      codigoSubCantidad: map['codigoSubCantidad'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory SubCantidad.fromJson(String source) =>
+      SubCantidad.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() =>
+      'SubCantidad(subCantidad: $subCantidad, codigoSubCantidad: $codigoSubCantidad)';
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is SubCantidad &&
+        o.subCantidad == subCantidad &&
+        o.codigoSubCantidad == codigoSubCantidad;
+  }
+
+  @override
+  int get hashCode => subCantidad.hashCode ^ codigoSubCantidad.hashCode;
 }
 
 /// Creando [Pagina]
@@ -549,6 +604,10 @@ class EcfModel {
 
   String fechaEntrega;
 
+  String contactoEntrega;
+
+  String direccionEntrega;
+
   /// Fecha de orden de compra
 
   String fechaOrdenCompra;
@@ -577,6 +636,22 @@ class EcfModel {
 
   String numeroReferencia;
 
+  String pesoBruto;
+
+  String pesoNeto;
+
+  String unidadPesoBruto;
+
+  String unidadPesoNeto;
+
+  String cantidadBulto;
+
+  String unidadBulto;
+
+  String volumenBulto;
+
+  String unidadVolumen;
+
   /// Nombre de puerto de embarque
 
   String nombrePuertoEmbarque;
@@ -585,9 +660,29 @@ class EcfModel {
 
   String condicionesEntrega;
 
+  String totalFob;
+
+  String seguro;
+
+  String flete;
+
+  String totalCif;
+
+  String regimenAduanero;
+
+  String nombrePuertoSalida;
+
+  String nombrePuertoDesembarque;
+
+  String viaTransporte;
+
+  String paisOrigen;
+
   /// Pais destino
 
   String paisDestino;
+
+  String direccionDestino;
 
   /// Nombre de Conductor
 
@@ -826,6 +921,8 @@ class EcfModel {
       this.municipioComprador = '',
       this.provinciaComprador = '',
       this.fechaEntrega = '',
+      this.contactoEntrega = '',
+      this.direccionEntrega = '',
       this.fechaOrdenCompra = '',
       this.numeroOrdenCompra = '',
       this.codigoInternoComprador = '',
@@ -833,11 +930,29 @@ class EcfModel {
       this.numeroEmbarque = '',
       this.numeroContenedor = '',
       this.numeroReferencia = '',
+      this.pesoBruto = '',
+      this.pesoNeto = '',
+      this.unidadPesoBruto = '',
+      this.unidadPesoNeto = '',
+      this.unidadBulto = '',
+      this.cantidadBulto = '',
+      this.volumenBulto = '',
+      this.unidadVolumen = '',
       this.nombrePuertoEmbarque = '',
       this.condicionesEntrega = '',
+      this.totalFob = '',
+      this.seguro = '',
+      this.flete = '',
+      this.totalCif = '',
+      this.regimenAduanero = '',
+      this.nombrePuertoSalida = '',
+      this.nombrePuertoDesembarque = '',
+      this.viaTransporte = '',
+      this.paisOrigen = '',
       this.numeroAlbaran = '',
       this.numeroComprobanteModificado = '',
       this.paisDestino = '',
+      this.direccionDestino = '',
       this.conductor = '',
       this.documentoTransporte = '',
       this.ficha = '',
@@ -1056,6 +1171,8 @@ class EcfModel {
       ${municipioComprador != '' ? '<MunicipioComprador>$municipioComprador</MunicipioComprador>' : ''}
       ${provinciaComprador != '' ? '<ProvinciaComprador>$provinciaComprador</ProvinciaComprador>' : ''}
       ${fechaEntrega != '' ? '<FechaEntrega>$fechaEntrega</FechaEntrega>' : ''}
+      ${contactoEntrega != '' ? '<ContactoEntrega>$contactoEntrega</ContactoEntrega>' : ''}
+      ${direccionEntrega != '' ? '<DireccionEntrega>$direccionEntrega</DireccionEntrega>' : ''}
       ${telefonoAdicional != '' ? '<TelefonoAdicional>$telefonoAdicional</TelefonoAdicional>' : ''}
       ${fechaOrdenCompra != '' ? '<FechaOrdenCompra>$fechaOrdenCompra</FechaOrdenCompra>' : ''}
       ${numeroOrdenCompra != '' ? '<NumeroOrdenCompra>$numeroOrdenCompra</NumeroOrdenCompra>' : ''}
@@ -1070,10 +1187,28 @@ class EcfModel {
          ${numeroReferencia != '' ? '<NumeroReferencia>$numeroReferencia</NumeroReferencia>' : ''}
          ${nombrePuertoEmbarque != '' ? '<NombrePuertoEmbarque>$nombrePuertoEmbarque</NombrePuertoEmbarque>' : ''}
          ${condicionesEntrega != '' ? '<CondicionesEntrega>$condicionesEntrega</CondicionesEntrega>' : ''}
+         ${totalFob != '' ? '<TotalFob>$totalFob</TotalFob>' : ''}
+         ${seguro != '' ? '<Seguro>$seguro</Seguro>' : ''}
+         ${flete != '' ? '<Flete>$flete</Flete>' : ''}
+         ${totalCif != '' ? '<TotalCif>$totalCif</TotalCif>' : ''}
+         ${regimenAduanero != '' ? '<RegimenAduanero>$regimenAduanero</RegimenAduanero>' : ''}
+         ${nombrePuertoSalida != '' ? '<NombrePuertoSalida>$nombrePuertoSalida</NombrePuertoSalida>' : ''}
+         ${nombrePuertoDesembarque != '' ? '<NombrePuertoDesembarque>$nombrePuertoDesembarque</NombrePuertoDesembarque>' : ''}
+         ${pesoBruto != '' ? '<PesoBruto>$pesoBruto</PesoBruto>' : ''}
+         ${pesoNeto != '' ? '<PesoNeto>$pesoNeto</PesoNeto>' : ''}
+         ${unidadPesoBruto != '' ? '<UnidadPesoBruto>$unidadPesoBruto</UnidadPesoBruto>' : ''}
+         ${unidadPesoNeto != '' ? '<UnidadPesoNeto>$unidadPesoNeto</UnidadPesoNeto>' : ''}
+         ${cantidadBulto != '' ? '<CantidadBulto>$cantidadBulto</CantidadBulto>' : ''}
+         ${unidadBulto != '' ? '<UnidadBulto>$unidadBulto</UnidadBulto>' : ''}
+         ${volumenBulto != '' ? '<VolumenBulto>$volumenBulto</VolumenBulto>' : ''}
+         ${unidadVolumen != '' ? '<UnidadVolumen>$unidadVolumen</UnidadVolumen>' : ''}
         </InformacionesAdicionales>
        ''' : ''}
      ${paisDestino != '' || conductor != '' || documentoTransporte != '' || ficha != '' || placa != '' || rutaTransporte != '' || zonaTransporte != '' || numeroAlbaran != '' ? '''
      <Transporte>
+      ${viaTransporte != '' ? '<ViaTransporte>$viaTransporte</ViaTransporte>' : ''}
+      ${paisOrigen != '' ? '<PaisOrigen>$paisOrigen</PaisOrigen>' : ''}
+      ${direccionDestino != '' ? '<DireccionDestino>$direccionDestino</DireccionDestino>' : ''}
       ${paisDestino != '' ? '<PaisDestino>$paisDestino</PaisDestino>' : ''}
       ${conductor != '' ? '<Conductor>$conductor</Conductor>' : ''}
       ${documentoTransporte != '' ? '<DocumentoTransporte>$documentoTransporte</DocumentoTransporte>' : ''}
@@ -1170,8 +1305,22 @@ class EcfModel {
     ${e.descripcionItem != '' ? '<DescripcionItem>${e.descripcionItem}</DescripcionItem>' : ''}
     <CantidadItem>${e.cantidad}</CantidadItem>
     ${e.unidadMedida != '' ? '<UnidadMedida>${e.unidadMedida}</UnidadMedida>' : ''}
+    ${e.cantidadReferencia != '' ? '<CantidadReferencia>${e.cantidadReferencia}</CantidadReferencia>' : ''}
     ${e.unidadReferencia != '' ? '<UnidadReferencia>${e.unidadReferencia}</UnidadReferencia>' : ''}
+    ${e.subCantidades.isNotEmpty ? '''
+      <TablaSubcantidad>
+          ${e.subCantidades.map((e) => '''
+             <SubcantidadItem>
+              ${e.subCantidad != '' ? '<Subcantidad>${e.subCantidad}</Subcantidad>' : ''}
+              ${e.codigoSubCantidad != '' ? '<CodigoSubcantidad>${e.codigoSubCantidad}</CodigoSubcantidad>' : ''}
+             </SubcantidadItem>
+        ''').toList().join()}
+      </TablaSubcantidad>
+      ''' : ''}
+    ${e.gradosAlcohol != '' ? '<GradosAlcohol>${e.gradosAlcohol}</GradosAlcohol>' : ''}
     ${e.precioUnitarioReferencia != '' ? '<PrecioUnitarioReferencia>${e.precioUnitarioReferencia}</PrecioUnitarioReferencia>' : ''}
+    ${e.fechaElaboracion != '' ? '<FechaElaboracion>${e.fechaElaboracion}</FechaElaboracion>' : ''}
+    ${e.fechaVencimientoItem != '' ? '<FechaVencimientoItem>${e.fechaVencimientoItem}</FechaVencimientoItem>' : ''}
     <PrecioUnitarioItem>${e.precioUnitario}</PrecioUnitarioItem>
      ${e.subDescuentos.isNotEmpty ? '''
        <DescuentoMonto>${e.descuentoMonto}</DescuentoMonto>
@@ -1609,9 +1758,19 @@ class EcfDetailsModel {
 
   String unidadMedida;
 
+  String fechaElaboracion;
+
+  String fechaVencimientoItem;
+
+  String cantidadReferencia;
+
   /// Unidad de Referencia del objeto [EcfDetailsModel]
 
   String unidadReferencia;
+
+  List<SubCantidad> subCantidades;
+
+  String gradosAlcohol;
 
   /// Precio Unitario de Referencia del objeto [EcfDetailsModel]
 
@@ -1667,8 +1826,13 @@ class EcfDetailsModel {
       required this.indicadorBienOServ,
       required this.indicadorFacturacion,
       required this.unidadMedida,
+      this.fechaElaboracion = '',
+      this.fechaVencimientoItem = '',
+      this.cantidadReferencia = '',
       this.unidadReferencia = '',
+      this.subCantidades = const [],
       required this.precioUnitario,
+      this.gradosAlcohol = '',
       this.precioUnitarioReferencia = '',
       required this.montoItem,
       this.descuentoMonto = '',
@@ -2240,18 +2404,15 @@ extension EcfPdfExtension on EcfModel {
 
     doc.addPage(
       pw.MultiPage(
-          footer: (ctx) {
-            return pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.center,
-                children: [pw.Text('Pagina ${pagina++}')]);
-          },
+          pageTheme: pw.PageTheme(
+              theme: pw.ThemeData(defaultTextStyle: pw.TextStyle(fontSize: 8))),
           header: (ctx) {
             return pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(razonSocialEmisor,
                       style: pw.TextStyle(
-                          fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                          fontSize: 16, fontWeight: pw.FontWeight.bold)),
                   pw.SizedBox(height: 10),
                   pw.Text(
                     'RNC: $rncEmisor',
@@ -2317,7 +2478,7 @@ extension EcfPdfExtension on EcfModel {
                               color: PdfColor.fromHex('#DFE1E5'))),
                       headerAlignment: pw.Alignment.centerLeft,
                       cellAlignment: pw.Alignment.centerLeft,
-                      cellStyle: pw.TextStyle(fontSize: 10),
+                      cellStyle: pw.TextStyle(fontSize: 8),
                       headers: [
                         'Cant',
                         'U.M',
@@ -2358,7 +2519,7 @@ extension EcfPdfExtension on EcfModel {
                                           fontWeight: pw.FontWeight.bold)),
                                   pw.SizedBox(width: 5),
                                   pw.Text(codigoSeguridad,
-                                      style: pw.TextStyle(fontSize: 10)),
+                                      style: pw.TextStyle(fontSize: 8)),
                                 ]),
                                 pw.SizedBox(height: 10),
                                 pw.Row(children: [
@@ -2368,7 +2529,7 @@ extension EcfPdfExtension on EcfModel {
                                           fontWeight: pw.FontWeight.bold)),
                                   pw.SizedBox(width: 5),
                                   pw.Text(fechaHoraFirma,
-                                      style: pw.TextStyle(fontSize: 10)),
+                                      style: pw.TextStyle(fontSize: 8)),
                                 ])
                               ])),
                           pw.Expanded(

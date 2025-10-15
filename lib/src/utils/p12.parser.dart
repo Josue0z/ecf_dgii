@@ -17,28 +17,42 @@ class AuthCertModel {
 
 /// Extraer primer cert
 String? extraerPrimerCert(String fullPem) {
-  final regex = RegExp(
-    r'-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----',
-    dotAll: true,
-  );
-  final match = regex.firstMatch(fullPem);
-  return match?.group(0)!.trim();
+  try {
+    final regex = RegExp(
+      r'-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----',
+      dotAll: true,
+    );
+    final match = regex.firstMatch(fullPem);
+    var group = match?.group(0);
+
+    if (group == null) {
+      throw '❌ No se pudo extraer el certificado del archivo .p12 ya que no contiene un grupo valido';
+    }
+    return group.trim();
+  } catch (e) {
+    rethrow;
+  }
 }
 
 /// Autenticar certificado y retornar un [AuthCertModel]
 Future<AuthCertModel> getAuthP12(
     {required File cert, required String password}) async {
-  var resultCerts =
-      await extraerCertYKeyComoString(p12Path: cert.path, password: password);
+  try {
+    var resultCerts =
+        await extraerCertYKeyComoString(p12Path: cert.path, password: password);
+    if (resultCerts == null || resultCerts.length < 2) {
+      throw '❌ No se pudo extraer certificado y clave privada';
+    }
+    final privateKeyPem = resultCerts[1];
 
-  final privateKeyPem = resultCerts?[1];
-
-  final certBase64 = (resultCerts?[0])
-          ?.replaceAll('-----BEGIN CERTIFICATE-----', '')
-          .replaceAll('-----END CERTIFICATE-----', '')
-          .replaceAll('\n', '') ??
-      '';
-  return AuthCertModel(privateKey: privateKeyPem!, certBase64: certBase64);
+    final certBase64 = (resultCerts[0])
+        .replaceAll('-----BEGIN CERTIFICATE-----', '')
+        .replaceAll('-----END CERTIFICATE-----', '')
+        .replaceAll('\n', '');
+    return AuthCertModel(privateKey: privateKeyPem, certBase64: certBase64);
+  } catch (e) {
+    rethrow;
+  }
 }
 
 /// Extrear certificado
@@ -46,63 +60,70 @@ Future<List<String>?> extraerCertYKeyComoString({
   required String p12Path,
   required String password,
 }) async {
-  final pemTemp = 'exportado_temp.pem';
+  try {
+    final pemTemp = 'exportado_temp.pem';
 
-  final result = await Process.run('openssl', [
-    'pkcs12',
-    '-in',
-    p12Path,
-    '-nodes',
-    '-passin',
-    'pass:$password',
-    '-out',
-    pemTemp,
-    '-legacy',
-  ]);
+    final result = await Process.run('openssl', [
+      'pkcs12',
+      '-in',
+      p12Path,
+      '-nodes',
+      '-passin',
+      'pass:$password',
+      '-out',
+      pemTemp,
+      '-legacy',
+    ]);
 
-  if (result.exitCode != 0) {
-    print('❌ Error al ejecutar OpenSSL:\n${result.stderr}');
-    return null;
-  }
-
-  final pemContent = await File(pemTemp).readAsString(encoding: latin1);
-  await File(pemTemp).delete();
-
-  final lines = pemContent.split('\n');
-  final certBuffer = StringBuffer();
-  final keyBuffer = StringBuffer();
-
-  String? current;
-  for (final line in lines) {
-    if (line.contains('BEGIN CERTIFICATE')) {
-      current = 'cert';
-    } else if (line.contains('BEGIN PRIVATE KEY') ||
-        line.contains('BEGIN RSA PRIVATE KEY')) {
-      current = 'key';
+    if (result.exitCode != 0) {
+      throw '❌ Error al ejecutar OpenSSL:\n${result.stderr}';
     }
 
-    if (current == 'cert') certBuffer.writeln(line);
-    if (current == 'key') keyBuffer.writeln(line);
+    final pemContent = await File(pemTemp).readAsString(encoding: latin1);
+    await File(pemTemp).delete();
 
-    if (line.contains('END CERTIFICATE') ||
-        line.contains('END PRIVATE KEY') ||
-        line.contains('END RSA PRIVATE KEY')) {
-      current = null;
+    final lines = pemContent.split('\n');
+    final certBuffer = StringBuffer();
+    final keyBuffer = StringBuffer();
+
+    String? current;
+    for (final line in lines) {
+      if (line.contains('BEGIN CERTIFICATE')) {
+        current = 'cert';
+      } else if (line.contains('BEGIN PRIVATE KEY') ||
+          line.contains('BEGIN RSA PRIVATE KEY')) {
+        current = 'key';
+      }
+
+      if (current == 'cert') certBuffer.writeln(line);
+      if (current == 'key') keyBuffer.writeln(line);
+
+      if (line.contains('END CERTIFICATE') ||
+          line.contains('END PRIVATE KEY') ||
+          line.contains('END RSA PRIVATE KEY')) {
+        current = null;
+      }
     }
+
+    final certPem = certBuffer.toString().trim();
+    final keyPem = keyBuffer.toString().trim();
+
+    if (certPem.isEmpty || keyPem.isEmpty) {
+      throw '⚠️ No se pudieron extraer cert o key desde el archivo .p12';
+    }
+
+    // 📂 Guardar key.pem en el path esperado
+    final keyPath = path.join(dirProject.path, 'temp', 'systemp', 'key.pem');
+    await Directory(path.dirname(keyPath)).create(recursive: true);
+    await File(keyPath).writeAsString(keyPem, encoding: latin1);
+    var certExtracted = extraerPrimerCert(certPem);
+
+    if (certExtracted == null) {
+      throw '⚠️ No se pudo extraer el certificado del archivo .p12';
+    }
+
+    return [certExtracted.trim(), keyPem.trim()];
+  } catch (e) {
+    rethrow;
   }
-
-  final certPem = certBuffer.toString().trim();
-  final keyPem = keyBuffer.toString().trim();
-
-  if (certPem.isEmpty || keyPem.isEmpty) {
-    print('⚠️ No se pudieron extraer cert o key desde el archivo .p12');
-    return null;
-  }
-
-  // 📂 Guardar key.pem en el path esperado
-  final keyPath = path.join(dirProject.path, 'temp', 'systemp', 'key.pem');
-  await Directory(path.dirname(keyPath)).create(recursive: true);
-  await File(keyPath).writeAsString(keyPem, encoding: latin1);
-
-  return [extraerPrimerCert(certPem)!.trim(), keyPem.trim()];
 }

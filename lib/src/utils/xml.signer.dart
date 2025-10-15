@@ -94,43 +94,48 @@ class XmlSignerService {
   /// Firmar xml
 
   Future<XmlSignerModel> firmarXml(String xmlOriginal, File outFile) async {
-    var sanitizedXml = escapeXmlEntities(xmlOriginal);
-    var canonical = (await canonicalXml(removeXmlDeclaration(sanitizedXml)))
-        .replaceAll('\n', '')
-        .replaceAll(RegExp(r'>\s+<'), '><');
+    try {
+      var sanitizedXml = escapeXmlEntities(xmlOriginal);
+      var canonical = (await canonicalXml(removeXmlDeclaration(sanitizedXml)))
+          .replaceAll('\n', '')
+          .replaceAll(RegExp(r'>\s+<'), '><');
 
-    var digestValue = await calcularDigest(canonical);
+      var digestValue = await calcularDigest(canonical);
 
-    // 2) Construye el SignedXml
-    final signer = SignedXml()
-      // URI="" -> referencia al documento completo
-      ..addReference(
-        null, // no XPath
-        ['http://www.w3.org/2000/09/xmldsig#enveloped-signature'],
-        'http://www.w3.org/2001/04/xmlenc#sha256',
-        '', // URI vacío
-        digestValue, // digestValue (se calculará)
-        null, // inclusiveNamespacesPrefixList
-        true, // isEmptyUri = true para que use URI=""
-      )
-      ..keyInfoProvider = X509KeyInfoProvider(certBase64, rsaPrivateKey)
-      ..canonicalizationAlgorithm =
-          'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
-      ..signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+      // 2) Construye el SignedXml
+      final signer = SignedXml()
+        // URI="" -> referencia al documento completo
+        ..addReference(
+          null, // no XPath
+          ['http://www.w3.org/2000/09/xmldsig#enveloped-signature'],
+          'http://www.w3.org/2001/04/xmlenc#sha256',
+          '', // URI vacío
+          digestValue, // digestValue (se calculará)
+          null, // inclusiveNamespacesPrefixList
+          true, // isEmptyUri = true para que use URI=""
+        )
+        ..keyInfoProvider = X509KeyInfoProvider(certBase64, rsaPrivateKey)
+        ..canonicalizationAlgorithm =
+            'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
+        ..signatureAlgorithm =
+            'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
 
-      // Y computa la firma sobre el XML sin la cabecera <?xml…?>
-      ..computeSignature(canonical);
+        // Y computa la firma sobre el XML sin la cabecera <?xml…?>
+        ..computeSignature(canonical);
 
-    // 3) Escribe el resultado
-    await outFile.writeAsString(
-        '<?xml version="1.0" encoding="utf-8"?>${signer.signedXml}');
+      // 3) Escribe el resultado
+      await outFile.writeAsString(
+          '<?xml version="1.0" encoding="utf-8"?>${signer.signedXml}');
 
-    print('FIRMA: ${signer.signatureValue}');
+      print('FIRMA: ${signer.signatureValue}');
 
-    return XmlSignerModel(
-        xmlStr: signer.signedXml,
-        xmlFile: outFile,
-        codigoSeguridad: obtenerCodigoSeguridad(signer.signatureValue));
+      return XmlSignerModel(
+          xmlStr: signer.signedXml,
+          xmlFile: outFile,
+          codigoSeguridad: obtenerCodigoSeguridad(signer.signatureValue));
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 
