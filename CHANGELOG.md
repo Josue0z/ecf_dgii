@@ -1,3 +1,3 @@
-## 1.0.20
+## 1.0.21
 
-- Correpcion al modificar o controlar errores
+- Correpcion del pem archivo del p12

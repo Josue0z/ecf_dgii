@@ -63,6 +63,10 @@ Future<List<String>?> extraerCertYKeyComoString({
   try {
     final pemTemp = 'exportado_temp.pem';
 
+    var pemFile = File(path.join(dirProject.path, pemTemp));
+
+    await pemFile.create(recursive: true);
+
     final result = await Process.run('openssl', [
       'pkcs12',
       '-in',
@@ -71,7 +75,7 @@ Future<List<String>?> extraerCertYKeyComoString({
       '-passin',
       'pass:$password',
       '-out',
-      pemTemp,
+      pemFile.path,
       '-legacy',
     ]);
 
@@ -79,7 +83,7 @@ Future<List<String>?> extraerCertYKeyComoString({
       throw '❌ Error al ejecutar OpenSSL:\n${result.stderr}';
     }
 
-    final pemContent = await File(pemTemp).readAsString(encoding: latin1);
+    final pemContent = await pemFile.readAsString(encoding: latin1);
     await File(pemTemp).delete();
 
     final lines = pemContent.split('\n');
