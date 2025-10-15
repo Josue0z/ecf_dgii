@@ -1547,7 +1547,7 @@ class EcfModel {
   Future<XmlSignerModel?> validarSemilla() async {
     try {
       var expiracionArchivo =
-          File(path.join(Directory.systemTemp.path, 'expiracion_data.txt'));
+          File(path.join(tempDirPath, 'expiracion_data.txt'));
 
       await expiracionArchivo.create(recursive: true);
       DateTime now = DateTime.now();
@@ -1569,7 +1569,7 @@ class EcfModel {
 
       xmlSignerModel = await signerService.firmarXml(
         seedXml,
-        File(path.join(dirProject.path, tempDirName, 'semilla_firmada.xml')),
+        File(path.join(tempDirPath, tempDirName, 'semilla_firmada.xml')),
       );
 
       if (expiracionTiempoData != null &&
@@ -1604,10 +1604,10 @@ class EcfModel {
         tag = 'ECF_';
       }
       final xmlFilePath = path.join(
-          dirProject.path, tempDirName, '$tag$rncEmisor$numeroComprobante.xml');
+          tempDirPath, tempDirName, '$tag$rncEmisor$numeroComprobante.xml');
 
       final rfceFilePath = path.join(
-          dirProject.path, tempDirName, '$rncEmisor$numeroComprobante.xml');
+          tempDirPath, tempDirName, '$rncEmisor$numeroComprobante.xml');
 
       File xmlFile = File(xmlFilePath);
 
@@ -1665,7 +1665,7 @@ class EcfModel {
 
       var res = await enviarEcfFirmado(ecfFile!, tipoEcf, token, esResumenE32);
 
-      var urlsDir = Directory(path.join(dirProject.path, 'urls'));
+      var urlsDir = Directory(path.join(tempDirPath, 'urls'));
 
       if (res['trackId'] != null) {
         trackId = res['trackId'];
@@ -1992,7 +1992,7 @@ class AprobacionComercial {
   Future<XmlSignerModel> validarSemilla() async {
     var xmlSignerModel = await signerService.firmarXml(
       seedXml,
-      File(path.join(dirProject.path, tempDirName, 'semilla_firmada.xml')),
+      File(path.join(tempDirPath, tempDirName, 'semilla_firmada.xml')),
     );
 
     jsonData = await validarSemillaFirmada(xmlSignerModel.xmlFile);
@@ -2006,7 +2006,7 @@ class AprobacionComercial {
   /// Enviar [AprobacionComercial] de un ecf
 
   Future<Map<String, dynamic>> enviarAprobacionComercialEcf() async {
-    xmlAprobacionFile = File(path.join(dirProject.path, tempDirName,
+    xmlAprobacionFile = File(path.join(tempDirPath, tempDirName,
         'ACECF_${rncComprador}_$numeroComprobante.xml'));
 
     var res = await signerService.firmarXml(xmlAprobacion, xmlAprobacionFile!);

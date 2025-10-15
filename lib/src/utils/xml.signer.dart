@@ -52,7 +52,7 @@ class X509KeyInfoProvider implements KeyInfoProvider {
 
   @override
   Uint8List? getKey(String? keyInfo) {
-    return File(path.join(dirProject.path, 'temp', 'systemp', 'key.pem'))
+    return File(path.join(tempDirPath, 'temp', 'systemp', 'key.pem'))
         .readAsBytesSync();
   }
 

@@ -1,3 +1,3 @@
-## 1.0.22
+## 1.0.23
 
-- Correpcion del pem archivo del p12
+- Correpcion de generacion de carpeta temporal

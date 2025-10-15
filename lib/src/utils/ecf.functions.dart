@@ -11,14 +11,13 @@ import 'package:path/path.dart' as path;
 
 /// Descargar semilla original de la DGII
 Future<File> descargarSemillaDgii(String dirName) async {
-  var dir = Directory(dirProject.path);
   Uri uri = GeneratorEndPoint.getEndPoint(kSemillaEndPoint);
   final response = await http.get(
     uri,
     headers: {'accept': 'application/xml'},
   );
 
-  final tempDir = Directory(path.join(dir.path, dirName));
+  final tempDir = Directory(path.join(tempDirPath, dirName));
   await tempDir.create(recursive: true);
 
   if (response.statusCode == 200) {

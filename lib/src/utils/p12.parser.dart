@@ -63,7 +63,7 @@ Future<List<String>?> extraerCertYKeyComoString({
   try {
     final pemTemp = 'exportado_temp.pem';
 
-    var pemFile = File(path.join(dirProject.path, pemTemp));
+    var pemFile = File(path.join(tempDirPath, pemTemp));
 
     await pemFile.create(recursive: true);
 
@@ -117,7 +117,7 @@ Future<List<String>?> extraerCertYKeyComoString({
     }
 
     // 📂 Guardar key.pem en el path esperado
-    final keyPath = path.join(dirProject.path, 'temp', 'systemp', 'key.pem');
+    final keyPath = path.join(tempDirPath, 'temp', 'systemp', 'key.pem');
     await Directory(path.dirname(keyPath)).create(recursive: true);
     await File(keyPath).writeAsString(keyPem, encoding: latin1);
     var certExtracted = extraerPrimerCert(certPem);
