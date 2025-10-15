@@ -84,7 +84,7 @@ Future<List<String>?> extraerCertYKeyComoString({
     }
 
     final pemContent = await pemFile.readAsString(encoding: latin1);
-    await File(pemTemp).delete();
+    await pemFile.delete();
 
     final lines = pemContent.split('\n');
     final certBuffer = StringBuffer();
