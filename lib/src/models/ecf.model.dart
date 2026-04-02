@@ -15,6 +15,7 @@ import 'package:ecf_dgii/src/utils/ecf.functions.dart';
 import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
 import 'package:ecf_dgii/src/utils/xml.signer.dart';
 
+/// Declaracion de Objeto [OtraMonedaDetalle]
 class OtraMonedaDetalle {
   /// Precio [OtraMonedaDetalle]
   String precioOtraMoneda;
@@ -127,17 +128,23 @@ class FormaDePago {
   }
 }
 
+
+/// Declaracion de Objeto [SubCantidad]
 class SubCantidad {
+  /// SubCantidad Informacion
   String subCantidad;
+  /// codigoSubCantidad
   String codigoSubCantidad;
+  /// Objeto [SubCantidad]
   SubCantidad({
     this.subCantidad = '',
     this.codigoSubCantidad = '',
   });
-
+  
+  /// Funcion de copiado [SubCantidad]
   SubCantidad copyWith({
-    String subCantidad = '',
-    String codigoSubCantidad = '',
+    String? subCantidad,
+    String? codigoSubCantidad,
   }) {
     return SubCantidad(
       subCantidad: subCantidad ?? this.subCantidad,
@@ -151,13 +158,15 @@ class SubCantidad {
       'codigoSubCantidad': codigoSubCantidad,
     };
   }
-
+  
+ /// Construir objeto [SubCantidad] desde un [Map]
   factory SubCantidad.fromMap(Map<String, dynamic> map) {
     return SubCantidad(
       subCantidad: map['subCantidad'],
       codigoSubCantidad: map['codigoSubCantidad'],
     );
   }
+  /// Convertir [SubCantidad] a formato Json
 
   String toJson() => json.encode(toMap());
 
@@ -508,7 +517,11 @@ class EcfModel {
 
   String tipoPago;
 
+  /// Info tipoCuentaPago
+
   String tipoCuentaPago;
+
+  /// Info numeroCuentaPago
 
   String numeroCuentaPago;
 
@@ -608,7 +621,11 @@ class EcfModel {
 
   String fechaEntrega;
 
+  /// Info contactoEntrega
+
   String contactoEntrega;
+
+  /// Info direccionEntrega
 
   String direccionEntrega;
 
@@ -640,19 +657,35 @@ class EcfModel {
 
   String numeroReferencia;
 
+  /// Info pesoBruto
+
   String pesoBruto;
+
+  /// Info pesoNeto
 
   String pesoNeto;
 
+  /// Info unidadPesoBruto
+
   String unidadPesoBruto;
+
+  /// Info unidadPesoNeto
 
   String unidadPesoNeto;
 
+  /// Info cantidadBulto
+
   String cantidadBulto;
+
+  /// Info unidadBulto
 
   String unidadBulto;
 
+  /// Info volumenBulto
+
   String volumenBulto;
+
+  /// Info unidadVolumen
 
   String unidadVolumen;
 
@@ -664,27 +697,47 @@ class EcfModel {
 
   String condicionesEntrega;
 
+  /// Info totalFob
+
   String totalFob;
+
+  /// Info seguro
 
   String seguro;
 
+  /// Info de flete
+
   String flete;
+
+  /// INfo de totalCif
 
   String totalCif;
 
+  /// Info de regimenAduanero
+
   String regimenAduanero;
+
+  /// Info de nombrePuertoSalida
 
   String nombrePuertoSalida;
 
+  /// Info de nombrePuertoDesembarque
+
   String nombrePuertoDesembarque;
+
+  /// Info ViaTransporte
 
   String viaTransporte;
 
+  /// Info Pais de Origen
+
   String paisOrigen;
 
-  /// Pais destino
+  /// Info Pais destino
 
   String paisDestino;
+
+  /// direccion de destino
 
   String direccionDestino;
 
@@ -1765,18 +1818,24 @@ class EcfDetailsModel {
   /// Unidad de Medida del objeto [EcfDetailsModel]
 
   String unidadMedida;
-
+  
+  /// Fecha de elaboracion del objeto [EcfDetailsModel]
   String fechaElaboracion;
-
+  
+  /// Fecha de Vencimiento del objeto [EcfDetailsModel]
   String fechaVencimientoItem;
-
+  
+  /// Cantidad de Referencia del objeto [EcfDetailsModel]
   String cantidadReferencia;
 
   /// Unidad de Referencia del objeto [EcfDetailsModel]
 
   String unidadReferencia;
-
+  
+  /// Lista de [SubCantidad]
   List<SubCantidad> subCantidades;
+
+  /// Grados de alcohol del objeto [EcfDetailsModel]
 
   String gradosAlcohol;
 
@@ -2122,6 +2181,7 @@ class AprobacionComercial {
   }
 }
 
+/// Declaracion de funcion [labelEcfTipo]
 String labelEcfTipo(String tipoEcf) {
   const tipos = {
     '31': 'FACTURA DE CRÉDITO FISCAL ELECTRONICA',
