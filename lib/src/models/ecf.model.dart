@@ -508,6 +508,10 @@ class EcfModel {
 
   String tipoPago;
 
+  String tipoCuentaPago;
+
+  String numeroCuentaPago;
+
   /// Fecha limite de pago si la factura es a credito
 
   String fechaLimitePago;
@@ -900,6 +904,8 @@ class EcfModel {
       this.tipoIngreso = '',
       this.fechaLimitePago = '',
       this.tipoPago = '',
+      this.tipoCuentaPago = '',
+      this.numeroCuentaPago = '',
       this.indicadorMontoGravado = '',
       this.direccionEmisor = '',
       this.sucursal = '',
@@ -1131,6 +1137,8 @@ class EcfModel {
       </TablaFormasPago>
     
     ''' : ''}
+      ${tipoCuentaPago != '' ? '<TipoCuentaPago>$tipoCuentaPago</TipoCuentaPago>' : ''}
+      ${numeroCuentaPago != '' ? '<NumeroCuentaPago>$numeroCuentaPago</NumeroCuentaPago>' : ''}
       ${bancoPago != '' ? '<BancoPago>$bancoPago</BancoPago>' : ''}
       ${totalPaginas != '' ? '<TotalPaginas>$totalPaginas</TotalPaginas>' : ''}
     </IdDoc>
@@ -2116,16 +2124,16 @@ class AprobacionComercial {
 
 String labelEcfTipo(String tipoEcf) {
   const tipos = {
-    '31': 'FACTURA DE CRÉDITO FISCAL',
-    '32': 'FACTURA DE CONSUMIDOR FINAL',
-    '33': 'NOTA DE DÉBITO',
-    '34': 'NOTA DE CRÉDITO',
-    '41': 'COMPROBANTE DE COMPRAS',
-    '43': 'COMPROBANTE PARA GASTOS MENORES',
-    '44': 'COMPROBANTE PARA REGIMENES ESPECIALES',
-    '45': 'COMPROBANTE GUBERNAMENTAL',
-    '46': 'COMPROBANTE PARA EXPORTACIONES',
-    '47': 'COMPROBANTE PARA PAGOS AL EXTERIOR',
+    '31': 'FACTURA DE CRÉDITO FISCAL ELECTRONICA',
+    '32': 'FACTURA DE CONSUMIDOR FINAL ELECTRONICA',
+    '33': 'NOTA DE DÉBITO ELECTRONICA',
+    '34': 'NOTA DE CRÉDITO ELECTRONICA',
+    '41': 'COMPROBANTE DE COMPRAS ELECTRONICO',
+    '43': 'COMPROBANTE PARA GASTOS MENORES ELECTRONICO',
+    '44': 'COMPROBANTE PARA REGIMENES ESPECIALES ELECTRONICO',
+    '45': 'COMPROBANTE GUBERNAMENTAL ELECTRONICO',
+    '46': 'COMPROBANTE PARA EXPORTACIONES ELECTRONICO',
+    '47': 'COMPROBANTE PARA PAGOS AL EXTERIOR ELECTRONICO',
   };
 
   return tipos[tipoEcf] ?? 'TIPO DESCONOCIDO';
@@ -2135,9 +2143,11 @@ String labelEcfTipo(String tipoEcf) {
 Future<pw.Document> generarPdfDesdeXmlFirmado(String pathXml,
     {required String url,
     List<List<String>> items = const [],
+    String razonSocialEmisor = '',
     String direccionEmisor = '',
     String correoEmisor = '',
-    String fechaVencimiento = ''}) async {
+    String fechaVencimiento = '',
+    String fechaFirma = ''}) async {
   final xmlContent = await File(pathXml).readAsString();
   final xml = XmlDocument.parse(xmlContent);
   final doc = pw.Document();
@@ -2173,24 +2183,27 @@ Future<pw.Document> generarPdfDesdeXmlFirmado(String pathXml,
           ];
         }).toList();
 
-  int pagina = 0;
-
   Uri uriData = Uri.parse(url);
-  String fechaFirma = uriData.queryParameters['FechaFirma'] ?? '';
+  String xfechaFirma = uriData.queryParameters['FechaFirma'] ?? fechaFirma;
 
   doc.addPage(
     pw.MultiPage(
-      pageFormat: PdfPageFormat.a4,
+      pageTheme: pw.PageTheme(
+          pageFormat: PdfPageFormat.a4,
+          theme: pw.ThemeData(defaultTextStyle: pw.TextStyle(fontSize: 8))),
       footer: (ctx) {
         return pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.center,
-            children: [pw.Text('Pagina ${pagina++}')]);
+            children: [pw.Text('Pagina ${ctx.pageNumber}/${ctx.pagesCount}')]);
       },
       header: (ctx) {
         return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(val('RazonSocialEmisor'),
+              pw.Text(
+                  razonSocialEmisor != ''
+                      ? razonSocialEmisor
+                      : val('RazonSocialEmisor'),
                   style: pw.TextStyle(
                       fontSize: 20, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 10),
@@ -2202,8 +2215,10 @@ Future<pw.Document> generarPdfDesdeXmlFirmado(String pathXml,
                     child: pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
-                      pw.Text('Dirección: ${val('DireccionEmisor')}'),
-                      pw.Text('Correo: ${val('CorreoEmisor')}'),
+                      pw.Text(
+                          'Dirección: ${val('DireccionEmisor') != '' ? val('DireccionEmisor') : direccionEmisor != '' ? direccionEmisor : 'S/N'}'),
+                      pw.Text(
+                          'Correo: ${val('CorreoEmisor') != '' ? val('CorreoEmisor') : correoEmisor != '' ? correoEmisor : 'S/N'}'),
                     ])),
                 pw.Expanded(
                     child: pw.Column(
@@ -2222,16 +2237,18 @@ Future<pw.Document> generarPdfDesdeXmlFirmado(String pathXml,
                           : pw.SizedBox(),
                       pw.Text('Fecha de Emisión: ${val('FechaEmision')}',
                           textAlign: pw.TextAlign.right),
-                      pw.Text(
-                          'Fecha de Vencimiento: ${val('FechaVencimientoSecuencia') != '' ? val('FechaVencimientoSecuencia') : fechaVencimiento}',
-                          textAlign: pw.TextAlign.right),
+                      labelEcftipoEcf == '32' || labelEcftipoEcf == '34'
+                          ? pw.SizedBox()
+                          : pw.Text(
+                              'Fecha de Vencimiento: ${val('FechaVencimientoSecuencia') != '' ? val('FechaVencimientoSecuencia') : fechaVencimiento}',
+                              textAlign: pw.TextAlign.right),
                     ]))
               ]),
               pw.SizedBox(height: 20),
               pw.Text(
-                  'RNC Cliente: ${val('RNCComprador') != '' ? val('RNCComprador') : 'S/N'}'),
+                  'RNC/Cedula Cliente: ${val('RNCComprador') != '' ? val('RNCComprador') : val('IdentificadorExtranjero') != '' ? val('IdentificadorExtranjero') : 'S/N'}'),
               pw.Text(
-                  'Razón Social Cliente: ${val('RazonSocialComprador') != '' ? val('RazonSocialComprador') : 'CLIENTE CONTADO'}'),
+                  'Cliente: ${val('RazonSocialComprador') != '' ? val('RazonSocialComprador') : 'CLIENTE CONTADO'}'),
               pw.Text(
                   'Contacto: ${val('ContactoComprador') != '' ? val('ContactoComprador') : 'S/N'}'),
               pw.Text(
@@ -2253,7 +2270,7 @@ Future<pw.Document> generarPdfDesdeXmlFirmado(String pathXml,
           data: detallesItems,
           headerAlignment: pw.Alignment.centerLeft,
           cellAlignment: pw.Alignment.centerLeft,
-          cellStyle: pw.TextStyle(fontSize: 10),
+          cellStyle: pw.TextStyle(fontSize: 8),
         ),
         pw.SizedBox(height: 20),
         pw.Row(children: [
@@ -2279,7 +2296,7 @@ Future<pw.Document> generarPdfDesdeXmlFirmado(String pathXml,
                       style: pw.TextStyle(
                           fontSize: 10, fontWeight: pw.FontWeight.bold)),
                   pw.SizedBox(width: 5),
-                  pw.Text(fechaFirma, style: pw.TextStyle(fontSize: 10)),
+                  pw.Text(xfechaFirma, style: pw.TextStyle(fontSize: 10)),
                 ])
               ])),
           pw.Expanded(
@@ -2400,12 +2417,18 @@ extension EcfPdfExtension on EcfModel {
     if (gravado == '') {
       gravado = '0.00';
     }
-    int pagina = 0;
 
     doc.addPage(
       pw.MultiPage(
           pageTheme: pw.PageTheme(
               theme: pw.ThemeData(defaultTextStyle: pw.TextStyle(fontSize: 8))),
+          footer: (ctx) {
+            return pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [
+                  pw.Text('Pagina ${ctx.pageNumber}/${ctx.pagesCount}')
+                ]);
+          },
           header: (ctx) {
             return pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -2442,14 +2465,16 @@ extension EcfPdfExtension on EcfModel {
                               : pw.SizedBox(),
                           pw.Text('Fecha de Emisión: $fechaEmision',
                               textAlign: pw.TextAlign.right),
-                          pw.Text(
-                              'Fecha de Vencimiento: ${fechaVencimiento != '' ? fechaVencimiento : fechaVencimiento}',
-                              textAlign: pw.TextAlign.right),
+                          tipo == '32' || tipo == '34'
+                              ? pw.SizedBox()
+                              : pw.Text(
+                                  'Fecha de Vencimiento: ${fechaVencimiento != '' ? fechaVencimiento : fechaVencimiento}',
+                                  textAlign: pw.TextAlign.right),
                         ]))
                   ]),
                   pw.SizedBox(height: 20),
                   pw.Text(
-                      'RNC Cliente: ${rncComprador != '' ? rncComprador : 'S/N'}'),
+                      'RNC Cliente: ${rncComprador != '' ? rncComprador : identificadorExtranjero != '' ? identificadorExtranjero : 'S/N'}'),
                   pw.Text(
                       'Razón Social Cliente: ${razonSocialComprador != '' ? razonSocialComprador : 'CLIENTE CONTADO'}'),
                   pw.Text(
@@ -2508,8 +2533,8 @@ extension EcfPdfExtension on EcfModel {
                                 pw.BarcodeWidget(
                                   data: qrData,
                                   barcode: pw.Barcode.qrCode(),
-                                  width: 120,
-                                  height: 120,
+                                  width: 100,
+                                  height: 100,
                                 ),
                                 pw.SizedBox(height: 15),
                                 pw.Row(children: [
@@ -2521,7 +2546,7 @@ extension EcfPdfExtension on EcfModel {
                                   pw.Text(codigoSeguridad,
                                       style: pw.TextStyle(fontSize: 8)),
                                 ]),
-                                pw.SizedBox(height: 10),
+                                pw.SizedBox(height: 5),
                                 pw.Row(children: [
                                   pw.Text('Fecha de Firma:',
                                       style: pw.TextStyle(

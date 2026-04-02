@@ -77,7 +77,8 @@ String removeXmlDeclaration(String xml) {
 
 /// Escape de datos del xml
 String escapeXmlEntities(String input) {
-  return input.replaceAll('&', '&amp;');
+  return input
+    .replaceAll('&', '&amp;');
 }
 
 /// Creacion de un [XmlSignerService]
@@ -96,6 +97,7 @@ class XmlSignerService {
   Future<XmlSignerModel> firmarXml(String xmlOriginal, File outFile) async {
     try {
       var sanitizedXml = escapeXmlEntities(xmlOriginal);
+  
       var canonical = (await canonicalXml(removeXmlDeclaration(sanitizedXml)))
           .replaceAll('\n', '')
           .replaceAll(RegExp(r'>\s+<'), '><');
@@ -119,16 +121,19 @@ class XmlSignerService {
             'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
         ..signatureAlgorithm =
             'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+        
 
         // Y computa la firma sobre el XML sin la cabecera <?xml…?>
         ..computeSignature(canonical);
 
+ 
+
       // 3) Escribe el resultado
       await outFile.writeAsString(
-          '<?xml version="1.0" encoding="utf-8"?>${signer.signedXml}');
+          '<?xml version="1.0" encoding="UTF-8"?>${signer.signedXml}',encoding: utf8);
 
       print('FIRMA: ${signer.signatureValue}');
-
+      
       return XmlSignerModel(
           xmlStr: signer.signedXml,
           xmlFile: outFile,
@@ -191,9 +196,9 @@ Future<String> canonicalXml(String xmlText) async {
 
   // Esperamos la salida del proceso
   final output =
-      await process.stdout.transform(SystemEncoding().decoder).join();
+      await process.stdout.transform(utf8.decoder).join();
   final errors =
-      await process.stderr.transform(SystemEncoding().decoder).join();
+      await process.stderr.transform(utf8.decoder).join();
 
   final exitCode = await process.exitCode;
 

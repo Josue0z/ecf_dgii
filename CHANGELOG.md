@@ -1,3 +1,3 @@
-## 1.0.23
+## 1.0.24
 
-- Correpcion de generacion de carpeta temporal
+- Modificaciones de problemas y extension de compatibilidad con mas formatos de comprobantes electronicos

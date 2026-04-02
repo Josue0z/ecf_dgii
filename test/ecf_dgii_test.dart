@@ -10,82 +10,89 @@ import 'package:path/path.dart' as path;
 void main() async {
   try {
     GeneratorEndPoint.envEcfType = EnvEcfType.cert;
-    final cert = File(path.join(dirProject.path, 'sailyn.p12'));
+    final cert = File(path.join(dirProject.path, 'july.p12'));
 
-    String password = 'URESA812';
+    String password = 'URESA781';
 
     AuthCertModel authModel = await getAuthP12(cert: cert, password: password);
- final now = DateTime.now();
+
+    final now = DateTime.now();
     final dateFormat = DateFormat('dd-MM-yyyy');
     final fechaEmision = '02-04-2020';
 
     List<EcfDetailsModel> items = [
-      EcfDetailsModel(
-          cantidad: '1.00',
-          unidadMedida: '',
-          indicadorFacturacion: '0',
-          indicadorBienOServ: '2',
-          nombreItem: 'SERVICIO PUBLICIDAD ACTUALIZADO',
+          EcfDetailsModel(
+          cantidad: '20.00',
+          unidadMedida: '18',
+          codigos: [],
+          fechaElaboracion: '',
+          fechaVencimientoItem: '',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '1',
+          nombreItem: 'PTE. CJ 24/12OZ',
           descripcionItem: '',
-          precioUnitario: '1.00',
+          precioUnitario: '900.0000',
           descuentoMonto: '',
           subDescuentos: [],
-          impuestosAdicionales: [],
-          otraMonedaDetalles: [],
-          montoItem: '1.00'),
+          montoItem: '18000.00',
+          impuestosAdicionales: []),
     ];
 
     EcfModel ecf = EcfModel(
         tipoEcf: EcfType.e34,
-        tempDirName: 'sailyn-reales',
+        tempDirName: 'july',
         indicadorMontoGravado: '',
         indicadorNotaCredito: '0',
         rncOtroContribuyente: '',
-        numeroComprobante: 'E340000000091',
-        numeroComprobanteModificado: 'E410000000091',
-        codigoModificacion: '2',
+        numeroComprobante: 'E340000000601',
+        numeroComprobanteModificado: 'E440000000601',
+        codigoModificacion: '3',
         fechaEmision: fechaEmision,
         fechaVencimiento: '',
         fechaEmisionNcfModificado: '01-04-2020',
-        razonModificacion: '',
+        razonModificacion: 'CORRIGE MONTOS DEL NCF MODIFICADO',
         tipoIngreso: '01',
         tipoPago: '1',
         formasDePagos: [],
         sucursal: '',
-        direccionEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
-        municipio: '',
-        provincia: '',
-        telefonoEmisor1: '',
-        telefonoEmisor2: '',
+        municipio: '010100',
+        provincia: '010000',
+        telefonoEmisor1: '809-472-7676',
+        telefonoEmisor2: '809-491-1918',
         telefonoEmisor3: '',
         totalPaginas: '',
-        rncEmisor: '130262812',
-        razonSocialEmisor: 'SAILYN AUTO IMPORT SRL',
-        nombreComercial: '',
-        correoEmisor: '',
-        website: '',
+        rncEmisor: '122017781',
+        razonSocialEmisor: 'JULY MOTORS SRL',
+        nombreComercial: 'JULY MOTORS',
+        direccionEmisor:
+            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
+        correoEmisor:
+            'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
+        website: 'www.facturaelectronica.com',
         actividadEconomica: '',
-        codigoVendedor: '',
+        codigoVendedor:
+            'AA0000000100000000010000000002000000000300000000050000000006',
         informacionAdicionalEmisor: '',
         rncComprador: '131880681',
         identificadorExtranjero: '',
-        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 02',
+        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 03',
         nombreComprador: '',
-        contactoComprador: '',
-        correoComprador: '',
+        contactoComprador: 'MARCOS LATIPLOL',
+        correoComprador: 'MARCOSLATIPLOL@KKKK.COM',
         telefonoAdicional: '',
-        direccionComprador: '',
-        municipioComprador: '',
-        provinciaComprador: '',
-        codigoInternoComprador: '',
-        numeroContenedor: '',
-        numeroReferencia: '',
-        fechaEntrega: '',
-        fechaOrdenCompra: '',
-        numeroOrdenCompra: '',
-        numeroFacturaInterna: '',
-        numeroPedidoInterno: '',
-        zonaVenta: '',
+        direccionComprador:
+            'CALLE JACINTO DE LA CONCHA FELIZ ESQUINA 27 DE FEBRERO,FRENTE A DOMINO',
+        municipioComprador: '010100',
+        provinciaComprador: '010000',
+        codigoInternoComprador: '10633440',
+        numeroContenedor: '8019289',
+        numeroReferencia: '1447',
+        fechaEntrega: '10-10-2020',
+        fechaOrdenCompra: '10-11-2018',
+        numeroOrdenCompra: '4500352238',
+        numeroFacturaInterna: '123456789016',
+        numeroPedidoInterno: '123456789016',
+        zonaVenta: 'NORTE',
         rutaVenta: '',
         paisDestino: '',
         conductor: '',
@@ -99,7 +106,7 @@ void main() async {
         totalGravado18: '',
         totalGravado16: '',
         totalGravadoTasa0: '',
-        montoExento: '',
+        montoExento: '18000.00',
         totalItbis: '',
         totalItbis18: '',
         totalItbis16: '',
@@ -107,11 +114,11 @@ void main() async {
         itbis1: '',
         itbis2: '',
         itbis3: '',
-        montoTotal: '0.00',
-        montoNoFacturable: '1.00',
-        montoPeriodo: '',
+        montoTotal: '18000.00',
+        montoNoFacturable: '',
+        montoPeriodo: '18000.00',
         montoAvancePago: '',
-        valorPagar: '',
+        valorPagar: '18000.00',
         tipoMoneda: '',
         tipoCambio: '',
         montoGravadoTotalOtraMoneda: '',
@@ -140,7 +147,7 @@ void main() async {
     await ecf.enviarEcf();
 
     var doc = await ecf.generarPdfFactura();
-    var filePdf = File(path.join(tempDirPath, 'sailyn-reales', 'pdfs',
+    var filePdf = File(path.join(tempDirPath, 'july', 'pdfs',
         '${ecf.rncEmisor}${ecf.numeroComprobante}.PDF'));
 
     await filePdf.create(recursive: true);
@@ -148,8 +155,6 @@ void main() async {
     print(ecf.uriEcf);
     print(ecf.trackId);
     print(ecf.token);
-    print(filePdf.path);
-    print(ecf.ecfFile?.path);
 
     /* var pathFile =
         '/Users/josue/development/proyectos/ecf_dgii/temp_4/101675489E310000000950.xml';
