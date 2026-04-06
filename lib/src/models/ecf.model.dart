@@ -1523,7 +1523,6 @@ class EcfModel {
             return '''
          <ImpuestoAdicional>
          <TipoImpuesto>${impuesto.tipoImpuesto}</TipoImpuesto>
-         <TasaImpuestoAdicional>${impuesto.tasaImpuestoAdicional}</TasaImpuestoAdicional>
          ${impuesto.montoImpuestoSelectivoConsumoEspecifico != '' ? '<MontoImpuestoSelectivoConsumoEspecifico>${impuesto.montoImpuestoSelectivoConsumoEspecifico}</MontoImpuestoSelectivoConsumoEspecifico>' : ''}
          ${impuesto.montoImpuestoSelectivoConsumoAdvalorem != '' ? '<MontoImpuestoSelectivoConsumoAdvalorem>${impuesto.montoImpuestoSelectivoConsumoAdvalorem}</MontoImpuestoSelectivoConsumoAdvalorem>' : ''}
          ${impuesto.otrosImpuestosAdicionales != '' ? '<OtrosImpuestosAdicionales>${impuesto.otrosImpuestosAdicionales}</OtrosImpuestosAdicionales>' : ''}
