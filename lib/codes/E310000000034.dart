@@ -1,12 +1,7 @@
-import 'dart:io';
+
 import 'package:ecf_dgii/settings.dart';
 import 'package:ecf_dgii/src/models/ecf.model.dart';
 import 'package:ecf_dgii/src/types/ecf.dart';
-import 'package:ecf_dgii/src/utils/directories.dart';
-import 'package:ecf_dgii/src/utils/generate.endpoint.dart';
-import 'package:ecf_dgii/src/utils/p12.parser.dart';
-import 'package:intl/intl.dart';
-import 'package:path/path.dart' as path;
 
 
     List<EcfDetailsModel> items = [
