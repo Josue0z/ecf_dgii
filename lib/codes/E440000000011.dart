@@ -1,0 +1,156 @@
+import 'package:ecf_dgii/settings.dart';
+import 'package:ecf_dgii/src/models/ecf.model.dart';
+import 'package:ecf_dgii/src/types/ecf.dart';
+
+    final fechaEmision = '01-04-2020';
+
+    List<EcfDetailsModel> items = [
+      EcfDetailsModel(
+          cantidad: '8.00',
+          unidadMedida: '23',
+          codigos: [TipoCodigo(tipoCodigo: 'Interno', codigoItem: '152556')],
+          fechaElaboracion: '21-04-2020',
+          fechaVencimientoItem: '23-06-2020',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '1',
+          nombreItem: 'Mero Basa',
+          descripcionItem: 'Filete de Mero Basa por libra',
+          precioUnitario: '380.0000',
+          descuentoMonto: '380.00',
+          subDescuentos: [
+            SubDescuento(
+                tipoSubDescuento: '\$',
+                subDescuentoPorcentaje: '',
+                montoSubDescuento: '380.00')
+          ],
+          montoItem: '2660.00',
+          impuestosAdicionales: []),
+      EcfDetailsModel(
+          cantidad: '4.00',
+          unidadMedida: '43',
+          fechaElaboracion: '25-05-2020',
+          fechaVencimientoItem: '24-06-2020',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '1',
+          nombreItem: 'Kelloggs',
+          descripcionItem: 'Corn Flakes de Kelloggs grande 10lb',
+          precioUnitario: '500.0000',
+          descuentoMonto: '40.00',
+          subDescuentos: [
+            SubDescuento(
+                tipoSubDescuento: '%',
+                subDescuentoPorcentaje: '2.00',
+                montoSubDescuento: '40.00')
+          ],
+          montoItem: '1960.00',
+          impuestosAdicionales: []),
+      EcfDetailsModel(
+          cantidad: '12.00',
+          unidadMedida: '13',
+          codigos: [TipoCodigo(tipoCodigo: 'Interno', codigoItem: '152558')],
+          fechaElaboracion: '23-02-2020',
+          fechaVencimientoItem: '25-06-2020',
+          indicadorFacturacion: '4',
+          indicadorBienOServ: '1',
+          nombreItem: 'Malta Moreno',
+          descripcionItem: 'Paquete de Malta Morena,  10onz, plastica',
+          precioUnitario: '450.0000',
+          descuentoMonto: '',
+          subDescuentos: [],
+          recargoMonto: '189.00',
+          subRecargos: [
+            SubRecargo(
+                tipoSubRecargo: '\$',
+                subRecargoPorcentaje: '',
+                montoSubRecargo: '189.00')
+          ],
+          montoItem: '5589.00',
+          impuestosAdicionales: []),
+    ];
+
+    EcfModel ecf = EcfModel(
+        tipoEcf: EcfType.e44,
+        tempDirName: kTempDirName,
+        indicadorMontoGravado: '',
+        numeroComprobante: 'E440000000011',
+        codigoModificacion: '',
+        fechaEmision: fechaEmision,
+        fechaVencimiento: kfechaVencimiento,
+        fechaEmisionNcfModificado: '',
+        razonModificacion: '',
+        tipoIngreso: '01',
+        tipoPago: '1',
+        formasDePagos: [FormaDePago('1', '10209.00')],
+        sucursal: '',
+        direccionEmisor:
+            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
+        municipio: '010100',
+        provincia: '010000',
+        telefonoEmisor1: '809-472-7676',
+        telefonoEmisor2: '809-491-1918',
+        telefonoEmisor3: '',
+        totalPaginas: '',
+        rncEmisor:kRncEmisor,
+        razonSocialEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
+        nombreComercial: 'DOCUMENTOS ELECTRONICOS DE 02',
+        correoEmisor:
+            'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
+        website: 'www.facturaelectronica.com',
+        actividadEconomica: '',
+        codigoVendedor:
+            'AA0000000100000000010000000002000000000300000000050000000006',
+        informacionAdicionalEmisor: '',
+        rncComprador: '131880681',
+        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 03',
+        nombreComprador: '',
+        contactoComprador: 'MARCOS LATIPLOL',
+        correoComprador: 'MARCOSLATIPLOL@KKKK.COM',
+        telefonoAdicional: '',
+        direccionComprador:
+            'CALLE JACINTO DE LA CONCHA FELIZ ESQUINA 27 DE FEBRERO,FRENTE A DOMINO',
+        municipioComprador: '010100',
+        provinciaComprador: '010000',
+        codigoInternoComprador: '10633440',
+        fechaEntrega: '10-10-2020',
+        fechaOrdenCompra: '10-11-2018',
+        numeroOrdenCompra: '4500352238',
+        numeroFacturaInterna: '123456789016',
+        numeroPedidoInterno: '123456789016',
+        zonaVenta: 'NORTE',
+        rutaVenta: '',
+        conductor: 'Rafael Perez',
+        documentoTransporte: '363636',
+        ficha: 'J-1234',
+        placa: 'A639689',
+        rutaTransporte: 'B-Sur',
+        zonaTransporte: 'Interior-1',
+        numeroAlbaran: '3634258',
+        totalGravado: '',
+        totalGravado18: '',
+        totalGravado16: '',
+        totalGravadoTasa0: '',
+        montoExento: '10209.00',
+        totalItbis: '',
+        totalItbis18: '',
+        totalItbis16: '',
+        totalItbisTasa0: '',
+        itbis1: '',
+        itbis2: '',
+        itbis3: '',
+        montoTotal: '10209.00',
+        montoPeriodo: '10209.00',
+        montoAvancePago: '',
+        valorPagar: '10209.00',
+        totalItbisRetencion: '',
+        totalIsrRetencion: '',
+        montoImpuestoAdicional: '',
+        impuestosAdicionales: [],
+        terminoPago: '',
+        bancoPago: '',
+        paginas: [],
+        items: items,
+        privateKey: '',
+        certBase64: '');
+
+    EcfModel kE440000000011 = ecf;
+   

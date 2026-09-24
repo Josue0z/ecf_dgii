@@ -1,0 +1,213 @@
+
+import 'package:ecf_dgii/settings.dart';
+import 'package:ecf_dgii/src/models/ecf.model.dart';
+import 'package:ecf_dgii/src/types/ecf.dart';
+
+    final fechaEmision = '01-04-2020';
+
+    List<EcfDetailsModel> items = [
+      EcfDetailsModel(
+          cantidad: '15.00',
+          unidadMedida: '23',
+          indicadorFacturacion: '1',
+          indicadorBienOServ: '2',
+          nombreItem: 'Servicio Profesional Legislativo',
+          descripcionItem: '',
+          precioUnitario: '385.0000',
+          subDescuentos: [
+          
+          ],
+          recargoMonto: '57.75',
+          subRecargos: [
+            SubRecargo(
+                tipoSubRecargo: '%',
+                subRecargoPorcentaje: '1.00',
+                montoSubRecargo: '57.75')
+          ],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '1040.90',
+              montoISRRetenido: '583.28'),
+          impuestosAdicionales: [],
+          montoItem: '5832.75'),
+      EcfDetailsModel(
+          cantidad: '5.00',
+          unidadMedida: '43',
+          indicadorFacturacion: '1',
+          indicadorBienOServ: '2',
+          nombreItem: 'Asesoria Legal',
+          descripcionItem: '',
+          precioUnitario: '550.0000',
+          descuentoMonto: '',
+          subDescuentos: [
+            
+          ],
+          recargoMonto: '27.50',
+          subRecargos: [
+            SubRecargo(
+                tipoSubRecargo: '%',
+                subRecargoPorcentaje: '1.00',
+                montoSubRecargo: '27.50')
+          ],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '490.95',
+              montoISRRetenido: '277.75'),
+          impuestosAdicionales: [],
+          montoItem: '2777.50'),
+      EcfDetailsModel(
+          cantidad: '9.00',
+          unidadMedida: '13',
+          indicadorFacturacion: '1',
+          indicadorBienOServ: '2',
+          nombreItem: 'Gestiones Legales',
+          descripcionItem: '',
+          precioUnitario: '250.0000',
+          descuentoMonto: '',
+          subDescuentos: [
+          
+          ],
+          recargoMonto: '22.50',
+          subRecargos: [
+            SubRecargo(
+                tipoSubRecargo: '%',
+                subRecargoPorcentaje: '1.00',
+                montoSubRecargo: '22.50')
+          ],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '400.05',
+              montoISRRetenido: '227.25'),
+          impuestosAdicionales: [],
+          montoItem: '2272.50'),
+      EcfDetailsModel(
+          cantidad: '23.00',
+          unidadMedida: '15',
+          indicadorFacturacion: '1',
+          indicadorBienOServ: '2',
+          nombreItem: 'Legalizacion de documentos',
+          descripcionItem: '',
+          precioUnitario: '185.0000',
+          descuentoMonto: '',
+          subDescuentos: [
+            
+          ],
+          recargoMonto: '42.55',
+          subRecargos: [
+            SubRecargo(
+                tipoSubRecargo: '%',
+                subRecargoPorcentaje: '1.00',
+                montoSubRecargo: '42.55')
+          ],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '764.56',
+              montoISRRetenido: '429.76'),
+          impuestosAdicionales: [],
+          montoItem: '4297.55'),
+      EcfDetailsModel(
+          cantidad: '7.00',
+          unidadMedida: '23',
+          indicadorFacturacion: '1',
+          indicadorBienOServ: '2',
+          nombreItem: 'Servicios ambulatorio',
+          descripcionItem: '',
+          precioUnitario: '125.0000',
+          descuentoMonto: '',
+          subDescuentos: [
+        
+          ],
+          recargoMonto: '8.75',
+          subRecargos: [
+            SubRecargo(
+                tipoSubRecargo: '%',
+                subRecargoPorcentaje: '1.00',
+                montoSubRecargo: '8.75')
+          ],
+          retencion: Retencion(
+              indicadorAgenteRetencionoPercepcion: '1',
+              montoITBISRetenido: '150.08',
+              montoISRRetenido: '88.38'),
+          impuestosAdicionales: [],
+          montoItem: '883.75'),
+    ];
+
+    EcfModel ecf = EcfModel(
+        tipoEcf: EcfType.e41,
+        tempDirName: kTempDirName,
+        numeroComprobante: 'E410000000007',
+        codigoModificacion: '',
+        fechaEmision: fechaEmision,
+        fechaVencimiento: kfechaVencimiento,
+        fechaEmisionNcfModificado: '',
+        razonModificacion:
+            'ANULACION DEL ENCF31 CON SECUENCIA QUE FINALIZA EN 61',
+        tipoIngreso: '',
+        tipoPago: '1',
+        formasDePagos: [FormaDePago('1', '18955.58')],
+        sucursal: '',
+        direccionEmisor:
+            'AVE. ISABEL AGUIAR NO. 269, ZONA INDUSTRIAL DE HERRERA',
+        municipio: '010100',
+        provincia: '010000',
+        telefonoEmisor1: '809-472-7676',
+        telefonoEmisor2: '809-491-1918',
+        telefonoEmisor3: '',
+        totalPaginas: '',
+        rncEmisor: kRncEmisor,
+        razonSocialEmisor: 'DOCUMENTOS ELECTRONICOS DE 02',
+        nombreComercial: 'DOCUMENTOS ELECTRONICOS DE 02',
+        correoEmisor:
+            'DOCUMENTOSELECTRONICOSDE0612345678969789+9000000000000000000000000000001@123.COM',
+        website: '',
+        actividadEconomica: '',
+        codigoVendedor: '',
+        informacionAdicionalEmisor: '',
+        rncComprador: '533445861',
+        razonSocialComprador: 'DOCUMENTOS ELECTRONICOS DE 11',
+        nombreComprador: '',
+        contactoComprador: '',
+        correoComprador: '',
+        telefonoAdicional: '',
+        direccionComprador: '',
+        municipioComprador: '',
+        provinciaComprador: '',
+        codigoInternoComprador: '',
+        fechaEntrega: '',
+        fechaOrdenCompra: '',
+        numeroOrdenCompra: '',
+        numeroFacturaInterna: '',
+        numeroPedidoInterno: '',
+        zonaVenta: '',
+        rutaVenta: '',
+        indicadorMontoGravado: '0',
+        totalGravado: '16064.05',
+        totalGravado18: '16064.05',
+        totalGravado16: '',
+        totalGravadoTasa0: '',
+        montoExento: '',
+        totalItbis: '2891.53',
+        totalItbis18: '2891.53',
+        totalItbis16: '',
+        totalItbisTasa0: '',
+        itbis1: '18',
+        itbis2: '',
+        itbis3: '',
+        montoTotal: '18955.58',
+        montoPeriodo: '',
+        montoAvancePago: '',
+        valorPagar: '',
+        totalItbisRetencion: '2846.53',
+        totalIsrRetencion: '1606.41',
+        montoImpuestoAdicional: '',
+        impuestosAdicionales: [],
+        terminoPago: '',
+        bancoPago: '',
+        paginas: [],
+        items: items,
+        privateKey: '',
+        certBase64: '');
+
+  EcfModel kE410000000007 = ecf;
+
+    
